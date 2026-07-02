@@ -11,6 +11,19 @@
     max-width: 100%;
     height: auto;
 }
+@media all and (max-width: 768px) {
+    /* smaller content images on mobile, in exchange for bigger/more readable
+       text (the hero banner is excluded, it already has its own sizing) */
+    .magazine .article_img {
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .magazine_teainside .article_header.header_overlay .article_img {
+        max-width: 100%;
+        margin: 0;
+    }
+}
 .magazine .w_view {
     display: block;
 }
@@ -46,7 +59,7 @@
 }
 @media all and (max-width: 768px) {
     .magazine .section_header .title {
-        font-size: 17px;
+        font-size: 21px;
     }
 }
 .magazine .mb_10 {
@@ -90,14 +103,14 @@ body.nav-open .magazine_lnb {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 20px;
 }
 .magazine_lnb_tab {
     position: relative;
     display: block;
     width: auto;
     height: auto;
-    padding: 2px 0 2px 16px;
+    padding: 3px 0 3px 18px;
     border: none;
     border-radius: 0;
     margin: 0;
@@ -105,9 +118,16 @@ body.nav-open .magazine_lnb {
     text-align: left;
     white-space: nowrap;
     line-height: 1.4;
-    font-size: 14px;
+    font-size: 16px;
     color: rgba(0, 0, 0, 0.5);
     transition: color 0.25s ease;
+}
+/* "to top" shortcut, appended to the bottom of the list; a thin rule sets it
+   apart from the tea shortcuts above it */
+.magazine_lnb_top {
+    margin-top: 4px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
 }
 .magazine_lnb_tab:before {
     content: "";
@@ -144,6 +164,60 @@ body.nav-open .magazine_lnb {
 @media all and (max-width: 1280px) {
     .magazine_lnb {
         display: none;
+    }
+}
+/* mobile gets its own simpler layout: a compact horizontal bar pinned to the
+   bottom of the screen instead of the vertical rail used on wider screens */
+@media all and (max-width: 768px) {
+    .magazine_lnb {
+        display: block;
+        left: 0;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+        transform: translateY(100%);
+    }
+    body.nav-visible .magazine_lnb {
+        transform: translateY(0);
+    }
+    body.nav-open .magazine_lnb {
+        transform: translateY(100%);
+    }
+    .magazine_lnb_list {
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+        overflow-x: auto;
+    }
+    .magazine_lnb_tab {
+        padding: 4px 0;
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+    .magazine_lnb_tab:before {
+        left: 0;
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        height: 2px;
+        transform: scaleX(0);
+    }
+    .magazine_lnb_tab:hover:before,
+    .magazine_lnb_tab.active:before {
+        transform: scaleX(1);
+    }
+    .magazine_lnb_top {
+        margin-top: 0;
+        padding-top: 4px;
+        padding-left: 14px;
+        border-top: none;
+        border-left: 1px solid rgba(0, 0, 0, 0.15);
+        flex-shrink: 0;
     }
 }
 @media all and (max-width: 768px) {
@@ -271,20 +345,20 @@ body.nav-open .magazine_lnb {
         gap: 14px;
     }
     .article_title_block.type_num .title_num {
-        font-size: 37.4px;
+        font-size: 40px;
     }
     .article_title_block.type_num .article_title {
-        font-size: 11.7px;
+        font-size: 17px;
     }
     .article_title_block.type_num.type_row {
         gap: 10px;
     }
     .article_title_block.type_num.type_row .title_num {
-        font-size: 31.2px;
+        font-size: 34px;
     }
     .article_title_block.type_num.type_row .title_info {
         margin-left: auto;
-        font-size: 10px;
+        font-size: 13px;
     }
 }
 @media all and (max-width: 480px) {
@@ -292,10 +366,10 @@ body.nav-open .magazine_lnb {
         gap: 10px;
     }
     .article_title_block.type_num .title_num {
-        font-size: 31.2px;
+        font-size: 34px;
     }
     .article_title_block.type_num .title_info {
-        font-size: 10px;
+        font-size: 13px;
     }
 }
 @media all and (max-width: 768px) {
@@ -355,14 +429,16 @@ body.nav-open .magazine_lnb {
 }
 @media all and (max-width: 768px) {
     :root {
-        --article-font-size: 13px;
-        --type2-font-size: 12px;
+        /* bigger than the tablet size above it — mobile trades smaller images
+           for more readable text, rather than following the desktop scale-down */
+        --article-font-size: 17px;
+        --type2-font-size: 16px;
     }
 }
 @media all and (max-width: 480px) {
     :root {
-        --article-font-size: 12px;
-        --type2-font-size: 12px;
+        --article-font-size: 16px;
+        --type2-font-size: 15px;
     }
 }
 .magazine_teainside {
@@ -564,13 +640,13 @@ body.nav-open .magazine_lnb {
         bottom: 25px;
     }
     .magazine_teainside .header_overlay .title {
-        font-size: 15.6px;
-        line-height: 1.45;
+        font-size: 22px;
+        line-height: 1.35;
     }
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 10.3px;
+        font-size: 14px;
         margin-top: 0;
-        line-height: 2;
+        line-height: 1.7;
     }
     .magazine_teainside .title_box.centered .title,
     .magazine_teainside .title_box.centered .sub_title {
@@ -595,7 +671,7 @@ body.nav-open .magazine_lnb {
 }
 @media all and (max-width: 480px) {
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 10px;
+        font-size: 13px;
     }
 }
 
@@ -705,10 +781,10 @@ body.nav-open .magazine_lnb {
 }
 @media all and (max-width: 768px) {
     .teainside_view_06 .article_title_block.type_num .article_title {
-        font-size: 13.7px;
+        font-size: 17px;
     }
     .teainside_view_06 .top_txt_block .para_title {
-        font-size: 10.1px;
+        font-size: 14px;
     }
     .article_title_block.type_num.m_view {
         display: flex !important;
@@ -728,7 +804,7 @@ body.nav-open .magazine_lnb {
         line-height: 1.875;
     }
     .magazine_article.teainside_view_06 .para_title {
-        font-size: 10.8px;
+        font-size: 14px;
     }
     .teainside_view_06 .para_title.tip {
         margin-top: 10px;
@@ -737,10 +813,10 @@ body.nav-open .magazine_lnb {
         margin-bottom: 0 !important;
     }
     .article_title_block.type_num .title_info {
-        font-size: 10px;
+        font-size: 13px;
     }
     .article_title_block.type_num.type_row .title_num {
-        font-size: 23.4px;
+        font-size: 34px;
     }
     .recipe_wrap.recipe_list_col.mb_80 {
         margin-bottom: 30px !important;
@@ -748,7 +824,7 @@ body.nav-open .magazine_lnb {
 }
 @media all and (max-width: 480px) {
     .magazine_article.teainside_view_06 .para_title {
-        font-size: 10.1px;
+        font-size: 13px;
     }
 }
 

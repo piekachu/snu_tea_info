@@ -569,8 +569,8 @@ table caption,
     position: relative;
     z-index: 1001;
     flex-shrink: 0;
-    width: 30px;
-    height: 22px;
+    width: 24px;
+    height: 15px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -581,9 +581,9 @@ table caption,
 }
 .toggle-btn .bar {
     width: 100%;
-    height: 3px;
+    height: 2px;
     background-color: #707070;
-    border-radius: 2px;
+    border-radius: 1px;
     transition: background-color 0.3s ease;
 }
 .toggle-btn.open .bar {
@@ -591,36 +591,6 @@ table caption,
 }
 .toggle-btn:hover .bar {
     background-color: #389634;
-}
-
-/* --------------------------------------------------
-* scroll-to-top button
-* -------------------------------------------------- */
-.btn_pagetop {
-    position: fixed;
-    right: 24px;
-    bottom: 24px;
-    z-index: 900;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: var(--osullocGreen);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-.btn_pagetop:hover {
-    background: var(--osullocGreenV);
-}
-.btn_pagetop:before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 55%;
-    width: 10px;
-    height: 10px;
-    border-top: 2px solid #fff;
-    border-left: 2px solid #fff;
-    transform: translate(-50%, -50%) rotate(45deg);
 }
 
 /* --------------------------------------------------

@@ -53,9 +53,18 @@
             document.body.classList.toggle("nav-open");
         }
 
+        // fold the sidebar when clicking anywhere outside it
+        document.addEventListener("click", (e) => {
+            const sidebar = document.getElementById("mySidebar");
+            const toggleBtn = document.getElementById("menuToggle");
+            if (!sidebar.classList.contains("open")) return;
+            if (sidebar.contains(e.target) || toggleBtn.contains(e.target)) return;
+            toggleNav();
+        });
+
         // highlight the section shortcut for whichever tea is currently in view
         document.addEventListener("DOMContentLoaded", () => {
-            const tabs = document.querySelectorAll(".magazine_lnb_tab");
+            const tabs = document.querySelectorAll(".magazine_lnb_tab[href^='#tea_']");
             if (!tabs.length) return;
             const sections = Array.from(tabs)
                 .map((tab) => document.querySelector(tab.getAttribute("href")))
@@ -117,7 +126,7 @@
 		</button>
 		<h1 class="header_logo">
 				<!-- FIXME (LOGO) -->
-				<img src="./images/0001.png" width="154" height="23" alt="오설록" class="logo_img">
+				<a href="../index.html"><img src="./images/0001.png" width="154" height="23" alt="오설록" class="logo_img"></a>
 		</h1>
 	</div>
 </header>
@@ -136,6 +145,7 @@
 					<a href="#tea_03" class="magazine_lnb_tab"><span>03 백우롱</span></a>
 					<a href="#tea_04" class="magazine_lnb_tab"><span>04 용산사지</span></a>
 					<a href="#tea_05" class="magazine_lnb_tab"><span>05 금훤</span></a>
+					<a href="#" class="magazine_lnb_tab magazine_lnb_top" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"><span>맨 위로</span></a>
 				</div>
 			</nav>
 
@@ -572,18 +582,6 @@
         </div>
     </main>
     <!-- footer -->
-    
-
-
-
-
-
-
-
-<button type="button" class="btn_pagetop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><span class="a11y_hidden">페이지 위로 가기</span></button>
-
-
-
 
  
 
