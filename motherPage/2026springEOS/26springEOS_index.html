@@ -52,11 +52,35 @@
         function toggleNav() {
             const sidebar = document.getElementById("mySidebar");
             const toggleBtn = document.getElementById("menuToggle");
-            
+
             // Toggle classes on both elements
             sidebar.classList.toggle("open");
             toggleBtn.classList.toggle("open");
+            document.body.classList.toggle("nav-open");
         }
+
+        // highlight the section shortcut for whichever tea is currently in view
+        document.addEventListener("DOMContentLoaded", () => {
+            const tabs = document.querySelectorAll(".magazine_lnb_tab");
+            if (!tabs.length) return;
+            const sections = Array.from(tabs)
+                .map((tab) => document.querySelector(tab.getAttribute("href")))
+                .filter(Boolean);
+            const setActive = (id) => {
+                tabs.forEach((tab) => {
+                    tab.classList.toggle("active", tab.getAttribute("href") === `#${id}`);
+                });
+            };
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) setActive(entry.target.id);
+                    });
+                },
+                { rootMargin: "-40% 0px -50% 0px" }
+            );
+            sections.forEach((section) => observer.observe(section));
+        });
     </script>
 
 
@@ -93,7 +117,7 @@
             </div>
             <nav id="magazine_lnb" class="magazine_lnb">
 				<h2 class="a11y_hidden">매거진 카테고리</h2>
-				<div class="magazine_lnb_list inner" style="display: flex; gap: 8px; justify-content: center; overflow-x: auto; white-space: nowrap;">
+				<div class="magazine_lnb_list inner">
 					<a href="#tea_01" class="magazine_lnb_tab"><span>01 홍오룡</span></a>
 					<a href="#tea_02" class="magazine_lnb_tab"><span>02 봉황단총</span></a>
 					<a href="#tea_03" class="magazine_lnb_tab"><span>03 백우롱</span></a>

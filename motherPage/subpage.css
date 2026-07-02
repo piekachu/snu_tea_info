@@ -22,7 +22,9 @@
     text-underline-offset: 3px;
 }
 .magazine_wrap {
-    padding-top: 65px;
+    /* tracks the fixed header's height at every breakpoint (previously hardcoded,
+       which left content tucked completely under the header on mobile) */
+    padding-top: calc(var(--header-height) - 5px);
 }
 .magazine .mb_10 {
     margin-bottom: 10px !important;
@@ -36,60 +38,86 @@
 .magazine .mb_80 {
     margin-bottom: 80px !important;
 }
+/* fixed vertical rail of section shortcuts, left edge of viewport */
 .magazine_lnb {
-    margin-bottom: 54px;
+    position: fixed;
+    left: 32px;
+    top: 50%;
+    z-index: 50;
+    margin-bottom: 0;
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+/* hidden while the top-left sidebar nav is open, so the two never overlap */
+body.nav-open .magazine_lnb {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%) translateX(-16px);
 }
 .magazine_lnb_list {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
 }
 .magazine_lnb_tab {
-    width: 145px;
-    height: 53px;
-    text-align: center;
-    border-radius: 53px;
-    margin: 0 8px;
-    line-height: 51px;
-    border: 1px solid #666666;
-    color: #000;
-    font-size: 18px;
-    background: transparent;
-    transition:
-        border-color 0.3s,
-        background-color 0.3s,
-        color 0.3s;
+    position: relative;
+    display: block;
+    width: auto;
+    height: auto;
+    padding: 2px 0 2px 16px;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    background: none;
+    text-align: left;
+    white-space: nowrap;
+    line-height: 1.4;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
+    transition: color 0.25s ease;
 }
+.magazine_lnb_tab:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--osullocGreen);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform 0.25s ease;
+}
+.magazine_lnb_tab:hover,
 .magazine_lnb_tab.active {
-    background: #000;
-    color: #fff;
-    border-color: #000;
+    color: #000;
+}
+.magazine_lnb_tab:hover:before,
+.magazine_lnb_tab.active:before {
+    transform: scaleY(1);
 }
 .magazine_lnb_tab span {
     display: inline-flex;
     position: relative;
     line-height: 1;
 }
-/* keep the tab pills usable as plain anchor links */
+/* keep the tabs usable as plain anchor links */
 .magazine_lnb_list a.magazine_lnb_tab {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     text-decoration: none;
     cursor: pointer;
-    padding: 0 10px;
 }
+/* the nav only ever shows where .magazine reserves a matching gutter for it below,
+   so it can never sit underneath the article images */
 @media all and (max-width: 1280px) {
-    .magazine_lnb_tab {
-        font-size: 16px;
+    .magazine_lnb {
+        display: none;
     }
 }
-@media all and (max-width: 1024px) {
-    .magazine_lnb_tab {
-        width: 116px;
-        font-size: 14px;
-        height: 42px;
-        line-height: 40px;
-        margin: 0 6px;
+@media all and (min-width: 1281px) {
+    .magazine {
+        padding-left: 180px;
     }
 }
 @media all and (max-width: 768px) {
@@ -104,27 +132,6 @@
     }
     .magazine .mb_40 {
         margin-bottom: 20px !important;
-    }
-    .magazine_wrap {
-        padding-top: 0;
-    }
-    .magazine_lnb {
-        margin-bottom: 10px;
-    }
-    .magazine_lnb_tab {
-        width: 104px;
-        font-size: 13px;
-        height: 36px;
-        line-height: 35px;
-    }
-}
-@media all and (max-width: 480px) {
-    .magazine_lnb_tab {
-        margin: 0 4.25px;
-        font-size: 12px;
-        width: 92px;
-        height: 34px;
-        line-height: 33px;
     }
 }
 
