@@ -24,36 +24,12 @@
     <!--fonts-->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 
-        
-        
-
-
     <!--공통 css-->
-    <link rel="stylesheet" href="https://image.osulloc.com/kr/ko/static/v2/css/common.css?ver=20260526_2">
-    <link rel="stylesheet" href="https://image.osulloc.com/kr/ko/static_cdj/search/css/renew_search.css?ver=20241212">
+    <link rel="stylesheet" href="../common.css">
 
-    <script src="https://image.osulloc.com/kr/ko/static/js/lib/jquery-1.11.2.min.js"></script>
-    <script src="https://image.osulloc.com/kr/ko/static_renew/js/lib/jquery-1.12.1.ui.min.js"></script>
-    <script src="https://image.osulloc.com/kr/ko/static/v2/js/lib/anime.min.js?ver=20241212"></script>
-
-        
-        
-            
-        
-        
-
-    <!--common layout-->
-    <script src="https://image.osulloc.com/kr/ko/static/v2/js/front.js?ver=20260409"></script>
-    <script src="https://image.osulloc.com/kr/ko/static/v2/js/layout.js?ver=20260304_1"></script>
-
-
-
-    <!-- page css, js -->
-    <link rel="stylesheet" href="https://image.osulloc.com/kr/ko/static/v2/css/magazine.css?ver=20260130">
-
-    <link rel="stylesheet" href="../style.css">
+    <!-- subordinate page css -->
+    <link rel="stylesheet" href="../subpage.css">
 </head>
-<iframe id="x-sso-check" name="sso_check_iframe" title="SSO Session Check Iframe" hidden></iframe>
 <body>
 
 
@@ -108,10 +84,6 @@
 			<span class="line"></span><span class="line"></span><span class="line"></span>
 	</div>
 </header>
-
-
-<div class="dimmed_bg" style="display:none;"></div>
-
 
 
     <main id="container" class="magazine">
@@ -571,7 +543,7 @@
 
 
 
-<button type="button" class="btn_pagetop"><span class="a11y_hidden">페이지 위로 가기</span></button>
+<button type="button" class="btn_pagetop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><span class="a11y_hidden">페이지 위로 가기</span></button>
 
 
 

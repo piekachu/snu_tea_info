@@ -1,0 +1,722 @@
+/* subordinate (magazine/tea-lineup) pages only — requires common.css to be loaded first */
+
+/* -----------------------
+*  magazine lnb
+* -----------------------*/
+:root {
+    --magazine-font-color: #222;
+}
+.magazine img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+.magazine .w_view {
+    display: block;
+}
+.magazine .m_view {
+    display: none;
+}
+.magazine .underline {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.magazine_wrap {
+    padding-top: 65px;
+}
+.magazine .mb_10 {
+    margin-bottom: 10px !important;
+}
+.magazine .mb_30 {
+    margin-bottom: 30px !important;
+}
+.magazine .mb_40 {
+    margin-bottom: 40px !important;
+}
+.magazine .mb_80 {
+    margin-bottom: 80px !important;
+}
+.magazine_lnb {
+    margin-bottom: 54px;
+}
+.magazine_lnb_list {
+    display: flex;
+    justify-content: center;
+}
+.magazine_lnb_tab {
+    width: 145px;
+    height: 53px;
+    text-align: center;
+    border-radius: 53px;
+    margin: 0 8px;
+    line-height: 51px;
+    border: 1px solid #666666;
+    color: #000;
+    font-size: 18px;
+    background: transparent;
+    transition:
+        border-color 0.3s,
+        background-color 0.3s,
+        color 0.3s;
+}
+.magazine_lnb_tab.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+.magazine_lnb_tab span {
+    display: inline-flex;
+    position: relative;
+    line-height: 1;
+}
+/* keep the tab pills usable as plain anchor links */
+.magazine_lnb_list a.magazine_lnb_tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0 10px;
+}
+@media all and (max-width: 1280px) {
+    .magazine_lnb_tab {
+        font-size: 16px;
+    }
+}
+@media all and (max-width: 1024px) {
+    .magazine_lnb_tab {
+        width: 116px;
+        font-size: 14px;
+        height: 42px;
+        line-height: 40px;
+        margin: 0 6px;
+    }
+}
+@media all and (max-width: 768px) {
+    .magazine .w_view {
+        display: none !important;
+    }
+    .magazine .m_view {
+        display: block !important;
+    }
+    .magazine .mb_30 {
+        margin-bottom: 15px !important;
+    }
+    .magazine .mb_40 {
+        margin-bottom: 20px !important;
+    }
+    .magazine_wrap {
+        padding-top: 0;
+    }
+    .magazine_lnb {
+        margin-bottom: 10px;
+    }
+    .magazine_lnb_tab {
+        width: 104px;
+        font-size: 13px;
+        height: 36px;
+        line-height: 35px;
+    }
+}
+@media all and (max-width: 480px) {
+    .magazine_lnb_tab {
+        margin: 0 4.25px;
+        font-size: 12px;
+        width: 92px;
+        height: 34px;
+        line-height: 33px;
+    }
+}
+
+/* -----------------------
+*  magazine list
+* -----------------------*/
+:root {
+    --type-num-line-height: 40px;
+}
+@media all and (max-width: 1024px) {
+    :root {
+        --type-num-line-height: 32px;
+    }
+}
+@media all and (max-width: 768px) {
+    :root {
+        --type-num-line-height: 24px;
+    }
+}
+@media all and (max-width: 480px) {
+    :root {
+        --type-num-line-height: 20px;
+    }
+}
+.article_title_block.type_num {
+    display: flex;
+    gap: 30px;
+    height: calc(var(--type-num-line-height) * 2);
+}
+.article_title_block.type_num .title_num {
+    display: flex;
+    align-items: center;
+    height: calc(var(--type-num-line-height) * 2);
+    color: #222;
+    font-size: 75px;
+    font-weight: 900;
+}
+.article_title_block.type_num .txt_wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.article_title_block.type_num .article_title {
+    color: #222;
+    font-weight: var(--font-weight-bold);
+    font-size: 22px;
+    line-height: var(--type-num-line-height);
+}
+.article_title_block.type_num .title_info {
+    font-weight: var(--font-weight-light);
+    font-size: var(--type2-font-size);
+    color: #a2a2a2;
+    line-height: var(--type-num-line-height);
+}
+.article_title_block.type_num.type_row {
+    flex-direction: row;
+    gap: 20px;
+}
+.article_title_block.type_num.type_row .title_num {
+    font-size: 55px;
+}
+.article_title_block.type_num.type_row .txt_wrap {
+    width: 100%;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+.article_txt {
+    color: var(--magazine-font-color);
+    font-size: var(--article-font-size);
+    letter-spacing: -0.05em;
+}
+.centered {
+    text-align: center;
+}
+@media all and (max-width: 1280px) {
+    .article_title_block.type_num {
+        gap: 24px;
+    }
+    .article_title_block.type_num .title_num {
+        font-size: 69px;
+    }
+    .article_title_block.type_num .article_title {
+        font-size: 20.2px;
+    }
+    .article_title_block.type_num.type_row .title_num {
+        font-size: 50.5px;
+    }
+}
+@media all and (max-width: 1024px) {
+    .article_title_block {
+        padding: 0 var(--teainside-layout-padding);
+    }
+    .article_title_block.type_num {
+        gap: 18px;
+    }
+    .article_title_block.type_num .title_num {
+        font-size: 60px;
+    }
+    .article_title_block.type_num .article_title {
+        font-size: 17.6px;
+    }
+    .article_title_block.type_num.type_row .title_num {
+        font-size: 44px;
+    }
+}
+@media all and (max-width: 768px) {
+    .article_title_block.type_num {
+        gap: 14px;
+    }
+    .article_title_block.type_num .title_num {
+        font-size: 48px;
+    }
+    .article_title_block.type_num .article_title {
+        font-size: 15px;
+    }
+    .article_title_block.type_num.type_row {
+        gap: 10px;
+    }
+    .article_title_block.type_num.type_row .title_num {
+        font-size: 40px;
+    }
+    .article_title_block.type_num.type_row .title_info {
+        margin-left: auto;
+        font-size: 10px;
+    }
+}
+@media all and (max-width: 480px) {
+    .article_title_block.type_num {
+        gap: 10px;
+    }
+    .article_title_block.type_num .title_num {
+        font-size: 40px;
+    }
+    .article_title_block.type_num .title_info {
+        font-size: 10px;
+        font-size: clamp(8px, 2.6vw, 10px);
+    }
+}
+@media all and (max-width: 768px) {
+    .centered {
+        text-align: left;
+    }
+    .centered_m {
+        text-align: center;
+    }
+}
+
+/* -----------------------
+*  magazine contents
+* -----------------------*/
+.magazine_contents {
+    padding: 13px 0;
+    min-height: 50vh;
+}
+.magazine_article {
+    max-width: 1280px;
+    padding: 0 80px;
+    margin: 0 auto;
+}
+@media all and (max-width: 1280px) {
+    .magazine_article {
+        padding: 0 20px;
+    }
+}
+@media all and (max-width: 1024px) {
+    .magazine_article {
+        padding: 0;
+    }
+    .magazine_article .article_inner {
+        padding: 0 20px;
+    }
+}
+
+/* -----------------------
+*  magazine teainside
+* -----------------------*/
+:root {
+    --article-font-size: 22px;
+    --type2-font-size: 20px;
+    --teainside-layout-padding: 20px;
+}
+@media all and (max-width: 1280px) {
+    :root {
+        --article-font-size: 20.2px;
+        --type2-font-size: 18.4px;
+    }
+}
+@media all and (max-width: 1024px) {
+    :root {
+        --article-font-size: 17.6px;
+        --type2-font-size: 16px;
+    }
+}
+@media all and (max-width: 768px) {
+    :root {
+        --article-font-size: 13.2px;
+        --type2-font-size: 12.8px;
+    }
+}
+@media all and (max-width: 480px) {
+    :root {
+        --article-font-size: 12px;
+        --type2-font-size: 12px;
+    }
+}
+.magazine_teainside {
+    min-height: 100vh;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+.magazine_teainside.layer_1445 {
+    max-width: 1445px;
+}
+.magazine_teainside .article_header {
+    position: relative;
+    margin-bottom: 80px;
+}
+.magazine_teainside .article_header .article_img {
+    margin-bottom: 100px;
+}
+.magazine_teainside .article_header.header_overlay {
+    margin-bottom: 60px;
+}
+.magazine_teainside .article_header.header_overlay .article_img {
+    margin-bottom: 0;
+}
+.magazine_teainside .header_overlay .title_wrap {
+    position: absolute;
+    left: 35.5px;
+    right: 35.5px;
+    top: 25px;
+    bottom: 41px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+.magazine_teainside .header_overlay .title_box {
+    margin-top: auto;
+}
+.magazine_teainside .header_overlay .title {
+    font-size: 42px;
+    line-height: 1.452;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.04em;
+}
+.magazine_teainside .header_overlay .title span {
+    display: block;
+    font-weight: var(--font-weight-normal);
+}
+.magazine_teainside .header_overlay .sub_title {
+    font-size: 22px;
+    margin-top: 13px;
+    line-height: 1.818;
+    opacity: 0.8;
+}
+.magazine_teainside .title_box.centered .title,
+.magazine_teainside .title_box.centered .sub_title {
+    padding: 0;
+    text-align: center;
+    text-shadow: 0 0 12.8px rgba(0, 0, 0, 0.25);
+}
+.magazine_article.teainside_article {
+    max-width: 100%;
+    padding: 0;
+}
+.magazine_teainside .magazine_block {
+    margin-bottom: 100px;
+}
+.magazine_teainside .cont_para {
+    margin-bottom: 3.545em;
+}
+.magazine_teainside .cont_para:last-child {
+    margin-bottom: 0 !important;
+}
+.magazine_teainside .para_title {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--type2-font-size);
+    line-height: 1.7;
+    letter-spacing: -0.045em;
+    word-break: keep-all;
+}
+.magazine_teainside .article_txt {
+    line-height: 1.454;
+    margin-bottom: 1.34em;
+}
+.magazine_teainside .article_txt:last-child {
+    margin-bottom: 0 !important;
+}
+.magazine_teainside .article_txt strong {
+    font-weight: var(--font-weight-bold);
+}
+.article_hr.hr_dashed {
+    border: none;
+    border-top: 1px dashed #6c6c6c;
+    margin-bottom: 60px;
+}
+@supports (background: repeating-linear-gradient(to right, black, black)) {
+    .article_hr.hr_dashed {
+        margin: 0;
+        margin-bottom: 60px;
+        padding: 0;
+        border: 0;
+        height: 1px;
+        background: repeating-linear-gradient(to right, #6c6c6c 0, #6c6c6c 2px, transparent 2px, transparent 4px);
+    }
+}
+.magazine_teainside .block_cont {
+    flex: 1;
+}
+.magazine_block_wrap.cont_970 {
+    max-width: 970px;
+    margin: 0 auto;
+    padding: 0;
+}
+@media all and (max-width: 1280px) {
+    .magazine_teainside {
+        padding: 0 20px;
+    }
+    .magazine_teainside .article_header,
+    .magazine_teainside .article_header .article_img,
+    .magazine_teainside .magazine_block {
+        margin-bottom: 80px;
+    }
+    .magazine_teainside .article_header.header_overlay {
+        margin-bottom: 48px;
+    }
+    .magazine_teainside .header_overlay .title_wrap {
+        left: 28px;
+        right: 28px;
+        top: 20px;
+        bottom: 33px;
+    }
+    .magazine_teainside .header_overlay .title {
+        font-size: 33.6px;
+    }
+    .magazine_teainside .header_overlay .sub_title {
+        font-size: 20.24px;
+    }
+    .article_hr.hr_dashed {
+        margin-bottom: 48px;
+    }
+}
+@media all and (max-width: 1024px) {
+    .magazine_teainside {
+        padding: 0;
+        padding-top: 13px;
+    }
+    .magazine_teainside .article_header,
+    .magazine_teainside .article_header .article_img,
+    .magazine_teainside .magazine_block {
+        margin-bottom: 60px;
+    }
+    .magazine_teainside .article_header .title,
+    .magazine_teainside .magazine_block.txt_block {
+        padding: 0 var(--teainside-layout-padding);
+    }
+    .magazine_teainside .article_header.header_overlay {
+        margin-bottom: 36px;
+    }
+    .magazine_teainside .header_overlay .title_wrap {
+        left: 21px;
+        right: 21px;
+        top: 15px;
+        bottom: 25px;
+    }
+    .magazine_teainside .header_overlay .title {
+        font-size: 25.2px;
+    }
+    .magazine_teainside .header_overlay .sub_title {
+        font-size: 17.6px;
+    }
+    .article_hr.hr_dashed {
+        margin-bottom: 36px;
+    }
+}
+@media all and (max-width: 768px) {
+    .magazine_teainside .article_header {
+        margin-bottom: 42px;
+    }
+    .magazine_teainside .article_header .article_img {
+        margin-bottom: 25px;
+    }
+    .magazine_teainside .article_header.header_overlay {
+        margin-bottom: 30px;
+    }
+    .magazine_teainside .header_overlay .title_wrap {
+        left: 24px;
+        right: 24px;
+        bottom: 25px;
+    }
+    .magazine_teainside .header_overlay .title {
+        font-size: 20px;
+        line-height: 1.45;
+    }
+    .magazine_teainside .header_overlay .sub_title {
+        font-size: 13.2px;
+        margin-top: 0;
+        line-height: 2;
+    }
+    .magazine_teainside .title_box.centered .title,
+    .magazine_teainside .title_box.centered .sub_title {
+        text-shadow: 0 0 6.4px rgba(0, 0, 0, 0.25);
+    }
+    .article_hr.hr_dashed {
+        margin-bottom: 30px;
+    }
+    .magazine_teainside .article_txt {
+        line-height: 1.667;
+        margin-bottom: 1.79em;
+    }
+    .magazine_teainside .magazine_block {
+        margin-bottom: 50px;
+    }
+    .magazine_teainside .magazine_block.txt_block {
+        margin-bottom: 46px;
+    }
+    .magazine_teainside .cont_para {
+        margin-bottom: 1.583em;
+    }
+}
+@media all and (max-width: 480px) {
+    .magazine_teainside .header_overlay .sub_title {
+        font-size: 10px;
+    }
+}
+
+/* -----------------------
+*  page custom : osulloc now (teainside type 2)
+* -----------------------*/
+.teainside_type2 * {
+    letter-spacing: -0.04em;
+}
+.teainside_type2 .article_header.header_overlay,
+.teainside_type2 .magazine_block,
+.teainside_type2 .article_hr.hr_dashed {
+    margin-bottom: 80px;
+}
+.magazine_teainside.teainside_type2 .cont_para {
+    margin-bottom: 40px;
+}
+.magazine_teainside.teainside_type2 .article_txt {
+    margin-bottom: 20px;
+    font-size: var(--type2-font-size);
+    color: #424242;
+    line-height: 2;
+    word-break: keep-all;
+}
+.magazine_teainside.teainside_type2 .block_cont.centered .article_txt {
+    color: #222;
+}
+@media all and (max-width: 1024px) {
+    .teainside_type2 .magazine_article .article_inner {
+        padding: 0;
+    }
+    .teainside_type2 .article_hr.hr_dashed {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+@media all and (max-width: 768px) {
+    .magazine_teainside.teainside_type2 .article_header.header_overlay,
+    .magazine_teainside.teainside_type2 .magazine_block,
+    .teainside_type2 .article_hr.hr_dashed {
+        margin-bottom: 30px;
+    }
+    .magazine_teainside.teainside_type2 .article_txt {
+        margin-bottom: 10px;
+        line-height: 1.667;
+    }
+    .magazine_teainside.teainside_type2 .cont_para {
+        margin-bottom: 20px;
+    }
+}
+
+/* -----------------------
+*  teainside #6 (recipe list layout)
+* -----------------------*/
+.teainside_view_06 .recipe_section_02 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.recipe_list_col {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.recipe_list_col .recipe_item {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+.recipe_list_col .recipe_item .txt_block {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.recipe_list_col .recipe_item .txt_block .article_txt {
+    line-height: 1.75;
+}
+.recipe_list_col .recipe_item .cont_para {
+    margin-top: auto;
+}
+.recipe_wrap.recipe_list_col.mb_80 {
+    margin-bottom: 80px;
+}
+@media all and (min-width: 768.1px) {
+    .article_title_block.type_num.w_view {
+        display: flex !important;
+    }
+    .article_title_block.type_num.m_view {
+        display: none !important;
+    }
+}
+@media all and (max-width: 1280px) {
+    .recipe_list_col {
+        gap: 24px;
+    }
+}
+@media all and (max-width: 1024px) {
+    .teainside_view_06 .recipe_wrap {
+        padding: 0 20px;
+    }
+    .teainside_view_06 .article_title_block {
+        padding: 0;
+    }
+    .recipe_list_col {
+        gap: 18px;
+    }
+}
+@media all and (max-width: 768px) {
+    .teainside_view_06 .article_title_block.type_num .article_title {
+        font-size: 17.5px;
+    }
+    .teainside_view_06 .top_txt_block .para_title {
+        font-size: 13px;
+    }
+    .article_title_block.type_num.m_view {
+        display: flex !important;
+    }
+    .recipe_list_col {
+        gap: 10px;
+    }
+    .recipe_list_col .recipe_item {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .recipe_list_col .recipe_item .txt_block {
+        height: auto;
+        min-height: 0;
+    }
+    .recipe_list_col .recipe_item .txt_block .article_txt {
+        line-height: 1.875;
+    }
+    .magazine_article.teainside_view_06 .para_title {
+        font-size: 13.8px;
+    }
+    .teainside_view_06 .para_title.tip {
+        margin-top: 10px;
+    }
+    .teainside_view_06 .para_title.tip.mb_10 {
+        margin-bottom: 0 !important;
+    }
+    .article_title_block.type_num .title_info {
+        font-size: 12px;
+    }
+    .article_title_block.type_num.type_row .title_num {
+        font-size: 30px;
+    }
+    .recipe_wrap.recipe_list_col.mb_80 {
+        margin-bottom: 30px !important;
+    }
+}
+@media all and (max-width: 480px) {
+    .magazine_article.teainside_view_06 .para_title {
+        font-size: 13px;
+    }
+}
+
+/* -----------------------
+*  site-specific customizations
+* -----------------------*/
+.article_title_block.type_num .title_info {
+    font-weight: var(--font-weight-normal);
+    color: #585858;
+}
+
+/* offset so the sticky header doesn't cover a tea's title when jumping via #tea_ nav links */
+.recipe_wrap[id^="tea_"] {
+    scroll-margin-top: 140px;
+}
