@@ -1,0 +1,134 @@
+
+
+
+
+/* Smooth transition for button push ================================================================== */
+.recipe_wrap.recipe_list_col.mb_80{margin-bottom:80px}.teainside_type2 .magazine_block_wrap .img_block.fix_01{margin-bottom:60px}.recipe_list_col .recipe_item .txt_block .article_txt{line-height:1.75}.teainside_type2 .magazine_author_info{letter-spacing:-.04em}.article_title_block.type_num .title_info{font-weight:var(--font-weight-normal);color:#585858}@media all and (max-width:768px){.magazine_teainside .header_overlay .title_wrap{left:24px;right:24px;bottom:25px}.magazine_teainside .header_overlay .title_tag{padding:0 12px}.recipe_wrap.recipe_list_col.mb_80,.teainside_type2 .magazine_block_wrap .img_block.fix_01{margin-bottom:30px}.teainside_view_06 .para_title.tip.mb_10{margin-bottom:0!important}.recipe_list_col{gap:20px}.article_title_block.type_num.type_row .title_num{font-size:30px}.article_title_block.type_num .title_info{font-size:12px}.recipe_list_col .recipe_item .txt_block .article_txt{line-height:1.875}}
+/* Smooth transition when clicking navigation tabs */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Retain original styling aesthetics for the new anchor links */
+.magazine_lnb_list a.magazine_lnb_tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0 10px; /* Slight padding tweak to fit all 5 beautifully on mobile */
+}
+
+/* Offset to prevent the sticky header from blocking the tea titles when jumping */
+.recipe_wrap[id^="tea_"] {
+    scroll-margin-top: 140px; 
+}
+/* ================================================================== */
+
+
+
+
+
+/* Common Sidebar design ================================================================== */
+/* Sidebar base styling with transparency */
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: -250px;
+    background-color: rgba(255, 255, 255, 0.2); /* 85% opacity */
+    backdrop-filter: blur(8px); /* Optional: Adds a modern frosted-glass effect */
+    overflow-x: hidden;
+    transition: 0.3s ease;
+    padding-top: 60px;
+    box-shadow: 2px 0px 10px rgba(141, 141, 141, 0.3);
+}
+
+/* When the 'open' class is added via JavaScript */
+.sidebar.open {
+    left: 0;
+}
+
+/* Sidebar links */
+.sidebar a {
+    padding: 12px 15px 12px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #818181;
+    display: block;
+    transition: 0.2s;
+}
+
+.sidebar a:hover {
+    color: #f1f1f1;
+    background-color: #555;
+}
+
+.sidebar .active {
+    color: #fff;
+    background-color: #5f5f5f;
+}
+
+/* Close button inside sidebar */
+.sidebar .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+    padding: 0;
+}
+
+/* Clean 3-Bar Button Base Layout */
+.toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px; /* Locked in place */
+    z-index: 1001; /* Keeps it on top of the sidebar */
+    width: 30px;
+    height: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Individual lines/bars styling */
+.toggle-btn .bar {
+    width: 100%;
+    height: 3px;
+    background-color: #707070;
+    border-radius: 2px;
+    transition: background-color 0.3s ease; /* Smooth color switch */
+}
+
+
+.toggle-btn.open .bar {
+    background-color: #707070;
+}
+
+/* Subtle hover behavior */
+.toggle-btn:hover .bar {
+    background-color: #389634;
+}
+
+.sidebar-brand {
+    color: white;
+    font-size: 22px;
+    padding-left: 25px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #333;
+    margin: 10px 0;
+}
+/* ================================================================== */
+
+
