@@ -34,12 +34,6 @@
 
 
 
-    <button id="menuToggle" class="toggle-btn" onclick="toggleNav()" aria-label="Toggle Navigation">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-    </button>
-    
     <div id="mySidebar" class="sidebar">
         <div class="sidebar-brand">Navigation</div>
         <a href="../index.html">🏠 Home (Mother Page)</a>
@@ -81,6 +75,21 @@
             );
             sections.forEach((section) => observer.observe(section));
         });
+
+        // reveal the section-shortcut nav only once the hero banner has scrolled out of view
+        document.addEventListener("DOMContentLoaded", () => {
+            const hero = document.querySelector(".article_header.header_overlay");
+            if (!hero) return;
+            const heroObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        document.body.classList.toggle("nav-visible", !entry.isIntersecting);
+                    });
+                },
+                { threshold: 0 }
+            );
+            heroObserver.observe(hero);
+        });
     </script>
 
 
@@ -101,11 +110,15 @@
 <!-- header wide -->
 <header class="header">
 	<div class="layout_full header_inner">
+		<button id="menuToggle" class="toggle-btn" onclick="toggleNav()" aria-label="Toggle Navigation">
+			<span class="bar"></span>
+			<span class="bar"></span>
+			<span class="bar"></span>
+		</button>
 		<h1 class="header_logo">
 				<!-- FIXME (LOGO) -->
 				<img src="./images/0001.png" width="154" height="23" alt="오설록" class="logo_img">
 		</h1>
-			<span class="line"></span><span class="line"></span><span class="line"></span>
 	</div>
 </header>
 

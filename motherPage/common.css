@@ -474,31 +474,25 @@ table caption,
     right: 0;
     bottom: 0;
     background: var(--header-background);
-    opacity: 0;
-    transition: opacity 0.55s;
-    z-index: -1;
-}
-.header:hover:before,
-.header.fixed:before {
+    /* always on (was hover/.fixed-only), so the logo has a consistent opaque
+       backdrop instead of standing out against whatever image scrolls underneath */
     opacity: 1;
+    z-index: -1;
 }
 .header .header_inner {
     display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 24px;
 }
 .header_logo {
     width: auto;
     height: auto;
-    margin-right: 48px;
     padding: 15px 0;
     font-size: 0;
 }
 .header_logo .logo_img {
     width: var(--logo-width);
-}
-@media all and (max-width: 1440px) {
-    .header_logo {
-        margin-right: 42px;
-    }
 }
 @media all and (max-width: 1280px) {
     .header_logo .logo_img {
@@ -570,10 +564,11 @@ table caption,
     margin: 10px 0;
 }
 .toggle-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
+    /* lives inside .header_inner now; relative + z-index keeps it clickable
+       above the sidebar overlay (z-index: 1000) so it still closes the sidebar */
+    position: relative;
     z-index: 1001;
+    flex-shrink: 0;
     width: 30px;
     height: 22px;
     display: flex;
