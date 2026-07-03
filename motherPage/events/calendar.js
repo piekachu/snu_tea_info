@@ -14,13 +14,35 @@
         return `${year}-${pad2(monthIndex + 1)}-${pad2(day)}`;
     }
 
+    function dateKeyFromDate(date) {
+        return dateKey(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    // every date key from event.date to event.endDate inclusive (or just
+    // [event.date] for single-day events)
+    function eventDateKeys(event) {
+        if (!event.endDate || event.endDate === event.date) {
+            return [event.date];
+        }
+        const keys = [];
+        const cur = new Date(`${event.date}T00:00:00`);
+        const last = new Date(`${event.endDate}T00:00:00`);
+        while (cur <= last) {
+            keys.push(dateKeyFromDate(cur));
+            cur.setDate(cur.getDate() + 1);
+        }
+        return keys;
+    }
+
     function buildEventsByDate(events) {
         const map = new Map();
         (events || []).forEach((event) => {
-            if (!map.has(event.date)) {
-                map.set(event.date, []);
-            }
-            map.get(event.date).push(event);
+            eventDateKeys(event).forEach((key) => {
+                if (!map.has(key)) {
+                    map.set(key, []);
+                }
+                map.get(key).push(event);
+            });
         });
         return map;
     }
