@@ -25,7 +25,18 @@
         const dt = document.createElement("dt");
         dt.textContent = label;
         const dd = document.createElement("dd");
-        dd.textContent = value;
+        if (/^https?:\/\//.test(value)) {
+            // a map link (e.g. location) rather than plain text
+            const link = document.createElement("a");
+            link.href = value;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.className = "event_meta_link";
+            link.textContent = "지도에서 보기";
+            dd.appendChild(link);
+        } else {
+            dd.textContent = value;
+        }
         row.appendChild(dt);
         row.appendChild(dd);
         list.appendChild(row);
@@ -40,13 +51,25 @@
 
         const metaEl = document.getElementById("eventMeta");
         if (metaEl) {
+            const status = typeof eventStatuses !== "undefined" ? eventStatuses[event.status] : null;
             const category = typeof eventCategories !== "undefined" ? eventCategories[event.category] : null;
 
-            if (category) {
-                const badge = document.createElement("span");
-                badge.className = "event_meta_badge";
-                badge.textContent = category.label;
-                metaEl.appendChild(badge);
+            if (status || category) {
+                const badges = document.createElement("div");
+                badges.className = "event_meta_badges";
+                if (status) {
+                    const statusBadge = document.createElement("span");
+                    statusBadge.className = `event_meta_badge event_status_${event.status}`;
+                    statusBadge.textContent = status.label;
+                    badges.appendChild(statusBadge);
+                }
+                if (category) {
+                    const categoryBadge = document.createElement("span");
+                    categoryBadge.className = "event_meta_badge";
+                    categoryBadge.textContent = category.label;
+                    badges.appendChild(categoryBadge);
+                }
+                metaEl.appendChild(badges);
             }
 
             const list = document.createElement("dl");

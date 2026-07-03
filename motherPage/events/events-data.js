@@ -4,10 +4,13 @@
 //  - events/events-meta.js (renders the date/location/facilitator/fee/category
 //    card on each event subpage, and shows the tea-lineup section when the
 //    event's category is "regulars")
-// Dates below are placeholders — replace with real dates as events are scheduled.
 // `path` is relative to motherPage/ (no leading slash); every page that
 // consumes it is exactly one folder below motherPage/, so callers all
 // prefix it with "../".
+//
+// `location` can be a plain address string, or a map link (e.g. a Naver Map
+// share URL) — events-meta.js auto-detects http(s) URLs and renders those
+// as a "지도에서 보기" link instead of plain text.
 //
 // `category` must be one of the keys in eventCategories below:
 //   teaClass  — 티클래스 (차 우림법 등을 배우는 소규모 클래스)
@@ -21,25 +24,37 @@ const eventCategories = {
     special: { label: "특별행사" }
 };
 
+// `status` must be one of the keys in eventStatuses below:
+//   recruiting — 모집중 (참가 신청을 받고 있음)
+//   upcoming   — 모집예정 (아직 신청이 열리지 않음)
+//   closed     — 마감 (신청이 종료됨)
+const eventStatuses = {
+    recruiting: { label: "모집중" },
+    upcoming: { label: "모집예정" },
+    closed: { label: "마감" }
+};
+
 const teaClubEvents = [
     {
-        date: "2026-06-13",
+        date: "2026-06-19",
         title: "26-1 종강다회",
         subtitle: "한 학기의 끝을 마무리하는 시간",
         path: "2026springEOS/26springEOS_index.html",
-        location: "[장소를 입력해주세요]",
+        location: "https://naver.me/5pwsXu4f",
         facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
-        category: "regulars"
+        category: "regulars",
+        status: "upcoming"
     },
     {
-        date: "2026-09-05",
+        date: "2026-06-22",
         title: "26-2 개강다회",
         subtitle: "새 학기를 여는 첫 만남",
         path: "2026summerSOS/26summerSOS_index.html",
-        location: "[장소를 입력해주세요]",
+        location: "https://naver.me/xoH83gzf",
         facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
-        category: "regulars"
+        category: "regulars",
+        status: "upcoming"
     }
 ];

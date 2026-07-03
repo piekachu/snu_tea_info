@@ -15,12 +15,14 @@
          magazine_lnb nav below).
       4. Add one entry for this event to teaClubEvents in
          ../events/events-data.js: date, title, subtitle, path to this
-         file, location, facilitator, fee, and category (one of
-         "teaClass" / "regulars" / "fieldTrip" / "special" — see
-         eventCategories in that file). That single edit is what makes
-         the event show up on the Events calendar, in every event page's
-         sidebar, AND fills in the info card below the hero on this page
-         — nothing on this page needs those values typed in by hand.
+         file, location, facilitator, fee, category (one of "teaClass" /
+         "regulars" / "fieldTrip" / "special" — see eventCategories in
+         that file), and status (one of "recruiting" / "upcoming" /
+         "closed" — see eventStatuses in that file). That single edit is
+         what makes the event show up on the Events calendar, in every
+         event page's sidebar, AND fills in the info card below the hero
+         on this page — nothing on this page needs those values typed in
+         by hand.
       5. The "tea lineup" section (the numbered tea cards below) only
          appears automatically when this event's category is "regulars".
          For other categories it's hidden by events-meta.js — replace it

@@ -852,14 +852,31 @@ body.nav-open .magazine_lnb {
     background: #fff;
     box-shadow: 0 2px 14px rgba(0, 0, 0, 0.1);
 }
+.event_meta_badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
 .event_meta_badge {
     display: inline-block;
     padding: 5px 14px;
-    margin-bottom: 16px;
     background: var(--osullocGreenS);
     color: var(--osullocGreen);
     font-size: 13px;
     font-weight: var(--font-weight-semibold);
+}
+.event_status_recruiting {
+    background: var(--osullocGreen);
+    color: #fff;
+}
+.event_status_upcoming {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--fontGray);
+}
+.event_status_closed {
+    background: rgba(0, 0, 0, 0.06);
+    color: rgba(0, 0, 0, 0.4);
 }
 .event_meta_list {
     display: grid;
@@ -884,6 +901,15 @@ body.nav-open .magazine_lnb {
     font-size: 14px;
     color: var(--fontColor);
     word-break: keep-all;
+}
+.event_meta_link {
+    color: var(--osullocGreen);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.event_meta_link:hover {
+    color: var(--osullocGreenV);
 }
 @media all and (max-width: 640px) {
     .event_meta {
