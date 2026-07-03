@@ -16,6 +16,7 @@
 
     <!--공통 css-->
     <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="calendar.css">
 
     <title>Events</title>
 
@@ -48,14 +49,24 @@
                 <h2 class="title">Events</h2>
             </div>
 
-            <h1 class="under-construction">공사중</h1>
-
-            <picture>
-                <img src="../main_images/bobTheBuilder.png" style="display: block; width: 100%; height: auto; max-width: 970px; margin: 0 auto;">
-            </picture>
+            <section class="calendar" aria-label="다과회 일정">
+                <div class="calendar_header">
+                    <button type="button" id="calPrev" class="calendar_nav" aria-label="이전 달">&#8249;</button>
+                    <div class="calendar_titlewrap">
+                        <h3 id="calLabel" class="calendar_label"></h3>
+                        <button type="button" id="calToday" class="calendar_today">오늘</button>
+                    </div>
+                    <button type="button" id="calNext" class="calendar_nav" aria-label="다음 달">&#8250;</button>
+                </div>
+                <div class="calendar_weekdays" id="calWeekdays"></div>
+                <div class="calendar_grid" id="calGrid"></div>
+            </section>
 
         </div>
     </main>
+
+    <script src="events-data.js"></script>
+    <script src="calendar.js"></script>
 
     <!-- footer -->
     <footer class="footer">

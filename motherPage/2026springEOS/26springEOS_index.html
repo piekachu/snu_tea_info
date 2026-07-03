@@ -37,70 +37,17 @@
     <div id="mySidebar" class="sidebar">
         <div class="sidebar-brand">Navigation</div>
         <a href="../index.html">🏠 Home</a>
+        <a href="../events/index.html">📅 Events</a>
         <a href="../teaInfo/index.html">🍵 Tea Info</a>
         <hr>
-        <a href="../2026springEOS/26springEOS_index.html" class="active">📄 종강다회</a>
-        <a href="../2026summerSOS/26summerSOS_index.html">📄 여름학기 개강다회</a>
+        <!-- populated at runtime from ../events/events-data.js by events-nav.js -->
+        <div id="sidebarEventLinks"></div>
     </div>
 
-    <script>
-        function toggleNav() {
-            const sidebar = document.getElementById("mySidebar");
-            const toggleBtn = document.getElementById("menuToggle");
-
-            // Toggle classes on both elements
-            sidebar.classList.toggle("open");
-            toggleBtn.classList.toggle("open");
-            document.body.classList.toggle("nav-open");
-        }
-
-        // fold the sidebar when clicking anywhere outside it
-        document.addEventListener("click", (e) => {
-            const sidebar = document.getElementById("mySidebar");
-            const toggleBtn = document.getElementById("menuToggle");
-            if (!sidebar.classList.contains("open")) return;
-            if (sidebar.contains(e.target) || toggleBtn.contains(e.target)) return;
-            toggleNav();
-        });
-
-        // highlight the section shortcut for whichever tea is currently in view
-        document.addEventListener("DOMContentLoaded", () => {
-            const tabs = document.querySelectorAll(".magazine_lnb_tab[href^='#tea_']");
-            if (!tabs.length) return;
-            const sections = Array.from(tabs)
-                .map((tab) => document.querySelector(tab.getAttribute("href")))
-                .filter(Boolean);
-            const setActive = (id) => {
-                tabs.forEach((tab) => {
-                    tab.classList.toggle("active", tab.getAttribute("href") === `#${id}`);
-                });
-            };
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach((entry) => {
-                        if (entry.isIntersecting) setActive(entry.target.id);
-                    });
-                },
-                { rootMargin: "-40% 0px -50% 0px" }
-            );
-            sections.forEach((section) => observer.observe(section));
-        });
-
-        // reveal the section-shortcut nav only once the hero banner has scrolled out of view
-        document.addEventListener("DOMContentLoaded", () => {
-            const hero = document.querySelector(".article_header.header_overlay");
-            if (!hero) return;
-            const heroObserver = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach((entry) => {
-                        document.body.classList.toggle("nav-visible", !entry.isIntersecting);
-                    });
-                },
-                { threshold: 0 }
-            );
-            heroObserver.observe(hero);
-        });
-    </script>
+    <script src="../subpage.js"></script>
+    <script src="../events/events-data.js"></script>
+    <script src="../events/events-nav.js"></script>
+    <script src="../events/events-meta.js"></script>
 
 
 
@@ -188,6 +135,7 @@
                     </div>
                 </div>
             </div>
+            <div id="eventMeta" class="event_meta"></div>
             <div class="magazine_block txt_block top_txt_block">
                 <div class="block_cont centered centered_m">
                     <div class="cont_para">
@@ -256,6 +204,9 @@
             </div>
 
             <hr class="article_hr hr_dashed">
+
+            <!-- shown only when this event's category is "regulars" (see events-meta.js) -->
+            <div id="teaLineup">
 
             <div id="tea_01" class="magazine_block_wrap cont_970">
                 <div class="recipe_wrap recipe_section_02 mb_40">
@@ -562,7 +513,8 @@
 
             <hr class="article_hr hr_dashed w_view">
 
-            
+            </div><!-- /#teaLineup -->
+
         </div>
     </article>
     

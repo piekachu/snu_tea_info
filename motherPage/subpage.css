@@ -840,3 +840,58 @@ body.nav-open .magazine_lnb {
 .recipe_wrap[id^="tea_"] {
     scroll-margin-top: 140px;
 }
+
+/* -----------------------
+*  event info card (date/location/facilitator/fee/category) — sits right
+*  under the hero banner on event subpages; populated by events-meta.js
+* -----------------------*/
+.event_meta {
+    max-width: 760px;
+    margin: 0 auto 60px;
+    padding: 24px 28px;
+    background: #fff;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.1);
+}
+.event_meta_badge {
+    display: inline-block;
+    padding: 5px 14px;
+    margin-bottom: 16px;
+    background: var(--osullocGreenS);
+    color: var(--osullocGreen);
+    font-size: 13px;
+    font-weight: var(--font-weight-semibold);
+}
+.event_meta_list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 32px;
+    margin: 0;
+}
+.event_meta_row {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+}
+.event_meta_row dt {
+    flex-shrink: 0;
+    width: 56px;
+    font-size: 13px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--fontGray);
+}
+.event_meta_row dd {
+    margin: 0;
+    font-size: 14px;
+    color: var(--fontColor);
+    word-break: keep-all;
+}
+@media all and (max-width: 640px) {
+    .event_meta {
+        padding: 18px 20px;
+        margin-bottom: 40px;
+    }
+    .event_meta_list {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
