@@ -1,23 +1,62 @@
-/* main hub page (index.html) only — requires common.css to be loaded first */
+/* main hub page (index.html) only — requires common.css to be loaded first.
+   Modeled on the apple.com/kr/store screenshots in this folder: a
+   persistent light-gray backdrop with a bold top-left page headline, then
+   plain top-left section labels each followed by a row of white,
+   shadow-free cards — no card borders, no drop shadows, no alternating
+   background bands. Color contrast comes only from the white cards
+   against the gray page. */
+
+#container.home {
+    background: #f5f5f7;
+}
+
+.home_hero {
+    padding: 56px 40px 16px;
+}
+
+.home_hero_title {
+    margin: 0;
+    max-width: 720px;
+    font-size: 30px;
+    font-weight: var(--font-weight-bold);
+    line-height: 1.4;
+    text-align: left;
+}
+
+.page-cards {
+    display: flex;
+    flex-direction: column;
+}
+
+.home_band {
+    width: 100%;
+    scroll-margin-top: calc(var(--header-height) + 24px);
+}
+
+.home_band_inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 40px 64px;
+}
 
 .home_card_header {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 16px;
-    padding: 20px 24px 4px;
+    margin-bottom: 24px;
 }
 
 .home_card_title {
     margin: 0;
     font-size: 22px;
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-bold);
     text-align: left;
 }
 
 .home_card_more {
     flex-shrink: 0;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: var(--font-weight-semibold);
     color: var(--osullocGreen);
     text-decoration: none;
@@ -28,28 +67,53 @@
     text-decoration: underline;
 }
 
-.home_section {
-    display: block;
-    width: 100%;
-    max-width: 1100px;
-    /* anchor-scroll target offset, so the fixed header never covers the
-       top of the section when the nav jumps here via #id */
-    scroll-margin-top: calc(var(--header-height) + 24px);
-}
-
-/* the carousel already ships its own box-free styling (events/carousel.css)
-   sized for its full-width home on the Events page — shrink it to this
-   card's column width instead of repeating that page's own margins */
-.home_section .event_carousel {
+/* the events carousel already ships its own box-free styling
+   (events/carousel.css) sized for its full-width home on the Events page —
+   let it simply fill this band's inner column instead */
+.home_band .event_carousel {
     max-width: 100%;
     margin: 0;
 }
 
+/* Notice / 소모임 신청 tiles: one plain white rounded card, no shadow —
+   consistent with the carousel cards' flat style */
+.home_tile.page-card {
+    max-width: 100%;
+    border-radius: 18px;
+    box-shadow: none;
+}
+
+.home_tile.page-card:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+@media all and (max-width: 1024px) {
+    .home_hero {
+        padding: 40px 32px 12px;
+    }
+    .home_hero_title {
+        font-size: 25px;
+    }
+    .home_band_inner {
+        padding: 16px 32px 48px;
+    }
+}
+
 @media all and (max-width: 640px) {
+    .home_hero {
+        padding: 28px 20px 8px;
+    }
+    .home_hero_title {
+        font-size: 20px;
+    }
+    .home_band_inner {
+        padding: 12px 20px 36px;
+    }
     .home_card_header {
-        padding: 16px 16px 4px;
+        margin-bottom: 16px;
     }
     .home_card_title {
-        font-size: 18px;
+        font-size: 19px;
     }
 }

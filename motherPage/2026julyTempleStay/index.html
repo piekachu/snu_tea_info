@@ -56,11 +56,6 @@
     <main id="container" class="magazine">
         <div class="layout_max magazine_wrap">
 
-            <!-- Page Title -->
-            <div class="section_header">
-                <h2 class="title">흥국사 템플스테이</h2>
-            </div>
-
             <div id="magazine_contents" class="magazine_contents">
                 <section class="magazine_teainside layer_1445 teainside_type2">
                     <article class="magazine_article teainside_article teainside_view_06">
@@ -69,27 +64,19 @@
                             <!-- hero banner -->
                             <div class="article_header header_overlay">
                                 <figure class="article_img">
-                                    <picture>
-                                        <!-- TODO: replace with the event's hero photo -->
-                                        <img src="../main_images/bobTheBuilder.png" width="1365" height="547" alt="">
-                                    </picture>
+                                    <!-- TODO: replace with the event's hero photo -->
+                                    <div class="img_placeholder" style="width: 100%; aspect-ratio: 1365 / 547;"></div>
                                 </figure>
                                 <div class="title_wrap">
-                                    <div class="title_box centered">
-                                        <h2 class="title"><span></span>산사에서 보내는 하룻밤</h2>
+                                    <div class="title_box">
                                         <p class="sub_title">설다연 흥국사 템플스테이</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- info card: date/location/facilitator/fee/category —
-                                 filled in automatically by events-meta.js from this
-                                 event's entry in ../events/events-data.js -->
-                            <div id="eventMeta" class="event_meta"></div>
-
-                            <!-- intro text -->
+                            <!-- detailed explanation (moved up, right after the hero) -->
                             <div class="magazine_block txt_block top_txt_block">
-                                <div class="block_cont centered centered_m">
+                                <div class="block_cont">
                                     <div class="cont_para">
                                         <h3 class="para_title mb_10">흥국사 템플스테이</h3>
                                         <p class="article_txt">
@@ -98,6 +85,14 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <hr class="article_hr hr_dashed">
+
+                            <!-- info card: date/location/facilitator/fee/category, plus the
+                                 event's one-line description at the right end —
+                                 filled in automatically by events-meta.js from this
+                                 event's entry in ../events/events-data.js -->
+                            <div id="eventMeta" class="event_meta"></div>
 
                             <hr class="article_hr hr_dashed">
 
@@ -116,6 +111,11 @@
                             </div>
 
                             <hr class="article_hr hr_dashed w_view">
+
+                            <!-- TODO: wire up the real signup flow, then remove `disabled` -->
+                            <div class="event_apply">
+                                <button type="button" class="event_apply_btn" disabled>신청하기</button>
+                            </div>
 
                         </div>
                     </article>

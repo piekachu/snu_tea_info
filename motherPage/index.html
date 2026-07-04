@@ -46,60 +46,64 @@
         <div class="layout_max">
 
             <!-- Page Title -->
-            <div class="section_header">
-                <h2 class="title">Welcome to the main portal</h2>
-
-                <h2 class="title">Select a page to visit:</h2>
+            <div class="home_hero">
+                <h2 class="home_hero_title">서울대학교 중앙 차동아리 설다연에 오신 것을 환영합니다!</h2>
             </div>
 
             <div class="page-cards">
-                <section id="events" class="home_section" aria-label="Events">
-                    <div class="home_card_header">
-                        <h3 class="home_card_title">Events</h3>
-                        <a class="home_card_more" href="events/index.html">더 알아보기</a>
-                    </div>
-                    <section class="event_carousel" id="eventCarousel" data-path-prefix="" aria-label="다가오는 행사">
-                        <div class="carousel_header">
-                            <h3 class="carousel_title">다가오는 행사</h3>
-                            <div class="carousel_controls">
-                                <div class="carousel_filter">
-                                    <button type="button" id="filterToggle" class="filter_toggle" aria-haspopup="listbox" aria-expanded="false">
-                                        <span id="filterToggleLabel">전체</span>
-                                        <svg class="filter_toggle_icon" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                            <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </button>
-                                    <ul id="filterMenu" class="filter_menu" role="listbox" hidden></ul>
-                                </div>
-                                <button type="button" id="carouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
-                                <button type="button" id="carouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
-                            </div>
+                <section id="events" class="home_band" aria-label="Events">
+                    <div class="home_band_inner">
+                        <div class="home_card_header">
+                            <h3 class="home_card_title">Events</h3>
+                            <a class="home_card_more" href="events/index.html">더 알아보기</a>
                         </div>
-                        <div class="carousel_track" id="carouselTrack"></div>
-                    </section>
+                        <section class="event_carousel" id="eventCarousel" data-path-prefix="" aria-label="다가오는 행사">
+                            <div class="carousel_header">
+                                <h3 class="carousel_title">다가오는 행사</h3>
+                                <div class="carousel_controls">
+                                    <div class="carousel_filter">
+                                        <button type="button" id="filterToggle" class="filter_toggle" aria-haspopup="listbox" aria-expanded="false">
+                                            <span id="filterToggleLabel">전체</span>
+                                            <svg class="filter_toggle_icon" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+                                        <ul id="filterMenu" class="filter_menu" role="listbox" hidden></ul>
+                                    </div>
+                                    <button type="button" id="carouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
+                                    <button type="button" id="carouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
+                                </div>
+                            </div>
+                            <div class="carousel_track" id="carouselTrack"></div>
+                        </section>
+                    </div>
                 </section>
 
-                <a id="notice" href="notice/index.html" class="page-card">
-                    <div class="home_card_header">
-                        <h3 class="home_card_title">공지사항/Q&amp;A</h3>
+                <section id="notice" class="home_band" aria-label="공지사항/Q&A">
+                    <div class="home_band_inner">
+                        <a href="notice/index.html" class="page-card home_tile">
+                            <div class="home_card_header">
+                                <h3 class="home_card_title">공지사항/Q&amp;A</h3>
+                            </div>
+                            <div class="page-card_thumb"></div>
+                        </a>
                     </div>
-                    <div class="page-card_thumb"></div>
-                </a>
-                <a id="join" href="join/index.html" class="page-card">
-                    <div class="home_card_header">
-                        <h3 class="home_card_title">소모임 신청</h3>
+                </section>
+
+                <section id="join" class="home_band" aria-label="소모임 신청">
+                    <div class="home_band_inner">
+                        <a href="join/index.html" class="page-card home_tile">
+                            <div class="home_card_header">
+                                <h3 class="home_card_title">소모임 신청</h3>
+                            </div>
+                            <div class="page-card_thumb"></div>
+                        </a>
                     </div>
-                    <div class="page-card_thumb"></div>
-                </a>
+                </section>
             </div>
 
             <h1 class="under-construction">모바일 환경에서는 불안정합니다!! PC로 봐주세요</h1>
-        
-        
-            <picture>
-                <img src="./main_images/bobTheBuilder.png" style="display: block; width: 100%; height: auto; max-width: 970px; margin: 0 auto;">
-            </picture>
-        
+
         </div>
     </main>
 

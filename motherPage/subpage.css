@@ -38,9 +38,9 @@
     /* tracks the fixed header's height at every breakpoint (previously hardcoded,
        which left content tucked completely under the header on mobile) */
     padding-top: calc(var(--header-height) - 5px);
-    /* narrower column (was unbounded up to 2560px) so the content stays truly
-       centered while still leaving a natural gutter for the left-side nav below */
-    max-width: 760px;
+    /* matches the main page's content column (see home.css .home_band_inner)
+       so event pages read at the same width as the rest of the site */
+    max-width: 1400px;
 }
 /* smaller page heading on subordinate pages specifically (mother page keeps
    the common.css default sizing) */
@@ -459,18 +459,6 @@ body.nav-open .magazine_lnb {
 }
 .magazine_teainside .article_header.header_overlay {
     margin-bottom: 60px;
-    /* break out of the narrow content column so the hero reads as a banner, but
-       cap it well short of full-bleed so it doesn't dominate the page */
-    --hero-w: min(calc(100vw - 64px), 1040px);
-    width: var(--hero-w);
-    max-width: var(--hero-w);
-    margin-left: calc(50% - (var(--hero-w) / 2));
-    margin-right: calc(50% - (var(--hero-w) / 2));
-}
-@media all and (max-width: 768px) {
-    .magazine_teainside .article_header.header_overlay {
-        --hero-w: calc(100vw - 32px);
-    }
 }
 .magazine_teainside .article_header.header_overlay .article_img {
     margin-bottom: 0;
@@ -485,8 +473,14 @@ body.nav-open .magazine_lnb {
     display: flex;
     flex-direction: column;
 }
+/* pinned to the bottom-left of the hero photo, not a separate heading above it */
 .magazine_teainside .header_overlay .title_box {
     margin-top: auto;
+}
+.magazine_teainside .header_overlay .title,
+.magazine_teainside .header_overlay .sub_title {
+    text-align: left;
+    text-shadow: 0 0 12.8px rgba(0, 0, 0, 0.25);
 }
 .magazine_teainside .header_overlay .title {
     font-size: 32.8px;
@@ -503,12 +497,6 @@ body.nav-open .magazine_lnb {
     margin-top: 13px;
     line-height: 1.818;
     opacity: 0.8;
-}
-.magazine_teainside .title_box.centered .title,
-.magazine_teainside .title_box.centered .sub_title {
-    padding: 0;
-    text-align: center;
-    text-shadow: 0 0 12.8px rgba(0, 0, 0, 0.25);
 }
 .magazine_article.teainside_article {
     max-width: 100%;
@@ -562,6 +550,15 @@ body.nav-open .magazine_lnb {
     max-width: 970px;
     margin: 0 auto;
     padding: 0;
+}
+/* keep the intro paragraph in a readable column too — same width as
+   .cont_970 above — now that .magazine_wrap itself is much wider */
+.magazine_teainside .magazine_block.txt_block {
+    /* left-aligned, flush with the hero image and the info list above it —
+       not centered independently */
+    max-width: 970px;
+    margin-left: 0;
+    margin-right: 0;
 }
 @media all and (max-width: 1280px) {
     .magazine_teainside {
@@ -648,8 +645,8 @@ body.nav-open .magazine_lnb {
         margin-top: 0;
         line-height: 1.7;
     }
-    .magazine_teainside .title_box.centered .title,
-    .magazine_teainside .title_box.centered .sub_title {
+    .magazine_teainside .header_overlay .title,
+    .magazine_teainside .header_overlay .sub_title {
         text-shadow: 0 0 6.4px rgba(0, 0, 0, 0.25);
     }
     .article_hr.hr_dashed {
@@ -681,10 +678,13 @@ body.nav-open .magazine_lnb {
 .teainside_type2 * {
     letter-spacing: -0.04em;
 }
-.teainside_type2 .article_header.header_overlay,
 .teainside_type2 .magazine_block,
 .teainside_type2 .article_hr.hr_dashed {
     margin-bottom: 80px;
+}
+/* extra breathing room between the hero photo and the info list below it */
+.teainside_type2 .article_header.header_overlay {
+    margin-bottom: 120px;
 }
 .magazine_teainside.teainside_type2 .cont_para {
     margin-bottom: 40px;
@@ -709,10 +709,12 @@ body.nav-open .magazine_lnb {
     }
 }
 @media all and (max-width: 768px) {
-    .magazine_teainside.teainside_type2 .article_header.header_overlay,
     .magazine_teainside.teainside_type2 .magazine_block,
     .teainside_type2 .article_hr.hr_dashed {
         margin-bottom: 30px;
+    }
+    .magazine_teainside.teainside_type2 .article_header.header_overlay {
+        margin-bottom: 48px;
     }
     .magazine_teainside.teainside_type2 .article_txt {
         margin-bottom: 10px;
@@ -846,17 +848,23 @@ body.nav-open .magazine_lnb {
 *  under the hero banner on event subpages; populated by events-meta.js
 * -----------------------*/
 .event_meta {
-    max-width: 760px;
-    margin: 0 auto 60px;
-    padding: 24px 28px;
-    background: #fff;
-    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.1);
+    /* spans the same width as the hero image (not capped at 970px like the
+       plain text blocks) so the brief description can sit at the right end */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    margin: 0 0 40px;
+}
+.event_meta_main {
+    flex: 0 1 auto;
+    min-width: 0;
 }
 .event_meta_badges {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 .event_meta_badge {
     display: inline-block;
@@ -878,27 +886,29 @@ body.nav-open .magazine_lnb {
     background: rgba(0, 0, 0, 0.06);
     color: rgba(0, 0, 0, 0.4);
 }
+/* plain line-by-line list, no card/box — a divider (see the <hr> after
+   #eventMeta in each event page) marks it off from the text below instead */
 .event_meta_list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     margin: 0;
 }
 .event_meta_row {
     display: flex;
-    gap: 10px;
+    gap: 16px;
     align-items: baseline;
 }
 .event_meta_row dt {
     flex-shrink: 0;
-    width: 56px;
-    font-size: 13px;
+    width: 60px;
+    font-size: 15px;
     font-weight: var(--font-weight-semibold);
     color: var(--fontGray);
 }
 .event_meta_row dd {
     margin: 0;
-    font-size: 14px;
+    font-size: 17px;
     color: var(--fontColor);
     word-break: keep-all;
 }
@@ -911,13 +921,66 @@ body.nav-open .magazine_lnb {
 .event_meta_link:hover {
     color: var(--osullocGreenV);
 }
+/* the event's one-line description — right end of the info section
+   (see events-meta.js), not overlaid on the hero photo anymore */
+.event_meta_brief {
+    flex: 1 1 260px;
+    max-width: 420px;
+    margin: 0;
+    text-align: right;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--fontGray);
+}
 @media all and (max-width: 640px) {
     .event_meta {
-        padding: 18px 20px;
-        margin-bottom: 40px;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 30px;
+    }
+    .event_meta_brief {
+        max-width: 100%;
+        text-align: left;
     }
     .event_meta_list {
-        grid-template-columns: 1fr;
         gap: 10px;
+    }
+}
+
+/* -----------------------
+*  application button — bottom of every event page; inactive (disabled)
+*  until the actual signup flow exists
+* -----------------------*/
+.event_apply {
+    /* no max-width/left-margin here on purpose — centers on the full page
+       width (matching the hero image), not the narrower 970px text column */
+    margin: 0 0 40px;
+    text-align: center;
+}
+.event_apply_btn {
+    display: inline-block;
+    padding: 16px 40px;
+    border: none;
+    background: var(--osullocGreen);
+    color: #fff;
+    font-size: 16px;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.event_apply_btn:hover:not(:disabled) {
+    background: var(--osullocGreenV);
+}
+.event_apply_btn:disabled {
+    background: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.35);
+    cursor: not-allowed;
+}
+@media all and (max-width: 640px) {
+    .event_apply_btn {
+        display: block;
+        width: 100%;
+        padding: 14px 20px;
+        text-align: center;
     }
 }

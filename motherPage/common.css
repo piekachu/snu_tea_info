@@ -749,8 +749,16 @@ body.page-home .header_logo .logo_img {
 }
 .page-card_thumb {
     width: 100%;
-    aspect-ratio: 16 / 7;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
+    background: var(--osullocGreenS);
+}
+
+/* stand-in for a photo that hasn't been added yet (see each event page's
+   "TODO: replace with..." comments) — plain tinted box, same treatment as
+   an empty .page-card_thumb, no placeholder graphic */
+.img_placeholder {
+    display: block;
     background: var(--osullocGreenS);
 }
 .page-card_thumb img {

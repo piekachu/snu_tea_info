@@ -43,6 +43,9 @@
 
         const metaEl = document.getElementById("eventMeta");
         if (metaEl) {
+            const main = document.createElement("div");
+            main.className = "event_meta_main";
+
             const effectiveStatus = typeof effectiveEventStatus !== "undefined" ? effectiveEventStatus(event) : event.status;
             const status = typeof eventStatuses !== "undefined" ? eventStatuses[effectiveStatus] : null;
             const category = typeof eventCategories !== "undefined" ? eventCategories[event.category] : null;
@@ -62,7 +65,7 @@
                     categoryBadge.textContent = category.label;
                     badges.appendChild(categoryBadge);
                 }
-                metaEl.appendChild(badges);
+                main.appendChild(badges);
             }
 
             const list = document.createElement("dl");
@@ -71,7 +74,18 @@
             addRow(list, "장소", event.location);
             addRow(list, "진행자", event.facilitator);
             addRow(list, "참가비", event.fee);
-            metaEl.appendChild(list);
+            main.appendChild(list);
+
+            metaEl.appendChild(main);
+
+            // one-line description — sits at the right end of the info
+            // section instead of overlaid on the hero photo
+            if (event.subtitle) {
+                const brief = document.createElement("p");
+                brief.className = "event_meta_brief";
+                brief.textContent = event.subtitle;
+                metaEl.appendChild(brief);
+            }
         }
 
         const isRegulars = event.category === "regulars";
