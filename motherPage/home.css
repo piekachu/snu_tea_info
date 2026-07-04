@@ -1,0 +1,55 @@
+/* main hub page (index.html) only — requires common.css to be loaded first */
+
+.home_card_header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px 4px;
+}
+
+.home_card_title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: var(--font-weight-semibold);
+    text-align: left;
+}
+
+.home_card_more {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--osullocGreen);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.home_card_more:hover {
+    text-decoration: underline;
+}
+
+.home_section {
+    display: block;
+    width: 100%;
+    max-width: 1100px;
+    /* anchor-scroll target offset, so the fixed header never covers the
+       top of the section when the nav jumps here via #id */
+    scroll-margin-top: calc(var(--header-height) + 24px);
+}
+
+/* the carousel already ships its own box-free styling (events/carousel.css)
+   sized for its full-width home on the Events page — shrink it to this
+   card's column width instead of repeating that page's own margins */
+.home_section .event_carousel {
+    max-width: 100%;
+    margin: 0;
+}
+
+@media all and (max-width: 640px) {
+    .home_card_header {
+        padding: 16px 16px 4px;
+    }
+    .home_card_title {
+        font-size: 18px;
+    }
+}

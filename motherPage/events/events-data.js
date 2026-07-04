@@ -1,5 +1,7 @@
 // Tea club event list — single source of truth, consumed by:
 //  - events/calendar.js (renders the Events page calendar)
+//  - events/events-carousel.js (renders the upcoming-events carousel on the
+//    Events page)
 //  - events/events-nav.js (builds the event list in every subpage's sidebar)
 //  - events/events-meta.js (renders the date/location/facilitator/fee/category
 //    card on each event subpage, and shows the tea-lineup section when the
@@ -11,6 +13,10 @@
 // `endDate` is optional — set it for multi-day events (e.g. a temple stay
 // spanning a weekend) and the calendar will show the event pill on every
 // day in [date, endDate], and the info card will show the date as a range.
+//
+// `thumbnail` is optional — a path relative to motherPage/ (same convention
+// as `path`) to an image for the upcoming-events carousel. Omit it and the
+// carousel shows a plain placeholder card instead of a broken image.
 //
 // `location` can be a plain address string, or a map link (e.g. a Naver Map
 // share URL) — events-meta.js auto-detects http(s) URLs and renders those
@@ -38,6 +44,43 @@ const eventStatuses = {
     closed: { label: "마감" }
 };
 
+const EVENT_WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+
+function formatEventDateKo(dateStr) {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const weekday = EVENT_WEEKDAY_LABELS[new Date(year, month - 1, day).getDay()];
+    return `${year}년 ${month}월 ${day}일 (${weekday})`;
+}
+
+function formatEventDateRangeKo(dateStr, endDateStr) {
+    if (!endDateStr || endDateStr === dateStr) {
+        return formatEventDateKo(dateStr);
+    }
+    const [year, month] = dateStr.split("-").map(Number);
+    const [endYear, endMonth, endDay] = endDateStr.split("-").map(Number);
+    const endWeekday = EVENT_WEEKDAY_LABELS[new Date(endYear, endMonth - 1, endDay).getDay()];
+    const start = formatEventDateKo(dateStr);
+    // same year+month: shorten the end date to just "일 (요일)"
+    if (year === endYear && month === endMonth) {
+        return `${start} ~ ${endDay}일 (${endWeekday})`;
+    }
+    return `${start} ~ ${formatEventDateKo(endDateStr)}`;
+}
+
+// true once an event's date (or endDate, for multi-day events) is over
+function isPastEvent(event, referenceDate) {
+    const now = referenceDate || new Date();
+    const lastDay = new Date(`${event.endDate || event.date}T23:59:59`);
+    return lastDay < now;
+}
+
+// an event whose date (or endDate, for multi-day events) has already
+// passed is always "closed", regardless of what status is set on it —
+// consumers should call this instead of reading event.status directly
+function effectiveEventStatus(event, referenceDate) {
+    return isPastEvent(event, referenceDate) ? "closed" : event.status;
+}
+
 const teaClubEvents = [
     {
         date: "2026-06-19",
@@ -48,7 +91,7 @@ const teaClubEvents = [
         facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "regulars",
-        status: "upcoming"
+        status: "closed"
     },
     {
         date: "2026-06-22",
@@ -59,7 +102,7 @@ const teaClubEvents = [
         facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "regulars",
-        status: "upcoming"
+        status: "closed"
     },
     {
         date: "2026-07-10",

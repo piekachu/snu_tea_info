@@ -16,10 +16,8 @@
 
     <!--공통 css-->
     <link rel="stylesheet" href="../common.css">
-    <link rel="stylesheet" href="carousel.css">
-    <link rel="stylesheet" href="calendar.css">
 
-    <title>Events</title>
+    <title>공지사항/Q&amp;A</title>
 
 </head>
 <body class="page-home">
@@ -37,8 +35,8 @@
          page rather than navigating to the subpage itself -->
     <nav class="home_nav" aria-label="주요 메뉴">
         <a href="../index.html">Home</a>
-        <a href="../index.html#events" class="active">Events</a>
-        <a href="../index.html#notice">공지사항/Q&amp;A</a>
+        <a href="../index.html#events">Events</a>
+        <a href="../index.html#notice" class="active">공지사항/Q&amp;A</a>
         <a href="../index.html#join">소모임 신청</a>
     </nav>
 
@@ -47,48 +45,17 @@
 
             <!-- Page Title -->
             <div class="section_header">
-                <h2 class="title">Events</h2>
+                <h2 class="title">공지사항/Q&amp;A</h2>
             </div>
 
-            <section class="event_carousel" id="eventCarousel" data-path-prefix="../" aria-label="다가오는 행사">
-                <div class="carousel_header">
-                    <h3 class="carousel_title">다가오는 행사</h3>
-                    <div class="carousel_controls">
-                        <div class="carousel_filter">
-                            <button type="button" id="filterToggle" class="filter_toggle" aria-haspopup="listbox" aria-expanded="false">
-                                <span id="filterToggleLabel">전체</span>
-                                <svg class="filter_toggle_icon" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <ul id="filterMenu" class="filter_menu" role="listbox" hidden></ul>
-                        </div>
-                        <button type="button" id="carouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
-                        <button type="button" id="carouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
-                    </div>
-                </div>
-                <div class="carousel_track" id="carouselTrack"></div>
-            </section>
+            <h1 class="under-construction">공사중</h1>
 
-            <section class="calendar" aria-label="다과회 일정">
-                <div class="calendar_header">
-                    <button type="button" id="calPrev" class="calendar_nav" aria-label="이전 달">&#8249;</button>
-                    <div class="calendar_titlewrap">
-                        <h3 id="calLabel" class="calendar_label"></h3>
-                        <button type="button" id="calToday" class="calendar_today">오늘</button>
-                    </div>
-                    <button type="button" id="calNext" class="calendar_nav" aria-label="다음 달">&#8250;</button>
-                </div>
-                <div class="calendar_weekdays" id="calWeekdays"></div>
-                <div class="calendar_grid" id="calGrid"></div>
-            </section>
+            <picture>
+                <img src="../main_images/bobTheBuilder.png" style="display: block; width: 100%; height: auto; max-width: 970px; margin: 0 auto;">
+            </picture>
 
         </div>
     </main>
-
-    <script src="events-data.js"></script>
-    <script src="events-carousel.js"></script>
-    <script src="calendar.js"></script>
 
     <!-- footer -->
     <footer class="footer">

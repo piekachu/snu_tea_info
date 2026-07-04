@@ -16,6 +16,8 @@
 
     <!--공통 css-->
     <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="events/carousel.css">
+    <link rel="stylesheet" href="home.css">
 
     <title>Main Hub</title>
 
@@ -36,7 +38,7 @@
     <nav class="home_nav" aria-label="주요 메뉴">
         <a href="index.html" class="active">Home</a>
         <a href="#events">Events</a>
-        <a href="#teaInfo">Tea Info</a>
+        <a href="#notice">공지사항/Q&amp;A</a>
         <a href="#join">소모임 신청</a>
     </nav>
 
@@ -51,19 +53,43 @@
             </div>
 
             <div class="page-cards">
-                <a id="events" href="events/index.html" class="page-card">
-                    <div class="page-card_thumb"></div>
-                    <span class="page-card_label">Events</span>
-                </a>
-                <a id="teaInfo" href="teaInfo/index.html" class="page-card">
-                    <div class="page-card_thumb">
-                        <img src="2026springEOS/images/0002.png" alt="">
+                <section id="events" class="home_section" aria-label="Events">
+                    <div class="home_card_header">
+                        <h3 class="home_card_title">Events</h3>
+                        <a class="home_card_more" href="events/index.html">더 알아보기</a>
                     </div>
-                    <span class="page-card_label">Tea Info</span>
+                    <section class="event_carousel" id="eventCarousel" data-path-prefix="" aria-label="다가오는 행사">
+                        <div class="carousel_header">
+                            <h3 class="carousel_title">다가오는 행사</h3>
+                            <div class="carousel_controls">
+                                <div class="carousel_filter">
+                                    <button type="button" id="filterToggle" class="filter_toggle" aria-haspopup="listbox" aria-expanded="false">
+                                        <span id="filterToggleLabel">전체</span>
+                                        <svg class="filter_toggle_icon" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                    <ul id="filterMenu" class="filter_menu" role="listbox" hidden></ul>
+                                </div>
+                                <button type="button" id="carouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
+                                <button type="button" id="carouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
+                            </div>
+                        </div>
+                        <div class="carousel_track" id="carouselTrack"></div>
+                    </section>
+                </section>
+
+                <a id="notice" href="notice/index.html" class="page-card">
+                    <div class="home_card_header">
+                        <h3 class="home_card_title">공지사항/Q&amp;A</h3>
+                    </div>
+                    <div class="page-card_thumb"></div>
                 </a>
                 <a id="join" href="join/index.html" class="page-card">
+                    <div class="home_card_header">
+                        <h3 class="home_card_title">소모임 신청</h3>
+                    </div>
                     <div class="page-card_thumb"></div>
-                    <span class="page-card_label">소모임 신청</span>
                 </a>
             </div>
 
@@ -76,6 +102,9 @@
         
         </div>
     </main>
+
+    <script src="events/events-data.js"></script>
+    <script src="events/events-carousel.js"></script>
 
     <!-- footer -->
     <footer class="footer">
