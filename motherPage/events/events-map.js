@@ -21,9 +21,14 @@
             onReady();
             return;
         }
+        // the SDK loads the "geocoder" submodule as a second, separate
+        // script after this one — `<script>.onload` fires once this file
+        // has executed, but before that submodule (and naver.maps.Service)
+        // exists. `callback=` is the SDK's own hook for "everything,
+        // submodules included, is ready now".
+        window.__snuTeaMapReady = onReady;
         var script = document.createElement("script");
-        script.src = "https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=" + NCP_CLIENT_ID + "&submodules=geocoder";
-        script.onload = onReady;
+        script.src = "https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=" + NCP_CLIENT_ID + "&submodules=geocoder&callback=__snuTeaMapReady";
         script.onerror = function () {
             console.error("[events-map] Naver Maps SDK failed to load. Check that this page's domain is registered as a Web Dynamic Map Service URL for client ID \"" + NCP_CLIENT_ID + "\" in the NCP console.");
         };
