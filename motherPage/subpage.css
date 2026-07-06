@@ -551,14 +551,13 @@ body.nav-open .magazine_lnb {
     margin: 0 auto;
     padding: 0;
 }
-/* keep the intro paragraph in a readable column too — same width as
-   .cont_970 above — now that .magazine_wrap itself is much wider */
+/* keep the intro paragraph in a readable column too — same width as,
+   and centered like, .cont_970 above (aligned with the guidelines/tea
+   text below, not flush with the wider hero image) */
 .magazine_teainside .magazine_block.txt_block {
-    /* left-aligned, flush with the hero image and the info list above it —
-       not centered independently */
     max-width: 970px;
-    margin-left: 0;
-    margin-right: 0;
+    margin-left: auto;
+    margin-right: auto;
 }
 @media all and (max-width: 1280px) {
     .magazine_teainside {
@@ -848,13 +847,14 @@ body.nav-open .magazine_lnb {
 *  under the hero banner on event subpages; populated by events-meta.js
 * -----------------------*/
 .event_meta {
-    /* spans the same width as the hero image (not capped at 970px like the
-       plain text blocks) so the brief description can sit at the right end */
+    /* same centered 970px column as the guidelines/tea text below,
+       instead of spanning the full width of the hero image */
+    max-width: 970px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 40px;
-    margin: 0 0 40px;
+    margin: 0 auto 40px;
 }
 .event_meta_main {
     flex: 0 1 auto;
@@ -944,6 +944,80 @@ body.nav-open .magazine_lnb {
     }
     .event_meta_list {
         gap: 10px;
+    }
+}
+
+/* -----------------------
+*  embedded event location map — same centered 970px column as the info
+*  card above it; populated by events-map.js, hidden when the event has
+*  no plain-address `location` to geocode (see events-data.js)
+* -----------------------*/
+.event_map {
+    max-width: 970px;
+    margin: 0 auto 40px;
+}
+.event_map_canvas {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: rgba(0, 0, 0, 0.04);
+}
+.event_map_directions {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 20px;
+    border: 1px solid var(--osullocGreen);
+    color: var(--osullocGreen);
+    font-size: 14px;
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.event_map_directions:hover {
+    background: var(--osullocGreen);
+    color: #fff;
+}
+
+/* -----------------------
+*  event/tea info toggle — "regulars" (정기다회) event pages only; switches
+*  which panel is shown below the hero between the event info (intro/meta/
+*  guidelines) and the tea lineup. Hidden entirely for other categories
+*  (see events-meta.js).
+* -----------------------*/
+.info_toggle {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 24px 0 40px;
+}
+.info_toggle_btn {
+    padding: 10px 28px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--fontGray);
+    font-size: 15px;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.info_toggle_btn:hover {
+    border-color: var(--osullocGreen);
+    color: var(--osullocGreen);
+}
+.info_toggle_btn.active {
+    background: var(--osullocGreen);
+    border-color: var(--osullocGreen);
+    color: #fff;
+}
+@media all and (max-width: 640px) {
+    .info_toggle {
+        margin: 20px 0 30px;
+    }
+    .info_toggle_btn {
+        flex: 1 1 0;
+        padding: 10px 0;
+        text-align: center;
+        font-size: 14px;
     }
 }
 

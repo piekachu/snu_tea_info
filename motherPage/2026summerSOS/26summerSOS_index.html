@@ -57,6 +57,7 @@
         <script src="../events/events-data.js"></script>
         <script src="../events/events-nav.js"></script>
         <script src="../events/events-meta.js"></script>
+        <script src="../events/events-map.js"></script>
 
 
 
@@ -99,6 +100,17 @@
                                     </div>
                                 </div>
 
+                                <!-- event/tea info toggle — only relevant for "regulars" (정기다회)
+                                     events; shown/hidden and wired up by events-meta.js -->
+                                <div id="infoToggle" class="info_toggle">
+                                    <button type="button" class="info_toggle_btn" data-panel="event">다회 정보</button>
+                                    <button type="button" class="info_toggle_btn" data-panel="tea">차 정보</button>
+                                </div>
+
+                                <!-- event info panel: intro, meta card — for "regulars"
+                                     events, events-meta.js shows/hides this opposite #teaLineup -->
+                                <div id="eventInfoPanel">
+
                                 <div class="magazine_block txt_block top_txt_block">
                                     <div class="block_cont">
                                         <div class="cont_para">
@@ -120,6 +132,10 @@
 
                                 <div id="eventMeta" class="event_meta"></div>
 
+                                <!-- embedded map, populated by events-map.js when this event has a
+                                     geocodable address (see events-data.js) -->
+                                <div id="eventMap" class="event_map"></div>
+
                                 <div class="magazine_block_wrap cont_970">
                                     <div class="magazine_block txt_block">
                                         <figure class="article_img">
@@ -130,9 +146,12 @@
                                     </div>
                                 </div>
 
+                                </div><!-- /#eventInfoPanel -->
 
                                 <hr class="article_hr hr_dashed">
 
+                                <!-- shown only when this event's category is "regulars" (see events-meta.js) -->
+                                <div id="teaLineup">
 
                                 <div class="magazine_block_wrap cont_970">
                                     <div class="magazine_block txt_block">
@@ -169,9 +188,6 @@
                                 </div>
 
                                 <hr class="article_hr hr_dashed">
-
-                                <!-- shown only when this event's category is "regulars" (see events-meta.js) -->
-                                <div id="teaLineup">
 
                                 <div id="tea_01" class="magazine_block_wrap cont_970">
                                     <div class="recipe_wrap recipe_section_02 mb_40">

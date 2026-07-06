@@ -6,6 +6,8 @@
 //  - events/events-meta.js (renders the date/location/facilitator/fee/category
 //    card on each event subpage, and shows the tea-lineup section when the
 //    event's category is "regulars")
+//  - events/events-map.js (renders an embedded Naver Map under the info card
+//    when `location` is a plain address — see `location`/`mapLink` below)
 // `path` is relative to motherPage/ (no leading slash); every page that
 // consumes it is exactly one folder below motherPage/, so callers all
 // prefix it with "../".
@@ -21,6 +23,11 @@
 // `location` can be a plain address string, or a map link (e.g. a Naver Map
 // share URL) — events-meta.js auto-detects http(s) URLs and renders those
 // as a "지도에서 보기" link instead of plain text.
+//
+// `mapLink` is optional — a Naver Map share URL (e.g. a naver.me short
+// link). Only meaningful when `location` is a plain address (not itself a
+// URL): events-map.js geocodes that address to drop a pin on an embedded
+// map, and `mapLink` becomes a "길찾기" button under it for full directions.
 //
 // `category` must be one of the keys in eventCategories below:
 //   teaClass  — 티클래스 (차 우림법 등을 배우는 소규모 클래스)
@@ -85,7 +92,6 @@ const teaClubEvents = [
     {
         date: "2026-06-19",
         title: "26-1 종강다회",
-        subtitle: "한 학기의 끝을 마무리하는 시간",
         path: "2026springEOS/26springEOS_index.html",
         location: "https://naver.me/5pwsXu4f",
         facilitator: "[진행자를 입력해주세요]",
@@ -96,7 +102,6 @@ const teaClubEvents = [
     {
         date: "2026-06-22",
         title: "26-2 개강다회",
-        subtitle: "새 학기를 여는 첫 만남",
         path: "2026summerSOS/26summerSOS_index.html",
         location: "https://naver.me/xoH83gzf",
         facilitator: "[진행자를 입력해주세요]",
@@ -107,7 +112,6 @@ const teaClubEvents = [
     {
         date: "2026-07-10",
         title: "다과 만들기",
-        subtitle: "차와 함께할 다과를 직접 만들어보는 시간",
         path: "2026julyTeaSnacks/index.html",
         location: "[장소를 입력해주세요]",
         facilitator: "[진행자를 입력해주세요]",
@@ -119,7 +123,6 @@ const teaClubEvents = [
         date: "2026-07-25",
         endDate: "2026-07-26",
         title: "흥국사 템플스테이",
-        subtitle: "산사에서 보내는 하룻밤",
         path: "2026julyTempleStay/index.html",
         location: "[장소를 입력해주세요]",
         facilitator: "[진행자를 입력해주세요]",
@@ -130,7 +133,6 @@ const teaClubEvents = [
     {
         date: "2026-07-28",
         title: "이도옥션",
-        subtitle: "[한 줄 소개 문구를 입력해주세요]",
         path: "2026julyYidoAuction/index.html",
         location: "[장소를 입력해주세요]",
         facilitator: "[진행자를 입력해주세요]",
@@ -141,9 +143,9 @@ const teaClubEvents = [
     {
         date: "2026-07-31",
         title: "정기다회",
-        subtitle: "[한 줄 소개 문구를 입력해주세요]",
         path: "2026julyRegulars/index.html",
-        location: "[장소를 입력해주세요]",
+        location: "서울 서대문구 연세로12길 27 2층",
+        mapLink: "https://naver.me/xoH83gzf",
         facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "regulars",
@@ -152,7 +154,6 @@ const teaClubEvents = [
     {
         date: "2026-08-09",
         title: "운영진 티클래스",
-        subtitle: "운영진이 함께하는 차 공부 시간",
         path: "2026augStaffTeaClass/index.html",
         location: "[장소를 입력해주세요]",
         facilitator: "[진행자를 입력해주세요]",

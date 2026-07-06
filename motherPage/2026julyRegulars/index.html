@@ -52,6 +52,7 @@
     <script src="../events/events-data.js"></script>
     <script src="../events/events-nav.js"></script>
     <script src="../events/events-meta.js"></script>
+    <script src="../events/events-map.js"></script>
 
     <main id="container" class="magazine">
         <div class="layout_max magazine_wrap">
@@ -83,6 +84,17 @@
                                 </div>
                             </div>
 
+                            <!-- event/tea info toggle — only relevant for "regulars" (정기다회)
+                                 events; shown/hidden and wired up by events-meta.js -->
+                            <div id="infoToggle" class="info_toggle">
+                                <button type="button" class="info_toggle_btn" data-panel="event">다회 정보</button>
+                                <button type="button" class="info_toggle_btn" data-panel="tea">차 정보</button>
+                            </div>
+
+                            <!-- event info panel: intro, meta card — for "regulars"
+                                 events, events-meta.js shows/hides this opposite #teaLineup -->
+                            <div id="eventInfoPanel">
+
                             <!-- detailed explanation (moved up, right after the hero) -->
                             <div class="magazine_block txt_block top_txt_block">
                                 <div class="block_cont">
@@ -103,7 +115,16 @@
                                  event's entry in ../events/events-data.js -->
                             <div id="eventMeta" class="event_meta"></div>
 
+                            <!-- embedded map, populated by events-map.js when this event has a
+                                 geocodable address (see events-data.js) -->
+                            <div id="eventMap" class="event_map"></div>
+
+                            </div><!-- /#eventInfoPanel -->
+
                             <hr class="article_hr hr_dashed">
+
+                            <!-- shown only when this event's category is "regulars" (see events-meta.js) -->
+                            <div id="teaLineup">
 
                             <!-- reusable guidelines block — edit or remove as needed -->
                             <div class="magazine_block_wrap cont_970">
@@ -142,9 +163,6 @@
                             </div>
 
                             <hr class="article_hr hr_dashed">
-
-                            <!-- shown only when this event's category is "regulars" (see events-meta.js) -->
-                            <div id="teaLineup">
 
                             <!-- ========== TEA SECTION START (duplicate this whole block per tea) ========== -->
                             <div id="tea_01" class="magazine_block_wrap cont_970">

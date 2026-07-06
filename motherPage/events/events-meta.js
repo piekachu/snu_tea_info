@@ -90,13 +90,37 @@
 
         const isRegulars = event.category === "regulars";
         const teaLineup = document.getElementById("teaLineup");
-        if (teaLineup) {
-            teaLineup.style.display = isRegulars ? "" : "none";
-        }
         const teaNav = document.getElementById("magazine_lnb");
-        if (teaNav) {
-            teaNav.style.display = isRegulars ? "" : "none";
+        const infoToggle = document.getElementById("infoToggle");
+        const eventInfoPanel = document.getElementById("eventInfoPanel");
+
+        if (!isRegulars) {
+            if (teaLineup) teaLineup.style.display = "none";
+            if (teaNav) teaNav.style.display = "none";
+            if (infoToggle) infoToggle.style.display = "none";
+            return;
         }
+
+        // "regulars" (정기다회): the toggle switches which panel is shown
+        // below the hero — event info (intro/meta/guidelines) or the tea
+        // lineup — instead of showing both at once.
+        if (infoToggle) infoToggle.style.display = "";
+        const showPanel = (panel) => {
+            if (eventInfoPanel) eventInfoPanel.style.display = panel === "event" ? "" : "none";
+            if (teaLineup) teaLineup.style.display = panel === "tea" ? "" : "none";
+            if (teaNav) teaNav.style.display = panel === "tea" ? "" : "none";
+            if (infoToggle) {
+                infoToggle.querySelectorAll(".info_toggle_btn").forEach((btn) => {
+                    btn.classList.toggle("active", btn.dataset.panel === panel);
+                });
+            }
+        };
+        if (infoToggle) {
+            infoToggle.querySelectorAll(".info_toggle_btn").forEach((btn) => {
+                btn.addEventListener("click", () => showPanel(btn.dataset.panel));
+            });
+        }
+        showPanel("event");
     }
 
     if (document.readyState === "loading") {

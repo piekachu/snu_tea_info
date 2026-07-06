@@ -52,6 +52,7 @@
     <script src="../events/events-data.js"></script>
     <script src="../events/events-nav.js"></script>
     <script src="../events/events-meta.js"></script>
+    <script src="../events/events-map.js"></script>
 
     <main id="container" class="magazine">
         <div class="layout_max magazine_wrap">
@@ -93,6 +94,10 @@
                                  filled in automatically by events-meta.js from this
                                  event's entry in ../events/events-data.js -->
                             <div id="eventMeta" class="event_meta"></div>
+
+                            <!-- embedded map, populated by events-map.js when this event has a
+                                 geocodable address (see events-data.js) -->
+                            <div id="eventMap" class="event_map"></div>
 
                             <hr class="article_hr hr_dashed">
 
