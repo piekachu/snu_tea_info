@@ -7,7 +7,7 @@
 //    card on each event subpage, and shows the tea-lineup section when the
 //    event's category is "regulars")
 //  - events/events-map.js (renders an embedded Naver Map under the info card
-//    when `location` is a plain address — see `location`/`mapLink` below)
+//    when `lat`/`lng` are set — see below)
 // `path` is relative to motherPage/ (no leading slash); every page that
 // consumes it is exactly one folder below motherPage/, so callers all
 // prefix it with "../".
@@ -24,10 +24,16 @@
 // share URL) — events-meta.js auto-detects http(s) URLs and renders those
 // as a "지도에서 보기" link instead of plain text.
 //
+// `lat`/`lng` are optional — set both to drop a pin on an embedded map
+// (events-map.js), centered on those coordinates. A venue's coordinates
+// don't change, so look them up once (e.g. via a geocoder, or by long-
+// pressing the spot in the Naver Map app for "좌표 복사") rather than
+// geocoding `location` live in the browser — this needs only the "Web
+// Dynamic Map" NCP product, not the separate "Geocoding" one.
+//
 // `mapLink` is optional — a Naver Map share URL (e.g. a naver.me short
-// link). Only meaningful when `location` is a plain address (not itself a
-// URL): events-map.js geocodes that address to drop a pin on an embedded
-// map, and `mapLink` becomes a "길찾기" button under it for full directions.
+// link) shown as a "길찾기" button under the embedded map, for full
+// directions. Only meaningful alongside `lat`/`lng`.
 //
 // `category` must be one of the keys in eventCategories below:
 //   teaClass  — 티클래스 (차 우림법 등을 배우는 소규모 클래스)
@@ -145,6 +151,8 @@ const teaClubEvents = [
         title: "정기다회",
         path: "2026julyRegulars/index.html",
         location: "서울 서대문구 연세로12길 27 2층",
+        lat: 37.559110,
+        lng: 126.938568,
         mapLink: "https://naver.me/xoH83gzf",
         facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
