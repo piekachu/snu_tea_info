@@ -20,7 +20,13 @@
             onReady();
             return;
         }
-        window.__snuTeaMapReady = onReady;
+        // the SDK can call this before it's actually finished assigning
+        // window.naver.maps later in the same script — defer to the next
+        // tick so that assignment has definitely completed by the time
+        // onReady runs.
+        window.__snuTeaMapReady = function () {
+            setTimeout(onReady, 0);
+        };
         var script = document.createElement("script");
         script.src = "https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=" + NCP_CLIENT_ID + "&callback=__snuTeaMapReady";
         script.onerror = function () {
