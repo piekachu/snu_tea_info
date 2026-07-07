@@ -6,9 +6,10 @@
 (function () {
     "use strict";
 
-    // NAVER Cloud Platform Maps "Client ID" — restricted to this site's
-    // registered domain(s) in the NCP console; not a secret.
-    var NCP_CLIENT_ID = "7x2r5r252m";
+    // NAVER Cloud Platform Maps key — restricted to this site's registered
+    // domain(s) in the NCP console; not a secret. Passed as `ncpKeyId` (the
+    // current param name — older docs/examples use the retired `ncpClientId`).
+    var NCP_KEY_ID = "7x2r5r252m";
 
     function currentRelPath() {
         var segments = window.location.pathname.split("/").filter(Boolean);
@@ -28,9 +29,9 @@
             setTimeout(onReady, 0);
         };
         var script = document.createElement("script");
-        script.src = "https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=" + NCP_CLIENT_ID + "&callback=__snuTeaMapReady";
+        script.src = "https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=" + NCP_KEY_ID + "&callback=__snuTeaMapReady";
         script.onerror = function () {
-            console.error("[events-map] Naver Maps SDK failed to load. Check that this page's domain is registered as a Web Dynamic Map Service URL for client ID \"" + NCP_CLIENT_ID + "\" in the NCP console.");
+            console.error("[events-map] Naver Maps SDK failed to load. Check that this page's domain is registered as a Web Dynamic Map Service URL for client ID \"" + NCP_KEY_ID + "\" in the NCP console.");
         };
         document.head.appendChild(script);
     }
