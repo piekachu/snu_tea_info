@@ -498,6 +498,48 @@ body.nav-open .magazine_lnb {
     line-height: 1.818;
     opacity: 0.8;
 }
+/* share button — bottom-right corner of the hero photo, overlaid on top of
+   it (injected by subpage.js on every event subpage) */
+.magazine_teainside .header_overlay .hero_share_btn {
+    position: absolute;
+    right: 35.5px;
+    bottom: 41px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    color: #222;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.magazine_teainside .header_overlay .hero_share_btn svg {
+    width: 20px;
+    height: 20px;
+}
+.magazine_teainside .header_overlay .hero_share_btn:hover {
+    background: #fff;
+    transform: scale(1.05);
+}
+.magazine_teainside .header_overlay .hero_share_btn.copied::after {
+    content: "링크가 복사되었습니다";
+    position: absolute;
+    right: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
 .magazine_article.teainside_article {
     max-width: 100%;
     padding: 0;
@@ -583,6 +625,10 @@ body.nav-open .magazine_lnb {
     .magazine_teainside .header_overlay .sub_title {
         font-size: 15.8px;
     }
+    .magazine_teainside .header_overlay .hero_share_btn {
+        right: 28px;
+        bottom: 33px;
+    }
     .article_hr.hr_dashed {
         margin-bottom: 48px;
     }
@@ -616,6 +662,10 @@ body.nav-open .magazine_lnb {
     .magazine_teainside .header_overlay .sub_title {
         font-size: 13.7px;
     }
+    .magazine_teainside .header_overlay .hero_share_btn {
+        right: 21px;
+        bottom: 25px;
+    }
     .article_hr.hr_dashed {
         margin-bottom: 36px;
     }
@@ -647,6 +697,16 @@ body.nav-open .magazine_lnb {
     .magazine_teainside .header_overlay .title,
     .magazine_teainside .header_overlay .sub_title {
         text-shadow: 0 0 6.4px rgba(0, 0, 0, 0.25);
+    }
+    .magazine_teainside .header_overlay .hero_share_btn {
+        right: 16px;
+        bottom: 16px;
+        width: 34px;
+        height: 34px;
+    }
+    .magazine_teainside .header_overlay .hero_share_btn svg {
+        width: 17px;
+        height: 17px;
     }
     .article_hr.hr_dashed {
         margin-bottom: 30px;
@@ -902,13 +962,13 @@ body.nav-open .magazine_lnb {
 .event_meta_row dt {
     flex-shrink: 0;
     width: 60px;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: var(--font-weight-semibold);
     color: var(--fontGray);
 }
 .event_meta_row dd {
     margin: 0;
-    font-size: 17px;
+    font-size: 16px;
     color: var(--fontColor);
     word-break: keep-all;
 }
@@ -931,6 +991,14 @@ body.nav-open .magazine_lnb {
     font-size: 16px;
     line-height: 1.6;
     color: var(--fontGray);
+}
+/* the event info intro block right after the hero (title + greeting
+   paragraph, "다회 정보") — match its text size to .event_meta_brief above
+   so the two read consistently instead of the smaller default article
+   text size */
+.magazine_teainside.teainside_type2 .top_txt_block .para_title,
+.magazine_teainside.teainside_type2 .top_txt_block .article_txt {
+    font-size: 16px;
 }
 @media all and (max-width: 640px) {
     .event_meta {
