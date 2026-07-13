@@ -61,8 +61,8 @@
             <nav id="magazine_lnb" class="magazine_lnb">
                 <h2 class="a11y_hidden">매거진 카테고리</h2>
                 <div class="magazine_lnb_list inner">
-                    <a href="#tea_01" class="magazine_lnb_tab"><span>01 [차 이름]</span></a>
-                    <a href="#" class="magazine_lnb_tab magazine_lnb_top" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"><span>맨 위로</span></a>
+                    <a href="#tea_01" class="magazine_lnb_tab"><span><span class="magazine_lnb_num">01</span><span class="magazine_lnb_label"> [차 이름]</span></span></a>
+                    <a href="#" class="magazine_lnb_tab magazine_lnb_top" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"><span><svg class="magazine_lnb_top_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="magazine_lnb_top_label">맨 위로</span></span></a>
                 </div>
             </nav>
 
@@ -109,7 +109,7 @@
 
                             <hr class="article_hr hr_dashed">
 
-                            <!-- info card: date/location/facilitator/fee/category, plus the
+                            <!-- info card: date/location/fee/category, plus the
                                  event's one-line description at the right end —
                                  filled in automatically by events-meta.js from this
                                  event's entry in ../events/events-data.js -->

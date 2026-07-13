@@ -3,9 +3,9 @@
 //  - events/events-carousel.js (renders the upcoming-events carousel on the
 //    Events page)
 //  - events/events-nav.js (builds the event list in every subpage's sidebar)
-//  - events/events-meta.js (renders the date+time/location/facilitator/fee/
-//    category card on each event subpage, and shows the tea-lineup section
-//    when the event's category is "regulars")
+//  - events/events-meta.js (renders the date+time/location/fee/category
+//    card on each event subpage, and shows the tea-lineup section when
+//    the event's category is "regulars")
 //  - events/events-map.js (renders an embedded Naver Map under the info card
 //    when `lat`/`lng` are set — see below)
 // `path` is relative to motherPage/ (no leading slash); every page that
@@ -111,7 +111,6 @@ const teaClubEvents = [
         title: "26-1 종강다회",
         path: "2026springEOS/26springEOS_index.html",
         location: "https://naver.me/5pwsXu4f",
-        facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "regulars",
         status: "closed"
@@ -121,7 +120,6 @@ const teaClubEvents = [
         title: "26-2 개강다회",
         path: "2026summerSOS/26summerSOS_index.html",
         location: "https://naver.me/xoH83gzf",
-        facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "regulars",
         status: "closed"
@@ -131,7 +129,6 @@ const teaClubEvents = [
         title: "다과 만들기",
         path: "2026julyTeaSnacks/index.html",
         location: "[장소를 입력해주세요]",
-        facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "special",
         status: "upcoming"
@@ -145,7 +142,6 @@ const teaClubEvents = [
         lat: 37.5671779,
         lng: 126.9870535,
         mapLink: "https://naver.me/GlRObS6h",
-        facilitator: "[진행자를 입력해주세요]",
         fee: "3만원 / 1인",
         category: "regulars",
         status: "upcoming"
@@ -156,7 +152,6 @@ const teaClubEvents = [
         title: "흥국사 템플스테이",
         path: "2026julyTempleStay/index.html",
         location: "[장소를 입력해주세요]",
-        facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "fieldTrip",
         status: "upcoming"
@@ -166,7 +161,6 @@ const teaClubEvents = [
         title: "이도옥션",
         path: "2026julyYidoAuction/index.html",
         location: "[장소를 입력해주세요]",
-        facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "special",
         status: "upcoming"
@@ -179,7 +173,6 @@ const teaClubEvents = [
         lat: 37.559110,
         lng: 126.938568,
         mapLink: "https://naver.me/xoH83gzf",
-        facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "regulars",
         status: "upcoming"
@@ -189,7 +182,6 @@ const teaClubEvents = [
         title: "운영진 티클래스",
         path: "2026augStaffTeaClass/index.html",
         location: "[장소를 입력해주세요]",
-        facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "teaClass",
         status: "upcoming"

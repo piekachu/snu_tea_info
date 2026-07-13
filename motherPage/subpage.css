@@ -151,6 +151,8 @@ body.nav-open .magazine_lnb {
 }
 .magazine_lnb_tab span {
     display: inline-flex;
+    align-items: center;
+    gap: 6px;
     position: relative;
     line-height: 1;
 }
@@ -159,6 +161,11 @@ body.nav-open .magazine_lnb {
     text-decoration: none;
     cursor: pointer;
 }
+/* "맨 위로" is icon-only on the mobile floating button (see the
+   max-width: 768px block below) but text-only on the desktop rail */
+.magazine_lnb_top_icon {
+    display: none;
+}
 /* the narrowed .magazine_wrap column above leaves a natural side gutter once the
    viewport is wide enough; only show the nav there so it never sits under content */
 @media all and (max-width: 1280px) {
@@ -166,38 +173,57 @@ body.nav-open .magazine_lnb {
         display: none;
     }
 }
-/* mobile gets its own simpler layout: a compact horizontal bar pinned to the
-   bottom of the screen instead of the vertical rail used on wider screens */
+/* mobile gets its own simpler layout: a floating "island" bar inset from
+   the screen edges instead of the vertical rail used on wider screens —
+   still hidden until the user scrolls past the hero, then rises into place
+   from below (see the translateY / nav-visible handling below) */
 @media all and (max-width: 768px) {
     .magazine_lnb {
         display: block;
-        left: 0;
-        right: 0;
+        /* shrink-to-fit and centered, instead of stretched edge-to-edge —
+           numbers-only content (see .magazine_lnb_label below) is short
+           enough that a full-width bar just looked like empty padding */
+        left: 50%;
+        right: auto;
         top: auto;
-        bottom: 0;
-        width: 100%;
-        padding: 10px 20px;
+        bottom: 16px;
+        width: auto;
+        padding: 8px 16px;
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(8px);
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
-        transform: translateY(100%);
+        border-radius: 999px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+        /* clear the island's own height (100%) plus its bottom inset
+           (16px), plus the floating "맨 위로" button stacked above it
+           (44px tall + the 10px gap to the island) — otherwise that
+           button, sitting higher up than the island itself, would still
+           poke into view when "hidden" */
+        transform: translate(-50%, calc(100% + 70px));
     }
     body.nav-visible .magazine_lnb {
-        transform: translateY(0);
+        transform: translate(-50%, 0);
     }
     body.nav-open .magazine_lnb {
-        transform: translateY(100%);
+        transform: translate(-50%, calc(100% + 70px));
     }
     .magazine_lnb_list {
         flex-direction: row;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
         overflow-x: auto;
     }
     .magazine_lnb_tab {
         padding: 4px 0;
         font-size: 13px;
         flex-shrink: 0;
+    }
+    /* numbers only in the island — the tea name is still in the DOM (and
+       still shown on the desktop rail) for accessibility/SEO, just hidden
+       here. Needs the extra .magazine_lnb_tab qualifier to out-specificity
+       the "display: inline-flex" that .magazine_lnb_tab span sets on every
+       descendant span, including this one. */
+    .magazine_lnb_tab .magazine_lnb_label {
+        display: none;
     }
     .magazine_lnb_tab:before {
         left: 0;
@@ -211,13 +237,42 @@ body.nav-open .magazine_lnb {
     .magazine_lnb_tab.active:before {
         transform: scaleX(1);
     }
+    /* "맨 위로" pulled out of the horizontal number row into its own
+       floating circular button, stacked directly above the island.
+       .magazine_lnb has its own transform (see above), which makes it the
+       containing block for this absolutely-positioned child — so the
+       button still rides along with the island's show/hide slide instead
+       of needing its own separate visibility handling. */
     .magazine_lnb_top {
-        margin-top: 0;
-        padding-top: 4px;
-        padding-left: 14px;
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 10px);
+        margin: 0;
+        padding: 0;
         border-top: none;
-        border-left: 1px solid rgba(0, 0, 0, 0.15);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: translateX(-50%);
         flex-shrink: 0;
+    }
+    .magazine_lnb_top:before {
+        display: none;
+    }
+    .magazine_lnb_top_icon {
+        display: block;
+        width: 18px;
+        height: 18px;
+    }
+    /* see the .magazine_lnb_label comment above re: this qualifier */
+    .magazine_lnb_top .magazine_lnb_top_label {
+        display: none;
     }
 }
 @media all and (max-width: 768px) {
@@ -348,7 +403,7 @@ body.nav-open .magazine_lnb {
         font-size: 40px;
     }
     .article_title_block.type_num .article_title {
-        font-size: 17px;
+        font-size: 14px;
     }
     .article_title_block.type_num.type_row {
         gap: 10px;
@@ -429,16 +484,14 @@ body.nav-open .magazine_lnb {
 }
 @media all and (max-width: 768px) {
     :root {
-        /* bigger than the tablet size above it — mobile trades smaller images
-           for more readable text, rather than following the desktop scale-down */
-        --article-font-size: 17px;
-        --type2-font-size: 16px;
+        --article-font-size: 13.5px;
+        --type2-font-size: 12.5px;
     }
 }
 @media all and (max-width: 480px) {
     :root {
-        --article-font-size: 16px;
-        --type2-font-size: 15px;
+        --article-font-size: 13px;
+        --type2-font-size: 12px;
     }
 }
 .magazine_teainside {
@@ -723,11 +776,11 @@ body.nav-open .magazine_lnb {
         margin-bottom: 48px;
     }
     .magazine_teainside.teainside_type2 .article_txt {
-        margin-bottom: 10px;
-        line-height: 1.667;
+        margin-bottom: 18px;
+        line-height: 2;
     }
     .magazine_teainside.teainside_type2 .cont_para {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
 }
 
@@ -970,7 +1023,7 @@ body.nav-open .magazine_lnb {
        above so it actually wins the cascade) */
     .event_meta_row dt,
     .event_meta_row dd {
-        line-height: 1.667;
+        line-height: 2;
     }
 }
 .event_meta_link {
@@ -1001,6 +1054,20 @@ body.nav-open .magazine_lnb {
 .magazine_teainside.teainside_type2 .top_txt_block .article_txt {
     font-size: 16px;
 }
+@media all and (max-width: 768px) {
+    .magazine_teainside.teainside_type2 .top_txt_block .para_title,
+    .magazine_teainside.teainside_type2 .top_txt_block .article_txt,
+    .event_meta_brief {
+        font-size: 14px;
+    }
+}
+@media all and (max-width: 480px) {
+    .magazine_teainside.teainside_type2 .top_txt_block .para_title,
+    .magazine_teainside.teainside_type2 .top_txt_block .article_txt,
+    .event_meta_brief {
+        font-size: 13px;
+    }
+}
 @media all and (max-width: 640px) {
     .event_meta {
         flex-direction: column;
@@ -1018,7 +1085,7 @@ body.nav-open .magazine_lnb {
         text-align: left;
     }
     .event_meta_list {
-        gap: 10px;
+        gap: 16px;
     }
     /* shorter than the 16:9 used at wider widths — a full 16:9 map at
        phone width still reads as a tall wall of tiles */

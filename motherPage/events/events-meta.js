@@ -1,5 +1,5 @@
-// Renders the date+time/location/facilitator/fee/category info card (plus
-// the share button at the right end of the status/category badge row) on an
+// Renders the date+time/location/fee/category info card (plus the share
+// button at the right end of the status/category badge row) on an
 // event subpage, and shows the tea-lineup section ("#teaLineup") only when
 // this event's category is "regulars". Reads teaClubEvents from
 // events-data.js — must load after it.
@@ -108,7 +108,6 @@
             list.className = "event_meta_list";
             addRow(list, "일시", formatEventDateTimeKo(event));
             addRow(list, "장소", event.location);
-            addRow(list, "진행자", event.facilitator);
             addRow(list, "참가비", event.fee);
             main.appendChild(list);
 
