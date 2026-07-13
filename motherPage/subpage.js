@@ -23,7 +23,13 @@
         toggleNav();
     });
 
-    // highlight the section shortcut for whichever tea is currently in view
+    // highlight the section shortcut for whichever tea is currently in view.
+    // Driven by scroll position rather than IntersectionObserver: with a
+    // thin trigger band, a section shorter than the viewport (or a jump
+    // straight to an anchor, which doesn't necessarily pass through that
+    // band) could leave the previously-active tab highlighted indefinitely,
+    // since nothing ever tells it to turn back off — this instead
+    // recomputes "current section" from scratch on every scroll.
     document.addEventListener("DOMContentLoaded", () => {
         const tabs = document.querySelectorAll(".magazine_lnb_tab[href^='#tea_']");
         if (!tabs.length) return;
@@ -35,15 +41,40 @@
                 tab.classList.toggle("active", tab.getAttribute("href") === `#${id}`);
             });
         };
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) setActive(entry.target.id);
-                });
-            },
-            { rootMargin: "-40% 0px -50% 0px" }
-        );
-        sections.forEach((section) => observer.observe(section));
+
+        // a section counts as "current" once its top has scrolled up past
+        // this line (roughly a third of the way down the viewport)
+        const referenceLine = () => window.innerHeight * 0.35;
+        const updateActive = () => {
+            let current = sections[0];
+            for (const section of sections) {
+                if (section.getBoundingClientRect().top <= referenceLine()) {
+                    current = section;
+                } else {
+                    break;
+                }
+            }
+            if (current) setActive(current.id);
+        };
+
+        let ticking = false;
+        const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                updateActive();
+                ticking = false;
+            });
+        };
+        document.addEventListener("scroll", onScroll, { passive: true });
+
+        // jump straight to the matching tab on click instead of waiting for
+        // the next scroll event to catch up
+        tabs.forEach((tab) => {
+            tab.addEventListener("click", () => setActive(tab.getAttribute("href").slice(1)));
+        });
+
+        updateActive();
     });
 
     // reveal the section-shortcut nav only once the hero banner has scrolled out of view

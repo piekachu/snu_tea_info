@@ -868,4 +868,18 @@ body.page-home .header_logo .logo_img {
         gap: 24px;
         padding: 36px var(--layout-padding) 24px;
     }
+    .footer_brand {
+        font-size: 17px;
+    }
+    .footer_desc,
+    .footer_link {
+        font-size: 12.5px;
+    }
+    .footer_icon {
+        width: 17px;
+        height: 17px;
+    }
+    .footer_bottom {
+        font-size: 11px;
+    }
 }

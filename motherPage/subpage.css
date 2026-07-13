@@ -180,36 +180,33 @@ body.nav-open .magazine_lnb {
 @media all and (max-width: 768px) {
     .magazine_lnb {
         display: block;
-        /* shrink-to-fit and centered, instead of stretched edge-to-edge —
-           numbers-only content (see .magazine_lnb_label below) is short
-           enough that a full-width bar just looked like empty padding */
-        left: 50%;
-        right: auto;
+        /* shrink-to-fit, anchored a fixed distance from the right edge —
+           that fixed distance (not a centered/content-dependent one)
+           is what lets .magazine_lnb_top below reliably land exactly at
+           the screen's right inset via a plain negative offset */
+        left: auto;
+        right: 72px;
         top: auto;
         bottom: 16px;
         width: auto;
-        padding: 8px 16px;
+        padding: 10px 24px;
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(8px);
         border-radius: 999px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-        /* clear the island's own height (100%) plus its bottom inset
-           (16px), plus the floating "맨 위로" button stacked above it
-           (44px tall + the 10px gap to the island) — otherwise that
-           button, sitting higher up than the island itself, would still
-           poke into view when "hidden" */
-        transform: translate(-50%, calc(100% + 70px));
+        /* clear the island's own height (100%) plus its bottom inset (16px) */
+        transform: translateY(calc(100% + 16px));
     }
     body.nav-visible .magazine_lnb {
-        transform: translate(-50%, 0);
+        transform: translateY(0);
     }
     body.nav-open .magazine_lnb {
-        transform: translate(-50%, calc(100% + 70px));
+        transform: translateY(calc(100% + 16px));
     }
     .magazine_lnb_list {
         flex-direction: row;
         align-items: center;
-        gap: 12px;
+        gap: 16px;
         overflow-x: auto;
     }
     .magazine_lnb_tab {
@@ -238,15 +235,20 @@ body.nav-open .magazine_lnb {
         transform: scaleX(1);
     }
     /* "맨 위로" pulled out of the horizontal number row into its own
-       floating circular button, stacked directly above the island.
+       floating circular button, sitting beside the island at the screen's
+       right edge (island is inset 72px = this button's 44px + a 12px gap
+       + the standard 16px screen margin, so a plain -56px here lands the
+       button's own right edge exactly at that 16px margin).
        .magazine_lnb has its own transform (see above), which makes it the
        containing block for this absolutely-positioned child — so the
        button still rides along with the island's show/hide slide instead
        of needing its own separate visibility handling. */
     .magazine_lnb_top {
         position: absolute;
-        left: 50%;
-        bottom: calc(100% + 10px);
+        left: auto;
+        right: -56px;
+        top: 50%;
+        bottom: auto;
         margin: 0;
         padding: 0;
         border-top: none;
@@ -259,7 +261,7 @@ body.nav-open .magazine_lnb {
         display: flex;
         align-items: center;
         justify-content: center;
-        transform: translateX(-50%);
+        transform: translateY(-50%);
         flex-shrink: 0;
     }
     .magazine_lnb_top:before {
@@ -1025,6 +1027,11 @@ body.nav-open .magazine_lnb {
     .event_meta_row dd {
         line-height: 2;
     }
+    /* label ("일시" etc.) sits closer to its value on mobile than the
+       desktop 16px gap */
+    .event_meta_row {
+        gap: 8px;
+    }
 }
 .event_meta_link {
     color: var(--osullocGreen);
@@ -1122,6 +1129,12 @@ body.nav-open .magazine_lnb {
 .event_map_directions:hover {
     background: var(--osullocGreen);
     color: #fff;
+}
+@media all and (max-width: 640px) {
+    .event_map_directions {
+        padding: 6px 14px;
+        font-size: 12.5px;
+    }
 }
 
 /* -----------------------

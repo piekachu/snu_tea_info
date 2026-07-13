@@ -128,6 +128,7 @@
         const teaNav = document.getElementById("magazine_lnb");
         const infoToggle = document.getElementById("infoToggle");
         const eventInfoPanel = document.getElementById("eventInfoPanel");
+        const eventApply = document.querySelector(".event_apply");
 
         if (!isRegulars) {
             if (teaLineup) teaLineup.style.display = "none";
@@ -138,12 +139,16 @@
 
         // "regulars" (정기다회): the toggle switches which panel is shown
         // below the hero — event info (intro/meta/guidelines) or the tea
-        // lineup — instead of showing both at once.
+        // lineup — instead of showing both at once. The apply button only
+        // makes sense alongside the event info (date/location/fee), so it
+        // follows that panel rather than staying up regardless of which
+        // one is open.
         if (infoToggle) infoToggle.style.display = "";
         const showPanel = (panel) => {
             if (eventInfoPanel) eventInfoPanel.style.display = panel === "event" ? "" : "none";
             if (teaLineup) teaLineup.style.display = panel === "tea" ? "" : "none";
             if (teaNav) teaNav.style.display = panel === "tea" ? "" : "none";
+            if (eventApply) eventApply.style.display = panel === "event" ? "" : "none";
             if (infoToggle) {
                 infoToggle.querySelectorAll(".info_toggle_btn").forEach((btn) => {
                     btn.classList.toggle("active", btn.dataset.panel === panel);
