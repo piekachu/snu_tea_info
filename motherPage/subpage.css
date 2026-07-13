@@ -498,48 +498,6 @@ body.nav-open .magazine_lnb {
     line-height: 1.818;
     opacity: 0.8;
 }
-/* share button — bottom-right corner of the hero photo, overlaid on top of
-   it (injected by subpage.js on every event subpage) */
-.magazine_teainside .header_overlay .hero_share_btn {
-    position: absolute;
-    right: 35.5px;
-    bottom: 41px;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.85);
-    color: #222;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-.magazine_teainside .header_overlay .hero_share_btn svg {
-    width: 20px;
-    height: 20px;
-}
-.magazine_teainside .header_overlay .hero_share_btn:hover {
-    background: #fff;
-    transform: scale(1.05);
-}
-.magazine_teainside .header_overlay .hero_share_btn.copied::after {
-    content: "링크가 복사되었습니다";
-    position: absolute;
-    right: calc(100% + 10px);
-    top: 50%;
-    transform: translateY(-50%);
-    white-space: nowrap;
-    background: rgba(0, 0, 0, 0.75);
-    color: #fff;
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 4px;
-}
 .magazine_article.teainside_article {
     max-width: 100%;
     padding: 0;
@@ -625,10 +583,6 @@ body.nav-open .magazine_lnb {
     .magazine_teainside .header_overlay .sub_title {
         font-size: 15.8px;
     }
-    .magazine_teainside .header_overlay .hero_share_btn {
-        right: 28px;
-        bottom: 33px;
-    }
     .article_hr.hr_dashed {
         margin-bottom: 48px;
     }
@@ -662,10 +616,6 @@ body.nav-open .magazine_lnb {
     .magazine_teainside .header_overlay .sub_title {
         font-size: 13.7px;
     }
-    .magazine_teainside .header_overlay .hero_share_btn {
-        right: 21px;
-        bottom: 25px;
-    }
     .article_hr.hr_dashed {
         margin-bottom: 36px;
     }
@@ -697,16 +647,6 @@ body.nav-open .magazine_lnb {
     .magazine_teainside .header_overlay .title,
     .magazine_teainside .header_overlay .sub_title {
         text-shadow: 0 0 6.4px rgba(0, 0, 0, 0.25);
-    }
-    .magazine_teainside .header_overlay .hero_share_btn {
-        right: 16px;
-        bottom: 16px;
-        width: 34px;
-        height: 34px;
-    }
-    .magazine_teainside .header_overlay .hero_share_btn svg {
-        width: 17px;
-        height: 17px;
     }
     .article_hr.hr_dashed {
         margin-bottom: 30px;
@@ -765,6 +705,13 @@ body.nav-open .magazine_lnb {
     .teainside_type2 .article_hr.hr_dashed {
         margin-left: 20px;
         margin-right: 20px;
+    }
+    /* the hero and toggle bar are meant to run full-bleed once the padding
+       above is zeroed out, but the info card and map should still line up
+       with the intro title/text (which re-adds this same padding itself) */
+    .magazine_teainside .event_meta,
+    .magazine_teainside .event_map {
+        padding: 0 var(--teainside-layout-padding);
     }
 }
 @media all and (max-width: 768px) {
@@ -923,6 +870,7 @@ body.nav-open .magazine_lnb {
 .event_meta_badges {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
     margin-bottom: 20px;
 }
@@ -946,6 +894,45 @@ body.nav-open .magazine_lnb {
     background: rgba(0, 0, 0, 0.06);
     color: rgba(0, 0, 0, 0.4);
 }
+/* share button — right end of the status/category badge lane (injected by
+   events-meta.js, right after the badges); pushed there by the auto margin
+   rather than a fixed position, since it now shares a normal-flow row */
+.event_meta_share_btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin-left: auto;
+    border: none;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.05);
+    color: #222;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.event_meta_share_btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+.event_meta_share_btn:hover {
+    background: rgba(0, 0, 0, 0.09);
+}
+.event_meta_share_btn.copied::after {
+    content: "링크가 복사되었습니다";
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    white-space: nowrap;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
 /* plain line-by-line list, no card/box — a divider (see the <hr> after
    #eventMeta in each event page) marks it off from the text below instead */
 .event_meta_list {
@@ -959,18 +946,32 @@ body.nav-open .magazine_lnb {
     gap: 16px;
     align-items: baseline;
 }
+/* same font/size/color/line-height as the event summary paragraph
+   (.top_txt_block .article_txt) and the tea-explanation text
+   (.magazine_teainside.teainside_type2 .article_txt), so the info rows
+   read as part of the same body copy instead of a separately-styled list */
+.event_meta_row dt,
+.event_meta_row dd {
+    font-size: var(--type2-font-size);
+    color: #424242;
+    line-height: 2;
+}
 .event_meta_row dt {
     flex-shrink: 0;
     width: 60px;
-    font-size: 16px;
-    font-weight: var(--font-weight-semibold);
-    color: var(--fontGray);
 }
 .event_meta_row dd {
     margin: 0;
-    font-size: 16px;
-    color: var(--fontColor);
     word-break: keep-all;
+}
+@media all and (max-width: 768px) {
+    /* matches .magazine_teainside.teainside_type2 .article_txt's own
+       line-height step at this breakpoint (must come after the base rule
+       above so it actually wins the cascade) */
+    .event_meta_row dt,
+    .event_meta_row dd {
+        line-height: 1.667;
+    }
 }
 .event_meta_link {
     color: var(--osullocGreen);
@@ -1003,6 +1004,12 @@ body.nav-open .magazine_lnb {
 @media all and (max-width: 640px) {
     .event_meta {
         flex-direction: column;
+        /* base rule's flex-start is a cross-axis (vertical) alignment on
+           desktop's row layout; once stacked into a column here it becomes
+           a horizontal one, and would otherwise shrink-wrap .event_meta_main
+           to its content width instead of the full column — stopping the
+           share button's margin-left: auto short of the real right edge */
+        align-items: stretch;
         gap: 16px;
         margin-bottom: 30px;
     }
@@ -1012,6 +1019,11 @@ body.nav-open .magazine_lnb {
     }
     .event_meta_list {
         gap: 10px;
+    }
+    /* shorter than the 16:9 used at wider widths — a full 16:9 map at
+       phone width still reads as a tall wall of tiles */
+    .event_map_canvas {
+        aspect-ratio: 2 / 1;
     }
 }
 
@@ -1052,39 +1064,53 @@ body.nav-open .magazine_lnb {
 *  (see events-meta.js).
 * -----------------------*/
 .info_toggle {
+    /* same centered 970px column as the info card below it, styled as a
+       plain underline tab bar rather than a pair of pill buttons */
     display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin: 24px 0 40px;
+    max-width: 970px;
+    margin: 24px auto 40px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 .info_toggle_btn {
-    padding: 10px 28px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 999px;
-    background: #fff;
+    position: relative;
+    flex: 1 1 0;
+    padding: 14px 0;
+    border: none;
+    border-radius: 0;
+    background: none;
     color: var(--fontGray);
     font-size: 15px;
     font-weight: var(--font-weight-semibold);
+    text-align: center;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    transition: color 0.2s ease;
+}
+.info_toggle_btn:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--osullocGreen);
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
 }
 .info_toggle_btn:hover {
-    border-color: var(--osullocGreen);
-    color: var(--osullocGreen);
+    color: var(--fontColor);
 }
 .info_toggle_btn.active {
-    background: var(--osullocGreen);
-    border-color: var(--osullocGreen);
-    color: #fff;
+    color: var(--osullocGreen);
+}
+.info_toggle_btn.active:before {
+    transform: scaleX(1);
 }
 @media all and (max-width: 640px) {
     .info_toggle {
-        margin: 20px 0 30px;
+        margin: 20px auto 30px;
     }
     .info_toggle_btn {
-        flex: 1 1 0;
-        padding: 10px 0;
-        text-align: center;
+        padding: 12px 0;
         font-size: 14px;
     }
 }

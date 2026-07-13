@@ -3,9 +3,9 @@
 //  - events/events-carousel.js (renders the upcoming-events carousel on the
 //    Events page)
 //  - events/events-nav.js (builds the event list in every subpage's sidebar)
-//  - events/events-meta.js (renders the date/location/facilitator/fee/category
-//    card on each event subpage, and shows the tea-lineup section when the
-//    event's category is "regulars")
+//  - events/events-meta.js (renders the date+time/location/facilitator/fee/
+//    category card on each event subpage, and shows the tea-lineup section
+//    when the event's category is "regulars")
 //  - events/events-map.js (renders an embedded Naver Map under the info card
 //    when `lat`/`lng` are set — see below)
 // `path` is relative to motherPage/ (no leading slash); every page that
@@ -15,6 +15,10 @@
 // `endDate` is optional — set it for multi-day events (e.g. a temple stay
 // spanning a weekend) and the calendar will show the event pill on every
 // day in [date, endDate], and the info card will show the date as a range.
+//
+// `time` is optional — a plain string (e.g. "18:00") shown alongside the
+// date in the info card's "일시" row (events-meta.js). Omit it for events
+// where a start time isn't set yet.
 //
 // `thumbnail` is optional — a path relative to motherPage/ (same convention
 // as `path`) to an image for the upcoming-events carousel. Omit it and the
@@ -80,6 +84,13 @@ function formatEventDateRangeKo(dateStr, endDateStr) {
     return `${start} ~ ${formatEventDateKo(endDateStr)}`;
 }
 
+// date (or date range) plus `time`, if set — used for the info card's
+// "일시" row
+function formatEventDateTimeKo(event) {
+    const dateStr = formatEventDateRangeKo(event.date, event.endDate);
+    return event.time ? `${dateStr} ${event.time}` : dateStr;
+}
+
 // true once an event's date (or endDate, for multi-day events) is over
 function isPastEvent(event, referenceDate) {
     const now = referenceDate || new Date();
@@ -123,6 +134,20 @@ const teaClubEvents = [
         facilitator: "[진행자를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         category: "special",
+        status: "upcoming"
+    },
+    {
+        date: "2026-07-17",
+        time: "18:00",
+        title: "효월다회",
+        path: "2026julyRegulars17/index.html",
+        location: "서울 중구 삼일대로 363 지하1층 146호 (티앤커피토브)",
+        lat: 37.5671779,
+        lng: 126.9870535,
+        mapLink: "https://naver.me/GlRObS6h",
+        facilitator: "[진행자를 입력해주세요]",
+        fee: "3만원 / 1인",
+        category: "regulars",
         status: "upcoming"
     },
     {

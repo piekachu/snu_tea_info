@@ -60,43 +60,4 @@
         );
         heroObserver.observe(hero);
     });
-
-    // share button, overlaid bottom-right on the hero photo — native share
-    // sheet where available, otherwise copy the page link to the clipboard
-    document.addEventListener("DOMContentLoaded", () => {
-        const hero = document.querySelector(".article_header.header_overlay");
-        if (!hero) return;
-
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "hero_share_btn";
-        btn.setAttribute("aria-label", "공유하기");
-        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
-            + '<circle cx="18" cy="5" r="2.5" stroke="currentColor" stroke-width="1.6"/>'
-            + '<circle cx="6" cy="12" r="2.5" stroke="currentColor" stroke-width="1.6"/>'
-            + '<circle cx="18" cy="19" r="2.5" stroke="currentColor" stroke-width="1.6"/>'
-            + '<path d="M8.2 10.8l7.6-4.6M8.2 13.2l7.6 4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
-            + '</svg>';
-
-        btn.addEventListener("click", async () => {
-            const shareData = { title: document.title, url: window.location.href };
-            if (navigator.share) {
-                try {
-                    await navigator.share(shareData);
-                } catch (err) {
-                    // user dismissed the native share sheet — nothing to do
-                }
-                return;
-            }
-            try {
-                await navigator.clipboard.writeText(shareData.url);
-                btn.classList.add("copied");
-                setTimeout(() => btn.classList.remove("copied"), 1500);
-            } catch (err) {
-                window.prompt("아래 링크를 복사해주세요:", shareData.url);
-            }
-        });
-
-        hero.appendChild(btn);
-    });
 })();
