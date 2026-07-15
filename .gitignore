@@ -1,2 +1,8 @@
 .DS_Store
 .idea/
+/publish/
+
+# raw (uncompressed) source photos — the compressed version actually used
+# by a page lives alongside it and is tracked; keep the multi-MB original
+# out of the repo
+motherPage/2026julyRegulars17/9901.png

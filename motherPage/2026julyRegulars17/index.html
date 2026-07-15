@@ -19,6 +19,39 @@
     <!-- subordinate page css -->
     <link rel="stylesheet" href="../subpage.css">
 
+    <!-- page-specific: plain bullet list for the tea lineup below (common.css
+         resets list-style on all <ul>, so this page restores it locally
+         rather than touching the shared stylesheet) -->
+    <style>
+        .tea_category_group {
+            margin-bottom: 36px;
+        }
+        .tea_category_group:last-child {
+            margin-bottom: 0;
+        }
+        .tea_category_title {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .tea_category_count {
+            font-size: 0.8em;
+            font-weight: var(--font-weight-normal);
+            opacity: 0.6;
+        }
+        .tea_bullet_list {
+            list-style: disc;
+            padding-left: 1.2em;
+        }
+        .tea_bullet_list li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .tea_bullet_list li:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+
     <title>효월 다회</title>
 </head>
 <body>
@@ -57,21 +90,6 @@
     <main id="container" class="magazine">
         <div class="layout_max magazine_wrap">
 
-            <!-- Tea navigation shortcuts: one link per tea section below -->
-            <nav id="magazine_lnb" class="magazine_lnb">
-                <h2 class="a11y_hidden">매거진 카테고리</h2>
-                <div class="magazine_lnb_list inner">
-                    <a href="#tea_01" class="magazine_lnb_tab"><span><span class="magazine_lnb_num">01</span><span class="magazine_lnb_label"> 천상의이슬차</span></span></a>
-                    <a href="#tea_02" class="magazine_lnb_tab"><span><span class="magazine_lnb_num">02</span><span class="magazine_lnb_label"> 봄비(세작)</span></span></a>
-                    <a href="#tea_03" class="magazine_lnb_tab"><span><span class="magazine_lnb_num">03</span><span class="magazine_lnb_label"> 비도오고그래서</span></span></a>
-                    <a href="#tea_04" class="magazine_lnb_tab"><span><span class="magazine_lnb_num">04</span><span class="magazine_lnb_label"> 취한(홍차)</span></span></a>
-                    <a href="#tea_05" class="magazine_lnb_tab"><span><span class="magazine_lnb_num">05</span><span class="magazine_lnb_label"> 매화향홍차</span></span></a>
-                    <a href="#tea_06" class="magazine_lnb_tab"><span><span class="magazine_lnb_num">06</span><span class="magazine_lnb_label"> 제주진피차</span></span></a>
-                    <a href="#tea_07" class="magazine_lnb_tab"><span><span class="magazine_lnb_num">07</span><span class="magazine_lnb_label"> 구기자차</span></span></a>
-                    <a href="#" class="magazine_lnb_tab magazine_lnb_top" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"><span><svg class="magazine_lnb_top_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="magazine_lnb_top_label">맨 위로</span></span></a>
-                </div>
-            </nav>
-
             <div id="magazine_contents" class="magazine_contents">
                 <section class="magazine_teainside layer_1445 teainside_type2">
                     <article class="magazine_article teainside_article teainside_view_06">
@@ -80,8 +98,7 @@
                             <!-- hero banner -->
                             <div class="article_header header_overlay">
                                 <figure class="article_img">
-                                    <!-- TODO: replace with the event's hero photo -->
-                                    <div class="img_placeholder" style="width: 100%; aspect-ratio: 1365 / 547;"></div>
+                                    <img src="9901.jpg" alt="안개 낀 다원 전경" style="width: 100%; aspect-ratio: 1365 / 547; object-fit: cover; display: block;">
                                 </figure>
                                 <div class="title_wrap">
                                     <div class="title_box">
@@ -90,15 +107,15 @@
                                 </div>
                             </div>
 
-                            <!-- event/tea info toggle — only relevant for "regulars" (정기다회)
-                                 events; shown/hidden and wired up by events-meta.js -->
+                            <!-- event/tea info toggle — only relevant for categories with
+                                 showsTeaInfo: true; shown/hidden and wired up by events-meta.js -->
                             <div id="infoToggle" class="info_toggle">
                                 <button type="button" class="info_toggle_btn" data-panel="event">다회 정보</button>
                                 <button type="button" class="info_toggle_btn" data-panel="tea">차 정보</button>
                             </div>
 
-                            <!-- event info panel: intro, meta card — for "regulars"
-                                 events, events-meta.js shows/hides this opposite #teaLineup -->
+                            <!-- event info panel: intro, meta card — events-meta.js shows/hides
+                                 this opposite #teaLineup -->
                             <div id="eventInfoPanel">
 
                             <!-- detailed explanation (moved up, right after the hero) -->
@@ -134,7 +151,8 @@
 
                             </div><!-- /#eventInfoPanel -->
 
-                            <!-- shown only when this event's category is "regulars" (see events-meta.js) -->
+                            <!-- shown only when this event's category has showsTeaInfo: true
+                                 (see events-meta.js) — plain categorized tea list, no photos -->
                             <div id="teaLineup">
 
                             <!-- reusable guidelines block — edit or remove as needed -->
@@ -175,385 +193,46 @@
 
                             <hr class="article_hr hr_dashed">
 
-                            <!-- ========== TEA SECTIONS (7 teas: 녹차 x3, 홍차 x2, 대용차 x2) ========== -->
-                            <div id="tea_01" class="magazine_block_wrap cont_970">
-                                <div class="recipe_wrap recipe_section_02 mb_40">
-                                    <div class="article_title_block type_num type_row">
-                                        <span class="title_num en">01</span>
-                                        <div class="txt_wrap">
-                                            <h4 class="article_title">천상의이슬차</h4>
-                                            <p class="title_info">녹차</p>
-                                        </div>
-                                    </div>
-                                    <figure class="article_img">
-                                        <!-- TODO: replace with this tea's photo -->
-                                        <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                    </figure>
+                            <div class="magazine_block_wrap cont_970">
+                                <div class="magazine_block txt_block">
                                     <div class="block_cont">
-                                        <div class="cont_para">
-                                            <div class="article_txt">
-                                                [이 차에 대한 소개를 작성해주세요.]
-                                            </div>
+                                        <div class="cont_para mb_30">
+                                            <h3 class="para_title mb_10">오늘의 차 (7종)</h3>
+                                            <p class="article_txt">
+                                                오늘 함께할 차들을 종류별로 정리했습니다.
+                                            </p>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="recipe_wrap recipe_list_col mb_80">
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>[특징 한 줄]</strong>
-                                                    <br><span class="underline">'[강조 문구]'</span>
-                                                    <br>[맛과 향에 대한 상세 설명을 작성해주세요.]
-                                                </div>
-                                            </div>
+                                        <div class="tea_category_group">
+                                            <h4 class="para_title tea_category_title mb_10">
+                                                녹차<span class="tea_category_count">3종</span>
+                                            </h4>
+                                            <ul class="tea_bullet_list">
+                                                <li>천상의이슬차</li>
+                                                <li>봄비(세작)</li>
+                                                <li>비도오고그래서</li>
+                                            </ul>
                                         </div>
-                                    </div>
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>차 우림법</strong>
-                                                    <br>[우려 마시는 방법을 작성해주세요.]
-                                                </div>
-                                            </div>
+                                        <div class="tea_category_group">
+                                            <h4 class="para_title tea_category_title mb_10">
+                                                홍차<span class="tea_category_count">2종</span>
+                                            </h4>
+                                            <ul class="tea_bullet_list">
+                                                <li>취한(홍차)</li>
+                                                <li>매화향홍차</li>
+                                            </ul>
+                                        </div>
+                                        <div class="tea_category_group">
+                                            <h4 class="para_title tea_category_title mb_10">
+                                                대용차<span class="tea_category_count">2종</span>
+                                            </h4>
+                                            <ul class="tea_bullet_list">
+                                                <li>제주진피차</li>
+                                                <li>구기자차</li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div id="tea_02" class="magazine_block_wrap cont_970">
-                                <div class="recipe_wrap recipe_section_02 mb_40">
-                                    <div class="article_title_block type_num type_row">
-                                        <span class="title_num en">02</span>
-                                        <div class="txt_wrap">
-                                            <h4 class="article_title">봄비(세작)</h4>
-                                            <p class="title_info">녹차</p>
-                                        </div>
-                                    </div>
-                                    <figure class="article_img">
-                                        <!-- TODO: replace with this tea's photo -->
-                                        <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                    </figure>
-                                    <div class="block_cont">
-                                        <div class="cont_para">
-                                            <div class="article_txt">
-                                                [이 차에 대한 소개를 작성해주세요.]
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="recipe_wrap recipe_list_col mb_80">
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>[특징 한 줄]</strong>
-                                                    <br><span class="underline">'[강조 문구]'</span>
-                                                    <br>[맛과 향에 대한 상세 설명을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>차 우림법</strong>
-                                                    <br>[우려 마시는 방법을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="tea_03" class="magazine_block_wrap cont_970">
-                                <div class="recipe_wrap recipe_section_02 mb_40">
-                                    <div class="article_title_block type_num type_row">
-                                        <span class="title_num en">03</span>
-                                        <div class="txt_wrap">
-                                            <h4 class="article_title">비도오고그래서</h4>
-                                            <p class="title_info">녹차</p>
-                                        </div>
-                                    </div>
-                                    <figure class="article_img">
-                                        <!-- TODO: replace with this tea's photo -->
-                                        <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                    </figure>
-                                    <div class="block_cont">
-                                        <div class="cont_para">
-                                            <div class="article_txt">
-                                                [이 차에 대한 소개를 작성해주세요.]
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="recipe_wrap recipe_list_col mb_80">
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>[특징 한 줄]</strong>
-                                                    <br><span class="underline">'[강조 문구]'</span>
-                                                    <br>[맛과 향에 대한 상세 설명을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>차 우림법</strong>
-                                                    <br>[우려 마시는 방법을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="tea_04" class="magazine_block_wrap cont_970">
-                                <div class="recipe_wrap recipe_section_02 mb_40">
-                                    <div class="article_title_block type_num type_row">
-                                        <span class="title_num en">04</span>
-                                        <div class="txt_wrap">
-                                            <h4 class="article_title">취한(홍차)</h4>
-                                            <p class="title_info">홍차</p>
-                                        </div>
-                                    </div>
-                                    <figure class="article_img">
-                                        <!-- TODO: replace with this tea's photo -->
-                                        <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                    </figure>
-                                    <div class="block_cont">
-                                        <div class="cont_para">
-                                            <div class="article_txt">
-                                                [이 차에 대한 소개를 작성해주세요.]
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="recipe_wrap recipe_list_col mb_80">
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>[특징 한 줄]</strong>
-                                                    <br><span class="underline">'[강조 문구]'</span>
-                                                    <br>[맛과 향에 대한 상세 설명을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>차 우림법</strong>
-                                                    <br>[우려 마시는 방법을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="tea_05" class="magazine_block_wrap cont_970">
-                                <div class="recipe_wrap recipe_section_02 mb_40">
-                                    <div class="article_title_block type_num type_row">
-                                        <span class="title_num en">05</span>
-                                        <div class="txt_wrap">
-                                            <h4 class="article_title">매화향홍차</h4>
-                                            <p class="title_info">홍차</p>
-                                        </div>
-                                    </div>
-                                    <figure class="article_img">
-                                        <!-- TODO: replace with this tea's photo -->
-                                        <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                    </figure>
-                                    <div class="block_cont">
-                                        <div class="cont_para">
-                                            <div class="article_txt">
-                                                [이 차에 대한 소개를 작성해주세요.]
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="recipe_wrap recipe_list_col mb_80">
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>[특징 한 줄]</strong>
-                                                    <br><span class="underline">'[강조 문구]'</span>
-                                                    <br>[맛과 향에 대한 상세 설명을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>차 우림법</strong>
-                                                    <br>[우려 마시는 방법을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="tea_06" class="magazine_block_wrap cont_970">
-                                <div class="recipe_wrap recipe_section_02 mb_40">
-                                    <div class="article_title_block type_num type_row">
-                                        <span class="title_num en">06</span>
-                                        <div class="txt_wrap">
-                                            <h4 class="article_title">제주진피차</h4>
-                                            <p class="title_info">대용차</p>
-                                        </div>
-                                    </div>
-                                    <figure class="article_img">
-                                        <!-- TODO: replace with this tea's photo -->
-                                        <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                    </figure>
-                                    <div class="block_cont">
-                                        <div class="cont_para">
-                                            <div class="article_txt">
-                                                [이 차에 대한 소개를 작성해주세요.]
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="recipe_wrap recipe_list_col mb_80">
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>[특징 한 줄]</strong>
-                                                    <br><span class="underline">'[강조 문구]'</span>
-                                                    <br>[맛과 향에 대한 상세 설명을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>차 우림법</strong>
-                                                    <br>[우려 마시는 방법을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="tea_07" class="magazine_block_wrap cont_970">
-                                <div class="recipe_wrap recipe_section_02 mb_40">
-                                    <div class="article_title_block type_num type_row">
-                                        <span class="title_num en">07</span>
-                                        <div class="txt_wrap">
-                                            <h4 class="article_title">구기자차</h4>
-                                            <p class="title_info">대용차</p>
-                                        </div>
-                                    </div>
-                                    <figure class="article_img">
-                                        <!-- TODO: replace with this tea's photo -->
-                                        <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                    </figure>
-                                    <div class="block_cont">
-                                        <div class="cont_para">
-                                            <div class="article_txt">
-                                                [이 차에 대한 소개를 작성해주세요.]
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="recipe_wrap recipe_list_col mb_80">
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>[특징 한 줄]</strong>
-                                                    <br><span class="underline">'[강조 문구]'</span>
-                                                    <br>[맛과 향에 대한 상세 설명을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="recipe_item">
-                                        <figure class="article_img">
-                                            <!-- TODO: replace with a detail photo -->
-                                            <div class="img_placeholder" style="width: 100%; max-width: 970px; aspect-ratio: 16 / 9;"></div>
-                                        </figure>
-                                        <div class="txt_block">
-                                            <div class="cont_para">
-                                                <div class="article_txt">
-                                                    <strong>차 우림법</strong>
-                                                    <br>[우려 마시는 방법을 작성해주세요.]
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- ========== END TEA SECTIONS ========== -->
 
                             <hr class="article_hr hr_dashed w_view">
 

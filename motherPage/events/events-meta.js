@@ -1,5 +1,5 @@
-// Renders the date+time/location/fee/category info card (plus the share
-// button at the right end of the status/category badge row) on an
+// Renders the date+time/location/fee/capacity/category info card (plus the
+// share button at the right end of the status/category badge row) on an
 // event subpage, and shows the tea-lineup section ("#teaLineup") only when
 // this event's category has `showsTeaInfo: true` (see eventCategories in
 // events-data.js). Reads teaClubEvents from events-data.js — must load
@@ -110,6 +110,7 @@
             addRow(list, "일시", formatEventDateTimeKo(event));
             addRow(list, "장소", event.location);
             addRow(list, "참가비", event.fee);
+            addRow(list, "인원", event["인원"] != null ? `${event["인원"]}명` : null);
             main.appendChild(list);
 
             metaEl.appendChild(main);

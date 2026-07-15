@@ -102,6 +102,11 @@
                 </div>
             </nav>
 
+            <!-- "to top" shortcut for mobile: kept outside #magazine_lnb so
+                 recentering the island (see subpage.css) doesn't move it —
+                 see .magazine_lnb_top_mobile in subpage.css -->
+            <a href="#" class="magazine_lnb_top_mobile" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"><span><svg class="magazine_lnb_top_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="magazine_lnb_top_label">맨 위로</span></span></a>
+
             <div id="magazine_contents" class="magazine_contents">
                 <section class="magazine_teainside layer_1445 teainside_type2">
                     <article class="magazine_article teainside_article teainside_view_06">

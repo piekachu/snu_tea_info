@@ -180,12 +180,11 @@ body.nav-open .magazine_lnb {
 @media all and (max-width: 768px) {
     .magazine_lnb {
         display: block;
-        /* shrink-to-fit, anchored a fixed distance from the right edge —
-           that fixed distance (not a centered/content-dependent one)
-           is what lets .magazine_lnb_top below reliably land exactly at
-           the screen's right inset via a plain negative offset */
-        left: auto;
-        right: 72px;
+        /* horizontally centered — independent of .magazine_lnb_top_mobile
+           below, which is its own fixed element rather than a child, so
+           centering the island here doesn't drag that button along */
+        left: 50%;
+        right: auto;
         top: auto;
         bottom: 16px;
         width: auto;
@@ -195,13 +194,13 @@ body.nav-open .magazine_lnb {
         border-radius: 999px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
         /* clear the island's own height (100%) plus its bottom inset (16px) */
-        transform: translateY(calc(100% + 16px));
+        transform: translateX(-50%) translateY(calc(100% + 16px));
     }
     body.nav-visible .magazine_lnb {
-        transform: translateY(0);
+        transform: translateX(-50%) translateY(0);
     }
     body.nav-open .magazine_lnb {
-        transform: translateY(calc(100% + 16px));
+        transform: translateX(-50%) translateY(calc(100% + 16px));
     }
     .magazine_lnb_list {
         flex-direction: row;
@@ -234,46 +233,57 @@ body.nav-open .magazine_lnb {
     .magazine_lnb_tab.active:before {
         transform: scaleX(1);
     }
-    /* "맨 위로" pulled out of the horizontal number row into its own
-       floating circular button, sitting beside the island at the screen's
-       right edge (island is inset 72px = this button's 44px + a 12px gap
-       + the standard 16px screen margin, so a plain -56px here lands the
-       button's own right edge exactly at that 16px margin).
-       .magazine_lnb has its own transform (see above), which makes it the
-       containing block for this absolutely-positioned child — so the
-       button still rides along with the island's show/hide slide instead
-       of needing its own separate visibility handling. */
+    /* the in-rail "to top" text link (used on the desktop rail above
+       1280px) has no place in the island layout — .magazine_lnb_top_mobile
+       below is the mobile equivalent, and it's a separate fixed element
+       (not nested in #magazine_lnb) specifically so that recentering the
+       island doesn't drag it along too */
     .magazine_lnb_top {
-        position: absolute;
-        left: auto;
-        right: -56px;
-        top: 50%;
-        bottom: auto;
-        margin: 0;
-        padding: 0;
-        border-top: none;
+        display: none;
+    }
+}
+/* independent mobile "to top" button — intentionally NOT a descendant of
+   #magazine_lnb (unlike the old layout), so it keeps its own fixed screen
+   position no matter where the island above is centered/moved */
+.magazine_lnb_top_mobile {
+    display: none;
+}
+@media all and (max-width: 768px) {
+    .magazine_lnb_top_mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 50;
         width: 44px;
         height: 44px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(8px);
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transform: translateY(-50%);
-        flex-shrink: 0;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(calc(100% + 16px));
+        transition: opacity 0.4s ease, transform 0.4s ease;
     }
-    .magazine_lnb_top:before {
-        display: none;
+    body.nav-visible .magazine_lnb_top_mobile {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
     }
-    .magazine_lnb_top_icon {
+    body.nav-open .magazine_lnb_top_mobile {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(calc(100% + 16px));
+    }
+    .magazine_lnb_top_mobile .magazine_lnb_top_icon {
         display: block;
         width: 18px;
         height: 18px;
     }
-    /* see the .magazine_lnb_label comment above re: this qualifier */
-    .magazine_lnb_top .magazine_lnb_top_label {
+    .magazine_lnb_top_mobile .magazine_lnb_top_label {
         display: none;
     }
 }

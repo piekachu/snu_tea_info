@@ -39,6 +39,9 @@
 // link) shown as a "길찾기" button under the embedded map, for full
 // directions. Only meaningful alongside `lat`/`lng`.
 //
+// `인원` is the event's capacity (number of participants), shown in the info
+// card right after 참가비. Defaults to 20 — update per event as needed.
+//
 // `category` must be one of the keys in eventCategories below:
 //   teaClass    — 티클래스 (차 우림법 등을 배우는 소규모 클래스)
 //   regulars    — 정기다회 (매 학기 종강/개강다회 등 정기 모임)
@@ -118,6 +121,7 @@ const teaClubEvents = [
         path: "2026springEOS/26springEOS_index.html",
         location: "https://naver.me/5pwsXu4f",
         fee: "[참가비를 입력해주세요]",
+        인원: 20,
         category: "regulars",
         status: "closed"
     },
@@ -127,6 +131,7 @@ const teaClubEvents = [
         path: "2026summerSOS/26summerSOS_index.html",
         location: "https://naver.me/xoH83gzf",
         fee: "[참가비를 입력해주세요]",
+        인원: 20,
         category: "regulars",
         status: "closed"
     },
@@ -136,6 +141,7 @@ const teaClubEvents = [
         path: "2026julyTeaSnacks/index.html",
         location: "[장소를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
+        인원: 20,
         category: "special",
         status: "upcoming"
     },
@@ -149,6 +155,7 @@ const teaClubEvents = [
         lng: 126.9870535,
         mapLink: "https://naver.me/GlRObS6h",
         fee: "1만5천원 / 1인",
+        인원: 20,
         category: "specialTea",
         status: "closed"
     },
@@ -159,6 +166,7 @@ const teaClubEvents = [
         path: "2026julyTempleStay/index.html",
         location: "[장소를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
+        인원: 20,
         category: "fieldTrip",
         status: "upcoming"
     },
@@ -168,20 +176,23 @@ const teaClubEvents = [
         path: "2026julyYidoAuction/index.html",
         location: "[장소를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
+        인원: 20,
         category: "special",
         status: "upcoming"
     },
     {
-        date: "2026-07-31",
+        date: "2026-07-30",
+        time: "19:00 - 21:00",
         title: "정기다회",
         path: "2026julyRegulars/index.html",
-        location: "서울 서대문구 연세로12길 27 2층",
+        location: "라오상하이 신촌(서울 서대문구 연세로12길 27)",
         lat: 37.559110,
         lng: 126.938568,
         mapLink: "https://naver.me/xoH83gzf",
-        fee: "[참가비를 입력해주세요]",
+        fee: "10000원",
+        인원: 40,
         category: "regulars",
-        status: "upcoming"
+        status: "recruiting"
     },
     {
         date: "2026-08-09",
@@ -189,6 +200,7 @@ const teaClubEvents = [
         path: "2026augStaffTeaClass/index.html",
         location: "[장소를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
+        인원: 20,
         category: "teaClass",
         status: "upcoming"
     }
