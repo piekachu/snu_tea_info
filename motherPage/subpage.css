@@ -548,10 +548,10 @@ body.nav-open .magazine_lnb {
     font-weight: var(--font-weight-normal);
 }
 .magazine_teainside .header_overlay .sub_title {
-    font-size: 17.2px;
+    font-size: 21px;
     margin-top: 13px;
     line-height: 1.818;
-    opacity: 0.8;
+    opacity: 0.95;
 }
 .magazine_article.teainside_article {
     max-width: 100%;
@@ -636,7 +636,7 @@ body.nav-open .magazine_lnb {
         font-size: 26.2px;
     }
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 15.8px;
+        font-size: 19px;
     }
     .article_hr.hr_dashed {
         margin-bottom: 48px;
@@ -669,7 +669,7 @@ body.nav-open .magazine_lnb {
         font-size: 19.7px;
     }
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 13.7px;
+        font-size: 16.5px;
     }
     .article_hr.hr_dashed {
         margin-bottom: 36px;
@@ -695,7 +695,7 @@ body.nav-open .magazine_lnb {
         line-height: 1.35;
     }
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 14px;
+        font-size: 17px;
         margin-top: 0;
         line-height: 1.7;
     }
@@ -722,7 +722,7 @@ body.nav-open .magazine_lnb {
 }
 @media all and (max-width: 480px) {
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 13px;
+        font-size: 16px;
     }
 }
 

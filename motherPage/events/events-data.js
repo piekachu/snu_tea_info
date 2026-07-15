@@ -5,7 +5,7 @@
 //  - events/events-nav.js (builds the event list in every subpage's sidebar)
 //  - events/events-meta.js (renders the date+time/location/fee/category
 //    card on each event subpage, and shows the tea-lineup section when
-//    the event's category is "regulars")
+//    the event's category has `showsTeaInfo: true`)
 //  - events/events-map.js (renders an embedded Naver Map under the info card
 //    when `lat`/`lng` are set — see below)
 // `path` is relative to motherPage/ (no leading slash); every page that
@@ -40,15 +40,21 @@
 // directions. Only meaningful alongside `lat`/`lng`.
 //
 // `category` must be one of the keys in eventCategories below:
-//   teaClass  — 티클래스 (차 우림법 등을 배우는 소규모 클래스)
-//   regulars  — 정기다회 (매 학기 종강/개강다회 등 정기 모임)
-//   fieldTrip — 다원답사 (다원/티하우스 답사)
-//   special   — 특별행사 (그 외 특별 행사)
+//   teaClass    — 티클래스 (차 우림법 등을 배우는 소규모 클래스)
+//   regulars    — 정기다회 (매 학기 종강/개강다회 등 정기 모임)
+//   fieldTrip   — 다원답사 (다원/티하우스 답사)
+//   special     — 특별행사 (그 외 특별 행사)
+//   specialTea  — 특별다회 (특별히 준비된 차로 진행하는 다회; regulars처럼
+//                 차 정보 섹션이 표시됨)
+// `showsTeaInfo: true` on a category makes events-meta.js show the tea-info
+// toggle and tea-lineup section (see #teaLineup) instead of just the plain
+// event info panel.
 const eventCategories = {
     teaClass: { label: "티클래스" },
-    regulars: { label: "정기다회" },
+    regulars: { label: "정기다회", showsTeaInfo: true },
     fieldTrip: { label: "다원답사" },
-    special: { label: "특별행사" }
+    special: { label: "특별행사" },
+    specialTea: { label: "특별다회", showsTeaInfo: true }
 };
 
 // `status` must be one of the keys in eventStatuses below:
@@ -142,9 +148,9 @@ const teaClubEvents = [
         lat: 37.5671779,
         lng: 126.9870535,
         mapLink: "https://naver.me/GlRObS6h",
-        fee: "3만원 / 1인",
-        category: "regulars",
-        status: "upcoming"
+        fee: "1만5천원 / 1인",
+        category: "specialTea",
+        status: "closed"
     },
     {
         date: "2026-07-25",

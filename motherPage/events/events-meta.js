@@ -1,8 +1,9 @@
 // Renders the date+time/location/fee/category info card (plus the share
 // button at the right end of the status/category badge row) on an
 // event subpage, and shows the tea-lineup section ("#teaLineup") only when
-// this event's category is "regulars". Reads teaClubEvents from
-// events-data.js — must load after it.
+// this event's category has `showsTeaInfo: true` (see eventCategories in
+// events-data.js). Reads teaClubEvents from events-data.js — must load
+// after it.
 (function () {
     "use strict";
 
@@ -123,14 +124,14 @@
             }
         }
 
-        const isRegulars = event.category === "regulars";
+        const showsTeaInfo = typeof eventCategories !== "undefined" && !!eventCategories[event.category] && !!eventCategories[event.category].showsTeaInfo;
         const teaLineup = document.getElementById("teaLineup");
         const teaNav = document.getElementById("magazine_lnb");
         const infoToggle = document.getElementById("infoToggle");
         const eventInfoPanel = document.getElementById("eventInfoPanel");
         const eventApply = document.querySelector(".event_apply");
 
-        if (!isRegulars) {
+        if (!showsTeaInfo) {
             if (teaLineup) teaLineup.style.display = "none";
             if (teaNav) teaNav.style.display = "none";
             if (infoToggle) infoToggle.style.display = "none";
