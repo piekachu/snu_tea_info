@@ -759,7 +759,7 @@ body.page-home .header_logo .logo_img {
    an empty .page-card_thumb, no placeholder graphic */
 .img_placeholder {
     display: block;
-    background: var(--osullocGreenS);
+    background: #f6fbf6;
 }
 .page-card_thumb img {
     display: block;

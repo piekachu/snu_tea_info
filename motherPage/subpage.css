@@ -558,7 +558,8 @@ body.nav-open .magazine_lnb {
     font-weight: var(--font-weight-normal);
 }
 .magazine_teainside .header_overlay .sub_title {
-    font-size: 21px;
+    font-size: 25px;
+    font-weight: var(--font-weight-bold);
     margin-top: 13px;
     line-height: 1.818;
     opacity: 0.95;
@@ -646,7 +647,7 @@ body.nav-open .magazine_lnb {
         font-size: 26.2px;
     }
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 19px;
+        font-size: 23px;
     }
     .article_hr.hr_dashed {
         margin-bottom: 48px;
@@ -679,7 +680,7 @@ body.nav-open .magazine_lnb {
         font-size: 19.7px;
     }
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 16.5px;
+        font-size: 20px;
     }
     .article_hr.hr_dashed {
         margin-bottom: 36px;
@@ -705,7 +706,7 @@ body.nav-open .magazine_lnb {
         line-height: 1.35;
     }
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 17px;
+        font-size: 20px;
         margin-top: 0;
         line-height: 1.7;
     }
@@ -732,7 +733,7 @@ body.nav-open .magazine_lnb {
 }
 @media all and (max-width: 480px) {
     .magazine_teainside .header_overlay .sub_title {
-        font-size: 16px;
+        font-size: 19px;
     }
 }
 
@@ -907,6 +908,52 @@ body.nav-open .magazine_lnb {
 .article_title_block.type_num .title_info {
     font-weight: var(--font-weight-normal);
     color: #585858;
+}
+
+/* brewing-parameters summary (temperature/water/time) — stands in for a
+   detail photo on the "차 우림법" recipe_item until/instead of one being
+   added; same tinted-box treatment as .img_placeholder rather than a
+   blank area */
+.brew_stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    align-self: center;
+    gap: 12px;
+    padding: 20px 12px;
+    background: #f6fbf6;
+    border-radius: 12px;
+}
+.brew_stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.brew_stat_icon {
+    width: 30px;
+    height: 30px;
+    color: #000;
+}
+.brew_stat_value {
+    font-size: 16px;
+    font-weight: var(--font-weight-bold);
+    color: #222;
+    letter-spacing: -0.02em;
+}
+@media all and (max-width: 768px) {
+    .brew_stats {
+        padding: 14px 8px;
+        border-radius: 10px;
+        gap: 4px;
+    }
+    .brew_stat_icon {
+        width: 24px;
+        height: 24px;
+    }
+    .brew_stat_value {
+        font-size: 14px;
+    }
 }
 
 /* offset so the sticky header doesn't cover a tea's title when jumping via #tea_ nav links */
