@@ -18,9 +18,10 @@ What it does:
   - disables the Home / Events / Tea Info sidebar links and the header logo
     link in the copied pages, since those destination pages aren't part of
     this publish
-  - removes the header's hamburger nav-toggle button in the copied pages
-    (it only opens the now-mostly-disabled sidebar) — the original page's
-    header is never touched
+  - removes the header's hamburger nav-toggle button AND the #mySidebar
+    panel entirely in the copied pages — the original page is never touched
+  - hides the 신청하기 (apply) button in the copied pages, since signup
+    isn't wired up for an early, separately-published preview
 
 What it does NOT do (do this yourself afterwards):
   - actually deploy publish/motherPage/ anywhere — point a separate static
@@ -87,18 +88,29 @@ def disable_dead_nav(html_path: Path) -> None:
     html_path.write_text(text, encoding="utf-8")
 
 
-# the header's hamburger button just opens the sidebar, whose own links are
-# already disabled above (see disable_dead_nav) — so for a single-page
-# publish it's dead chrome pointing at a mostly-dead menu; stripped here,
-# in the copy only, per request (the original page keeps its nav toggle)
+# the header's hamburger button just opens the sidebar — both are stripped
+# entirely from the copy (the original page keeps them)
 HEADER_TOGGLE_RE = re.compile(
     r'[ \t]*<button id="menuToggle"[^>]*>.*?</button>\n?', re.DOTALL
 )
+SIDEBAR_RE = re.compile(
+    r'[ \t]*<div id="mySidebar"[^>]*>.*?\n    </div>\n?', re.DOTALL
+)
+# signup isn't wired up yet for an early, separately-published preview —
+# hidden (not removed) so the markup/structure stays intact
+EVENT_APPLY_RE = re.compile(r'<div class="event_apply">')
 
 
-def remove_header_nav_toggle(html_path: Path) -> None:
+def remove_header_and_sidebar_nav(html_path: Path) -> None:
     text = html_path.read_text(encoding="utf-8")
     text = HEADER_TOGGLE_RE.sub("", text)
+    text = SIDEBAR_RE.sub("", text)
+    html_path.write_text(text, encoding="utf-8")
+
+
+def hide_apply_button(html_path: Path) -> None:
+    text = html_path.read_text(encoding="utf-8")
+    text = EVENT_APPLY_RE.sub('<div class="event_apply" style="display: none;">', text)
     html_path.write_text(text, encoding="utf-8")
 
 
@@ -142,7 +154,8 @@ def main() -> None:
         shutil.copytree(src_dir, dest, ignore=lambda _, names: raw_originals & set(names))
         for html in dest.glob("*.html"):
             disable_dead_nav(html)
-            remove_header_nav_toggle(html)
+            remove_header_and_sidebar_nav(html)
+            hide_apply_button(html)
 
     print(f"Published {len(folders)} event page(s) to {OUT.parent.relative_to(ROOT)}/")
     for folder in folders:
