@@ -16,6 +16,7 @@
 
     <!--공통 css-->
     <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="../subpage.css">
     <link rel="stylesheet" href="../events/calendar.css">
     <link rel="stylesheet" href="join.css">
 
@@ -136,7 +137,10 @@
         <div class="join_modal">
             <button type="button" class="join_modal_close" data-close-modal="detail" aria-label="닫기">&times;</button>
             <h3 class="join_modal_title" id="detailModalTitle"></h3>
-            <p class="join_modal_subtitle" id="detailModalMeta"></p>
+
+            <div class="event_meta_badges" id="detailModalBadges"></div>
+            <dl class="event_meta_list" id="detailModalMetaList"></dl>
+
             <p class="join_detail_desc" id="detailModalDesc"></p>
 
             <div class="join_participants">

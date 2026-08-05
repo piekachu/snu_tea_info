@@ -324,7 +324,20 @@ body.join-modal-open {
 
 /* -----------------------
 *  event detail modal
+*  — the badges row + info list (#detailModalBadges/#detailModalMetaList)
+*    reuse .event_meta_badge/.event_meta_list/.event_meta_share_btn/
+*    .event_meta_link from ../subpage.css, so this modal reads consistently
+*    with a real event subpage's info card; only the bits subpage.css has
+*    no equivalent for (the "full" capacity state, spacing scoped to just
+*    this modal) live here.
 * -----------------------*/
+.event_meta_badge.is-full {
+    background: rgba(178, 59, 59, 0.12);
+    color: #b23b3b;
+}
+#detailModalMetaList {
+    margin: 0 0 20px;
+}
 .join_detail_desc {
     margin: 0 0 20px;
     color: var(--fontColor);

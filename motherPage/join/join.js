@@ -227,6 +227,73 @@
         return `${period} ${h12}:${pad2(m)}`;
     }
 
+    // one dt/dd row in the event-page-style info list (.event_meta_list,
+    // shared with event subpages via subpage.css); `mapLink` adds a "지도에서
+    // 보기" link next to the value, pointed at a Naver Map search for the
+    // venue text — there's no stored coordinate to link to directly since
+    // anyone can type any venue name here, unlike the curated event pages
+    function addMetaRow(list, label, value, opts) {
+        if (!value) return;
+        const row = el("div", "event_meta_row");
+        row.appendChild(el("dt", null, label));
+        const dd = document.createElement("dd");
+        dd.textContent = value;
+        if (opts && opts.mapLink) {
+            dd.appendChild(document.createTextNode(" · "));
+            const link = document.createElement("a");
+            link.href = `https://map.naver.com/p/search/${encodeURIComponent(value)}`;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.className = "event_meta_link";
+            link.textContent = "지도에서 보기";
+            dd.appendChild(link);
+        }
+        row.appendChild(dd);
+        list.appendChild(row);
+    }
+
+    // native share sheet where available, otherwise copy a link straight to
+    // this event (via ?event=<id>, opened automatically on load — see
+    // openSharedEventIfAny) to the clipboard; same icon/fallback pattern as
+    // events-meta.js's share button on the curated event pages
+    function createShareButton(ev) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "event_meta_share_btn";
+        btn.setAttribute("aria-label", "공유하기");
+        btn.innerHTML =
+            '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+            '<path d="M12 15V3M7.5 7.5L12 3l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<path d="M5 12v6a2 2 0 002 2h10a2 2 0 002-2v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+            "</svg>";
+
+        btn.addEventListener("click", async () => {
+            const url = `${window.location.origin}${window.location.pathname}?event=${encodeURIComponent(ev.id)}`;
+            const shareData = {
+                title: `${ev.title} — 소모임 신청`,
+                text: [formatDateLabel(ev.date), formatTime(ev.time), ev.title].filter(Boolean).join(" · "),
+                url,
+            };
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    // user dismissed the native share sheet — nothing to do
+                }
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(url);
+                btn.classList.add("copied");
+                setTimeout(() => btn.classList.remove("copied"), 1500);
+            } catch (err) {
+                window.prompt("아래 링크를 복사해주세요:", url);
+            }
+        });
+
+        return btn;
+    }
+
     // ---------- state ----------
     let events = [];
     let signups = [];
@@ -456,8 +523,19 @@
         }
 
         els.detailModalTitle.textContent = ev.title;
-        const metaParts = [formatDateLabel(ev.date), formatTime(ev.time), ev.location].filter(Boolean);
-        els.detailModalMeta.textContent = metaParts.join(" · ");
+
+        els.detailModalBadges.innerHTML = "";
+        const capacityBadge = el("span", "event_meta_badge", capacityLabel(ev));
+        if (isFull(ev)) capacityBadge.classList.add("is-full");
+        els.detailModalBadges.appendChild(capacityBadge);
+        els.detailModalBadges.appendChild(createShareButton(ev));
+
+        els.detailModalMetaList.innerHTML = "";
+        addMetaRow(els.detailModalMetaList, "일시", [formatDateLabel(ev.date), formatTime(ev.time)].filter(Boolean).join(" · "));
+        addMetaRow(els.detailModalMetaList, "장소", ev.location, { mapLink: true });
+        addMetaRow(els.detailModalMetaList, "주최자", ev.host);
+        addMetaRow(els.detailModalMetaList, "정원", ev.capacity === "" || ev.capacity == null ? "무제한" : `${ev.capacity}명`);
+
         els.detailModalDesc.textContent = ev.description || "";
         els.detailModalDesc.hidden = !ev.description;
 
@@ -683,7 +761,8 @@
             createDesc: document.getElementById("createDesc"),
             detailModalOverlay: document.getElementById("detailModalOverlay"),
             detailModalTitle: document.getElementById("detailModalTitle"),
-            detailModalMeta: document.getElementById("detailModalMeta"),
+            detailModalBadges: document.getElementById("detailModalBadges"),
+            detailModalMetaList: document.getElementById("detailModalMetaList"),
             detailModalDesc: document.getElementById("detailModalDesc"),
             detailParticipantsTitle: document.getElementById("detailParticipantsTitle"),
             detailParticipantsList: document.getElementById("detailParticipantsList"),
@@ -735,11 +814,26 @@
             await refresh();
             els.loading.hidden = true;
             els.content.hidden = false;
+            openSharedEventIfAny();
         } catch (err) {
             console.error(err);
             els.loading.hidden = true;
             els.error.hidden = false;
         }
+    }
+
+    // a share link looks like join/index.html?event=<id> — jump straight to
+    // that event's date and pop its detail modal open, then drop the query
+    // param so navigating away and back (or refreshing) doesn't reopen it
+    function openSharedEventIfAny() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("event");
+        if (!id) return;
+        const ev = events.find((e) => e.id === id);
+        window.history.replaceState({}, "", window.location.pathname);
+        if (!ev) return;
+        selectDate(ev.date);
+        openDetailModal(ev.id);
     }
 
     if (document.readyState === "loading") {
