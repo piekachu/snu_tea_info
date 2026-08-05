@@ -100,12 +100,20 @@
 
                 <section id="notice" class="home_band" aria-label="공지사항/Q&A">
                     <div class="home_band_inner">
-                        <a href="notice/index.html" class="page-card home_tile">
-                            <div class="home_card_header">
-                                <h3 class="home_card_title">공지사항/Q&amp;A</h3>
+                        <div class="home_card_header">
+                            <h3 class="home_card_title">공지사항/Q&amp;A</h3>
+                            <a class="home_card_more" href="notice/index.html">더 알아보기</a>
+                        </div>
+                        <section class="event_carousel" id="noticeCarousel" data-notice-prefix="" aria-label="주요 공지">
+                            <div class="carousel_header">
+                                <h3 class="carousel_title">주요 공지</h3>
+                                <div class="carousel_controls">
+                                    <button type="button" id="noticeCarouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
+                                    <button type="button" id="noticeCarouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
+                                </div>
                             </div>
-                            <div class="page-card_thumb"></div>
-                        </a>
+                            <div class="carousel_track" id="noticeCarouselTrack"></div>
+                        </section>
                     </div>
                 </section>
             </div>
@@ -119,6 +127,8 @@
     <script src="events/events-carousel.js"></script>
     <script src="join/join-config.js"></script>
     <script src="join/join-carousel.js"></script>
+    <script src="notice/notices-data.js"></script>
+    <script src="notice/notices.js"></script>
 
     <!-- footer -->
     <footer class="footer">

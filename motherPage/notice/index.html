@@ -42,36 +42,16 @@
 
             <p class="notice_intro">설다연의 공지사항을 확인하세요.</p>
 
-            <!-- Ordering is manual: put every pinned notice (class
-                 "is-pinned") first, in whatever order among themselves you
-                 like, then every regular notice below that, newest first.
-                 Each notice is its own page (see e.g. bylaws.html) rather
-                 than expanding here. -->
-            <ul class="notice_list">
-                <li class="notice_item is-pinned">
-                    <a class="notice_item_link" href="newmember-ot.html">
-                        <span class="notice_item_badge">고정</span>
-                        <span class="notice_item_title">신입부원 OT 자료</span>
-                        <span class="notice_item_date">2026년 8월 5일</span>
-                        <svg class="notice_item_arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                </li>
-                <li class="notice_item is-pinned">
-                    <a class="notice_item_link" href="bylaws.html">
-                        <span class="notice_item_badge">고정</span>
-                        <span class="notice_item_title">설다연 회칙 (1판, ver.3)</span>
-                        <span class="notice_item_date">2026년 8월 5일</span>
-                        <svg class="notice_item_arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                </li>
-            </ul>
+            <!-- rendered from notices-data.js by notices.js (pinned first);
+                 data-notice-prefix "../" because this page sits one folder
+                 below motherPage/ while the data's paths are relative to it -->
+            <ul class="notice_list" id="noticeList" data-notice-prefix="../"></ul>
 
         </div>
     </main>
+
+    <script src="notices-data.js"></script>
+    <script src="notices.js"></script>
 
     <!-- footer -->
     <footer class="footer">

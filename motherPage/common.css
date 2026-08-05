@@ -514,6 +514,19 @@ table caption,
 body.page-home {
     --header-height: 110px;
     --logo-width: 190px;
+    /* full-height flex column so the footer stays pinned to the bottom of the
+       viewport on short pages instead of floating up under the content. The
+       fixed .header/.home_nav are out of flow, so only #container + .footer
+       participate — #container grows to fill, footer sits below it. */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+body.page-home #container {
+    flex: 1 0 auto;
+}
+body.page-home .footer {
+    flex-shrink: 0;
 }
 @media all and (max-width: 1280px) {
     body.page-home {

@@ -75,17 +75,44 @@
     margin: 0;
 }
 
-/* Notice / 소모임 신청 tiles: one plain white rounded card, no shadow —
-   consistent with the carousel cards' flat style */
-.home_tile.page-card {
-    max-width: 100%;
-    border-radius: 18px;
-    box-shadow: none;
+/* 주요 공지 (notice) cards — reuse the .carousel_card frame from
+   carousel.css so the 공지사항 row reads as one system with the Events /
+   소모임 rows, but text-only (no thumbnail): badge, title, date. */
+.notice_card {
+    display: flex;
 }
-
-.home_tile.page-card:hover {
-    transform: none;
-    box-shadow: none;
+.notice_card_body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    min-height: 150px;
+    padding: 22px 20px;
+    box-sizing: border-box;
+}
+.notice_card_badge {
+    align-self: flex-start;
+    padding: 3px 10px;
+    background: var(--osullocGreen);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: var(--font-weight-semibold);
+    border-radius: 999px;
+}
+.notice_card_title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: var(--font-weight-bold);
+    line-height: 1.4;
+    transition: color 0.2s ease;
+}
+.notice_card:hover .notice_card_title {
+    color: var(--osullocGreen);
+}
+.notice_card_date {
+    margin-top: auto; /* pin the date to the bottom of the card */
+    font-size: 12.5px;
+    color: var(--fontGray);
 }
 
 @media all and (max-width: 1024px) {
