@@ -124,11 +124,34 @@
         return card;
     }
 
+    // shown in place of the card row when there's nothing upcoming yet —
+    // an invitation to go make the first one, rather than just an empty
+    // carousel or (as before) hiding the section outright
+    function renderAddCard() {
+        const card = document.createElement("a");
+        card.className = "carousel_card carousel_card_add";
+        card.href = "join/index.html";
+
+        const icon = document.createElement("span");
+        icon.className = "carousel_add_icon";
+        icon.textContent = "+";
+        icon.setAttribute("aria-hidden", "true");
+        card.appendChild(icon);
+
+        const label = document.createElement("p");
+        label.className = "carousel_add_label";
+        label.textContent = "새 소모임 만들기";
+        card.appendChild(label);
+
+        return card;
+    }
+
     async function init() {
         const section = document.getElementById("joinCarousel");
         const track = document.getElementById("joinCarouselTrack");
         const prevBtn = document.getElementById("joinCarouselPrev");
         const nextBtn = document.getElementById("joinCarouselNext");
+        const controls = section ? section.querySelector(".carousel_controls") : null;
         if (!section || !track) return;
 
         let events;
@@ -138,6 +161,9 @@
             events = data.events;
             signups = data.signups;
         } catch (err) {
+            // a real fetch failure, not "zero events" — we don't actually
+            // know how many there are, so hide rather than show a
+            // misleadingly-empty "add" prompt
             console.error("[join-carousel]", err);
             section.style.display = "none";
             return;
@@ -149,12 +175,15 @@
             .slice()
             .sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")));
 
+        track.innerHTML = "";
+
         if (upcoming.length === 0) {
-            section.style.display = "none";
+            if (controls) controls.style.display = "none";
+            track.appendChild(renderAddCard());
             return;
         }
 
-        track.innerHTML = "";
+        if (controls) controls.style.display = "";
         upcoming.forEach((event) => {
             const count = signups.filter((s) => s.eventId === event.id).length;
             track.appendChild(renderCard(event, count));
