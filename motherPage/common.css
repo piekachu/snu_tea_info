@@ -222,6 +222,14 @@ body {
 html, body {
     margin: 0;
     padding: 0;
+}
+/* Clip horizontal overflow on <html> only — its overflow propagates to the
+   viewport, so the page still can't scroll sideways. Deliberately NOT on
+   <body>: overflow-x on body turns body into its own nested scroll
+   container, which stops the mobile browser's toolbar from collapsing and
+   breaks 100dvh tracking — that's what leaves the footer floating off the
+   bottom on phones. */
+html {
     overflow-x: hidden;
 }
 body, a {
