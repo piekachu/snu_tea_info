@@ -1,4 +1,5 @@
-/* 공지사항/Q&A page — requires common.css to be loaded first */
+/* 공지사항/Q&A page (list + each notice's own page) — requires common.css
+   to be loaded first */
 
 .notice_intro {
     max-width: 720px;
@@ -9,6 +10,10 @@
     text-align: center;
 }
 
+/* -----------------------
+*  list page (index.html) — plain title/date rows, each linking out to
+*  that notice's own page
+* -----------------------*/
 .notice_list {
     max-width: 780px;
     margin: 0 auto 60px;
@@ -23,20 +28,15 @@
     border-bottom: none;
 }
 
-/* the whole title/date row is the expand/collapse control — title grows to
-   fill the row, pushing the date and chevron to sit together at the right */
-.notice_item_toggle {
+.notice_item_link {
     display: flex;
     align-items: center;
     gap: 16px;
-    width: 100%;
-    padding: 24px 4px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
+    padding: 22px 4px;
+    color: inherit;
+    text-decoration: none;
 }
-.notice_item:first-child .notice_item_toggle {
+.notice_item:first-child .notice_item_link {
     padding-top: 0;
 }
 
@@ -46,6 +46,10 @@
     font-size: 17px;
     font-weight: var(--font-weight-bold);
     color: var(--fontColor);
+    transition: color 0.2s ease;
+}
+.notice_item_link:hover .notice_item_title {
+    color: var(--osullocGreen);
 }
 
 .notice_item_date {
@@ -54,61 +58,77 @@
     color: var(--fontGray);
 }
 
-.notice_item_chevron {
+.notice_item_arrow {
     flex-shrink: 0;
-    width: 11px;
-    height: 11px;
-    color: var(--fontGray);
-    transition: transform 0.2s ease;
+    width: 8px;
+    height: 12px;
+    color: rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease, color 0.2s ease;
 }
-.notice_item_toggle[aria-expanded="true"] .notice_item_chevron {
-    transform: rotate(180deg);
-}
-.notice_item_toggle:hover .notice_item_title {
+.notice_item_link:hover .notice_item_arrow {
     color: var(--osullocGreen);
+    transform: translateX(3px);
 }
 
-.notice_item_panel {
-    padding: 0 4px 28px;
+/* -----------------------
+*  detail page (bylaws.html, newmember-ot.html, ...)
+* -----------------------*/
+.notice_detail {
+    max-width: 780px;
+    margin: 0 auto 60px;
 }
 
-/* the actual "scroll down to read" area — fixed height instead of letting
-   a whole legal document's worth of text stretch the page out */
-.notice_item_scroll {
-    max-height: 420px;
-    overflow-y: auto;
-    padding: 20px 24px;
-    background: #f6fbf6;
-    border-radius: 12px;
+.notice_detail_meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.notice_detail_back {
+    font-size: 14px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--osullocGreen);
+    text-decoration: none;
+}
+.notice_detail_back:hover {
+    text-decoration: underline;
+}
+
+.notice_detail_date {
+    font-size: 13px;
+    color: var(--fontGray);
 }
 
 /* shown while an entry's content hasn't been filled in yet */
 .notice_item_placeholder {
-    margin: 0;
-    padding: 4px 0;
+    margin: 40px 0;
     color: var(--fontGray);
-    font-size: 14px;
+    font-size: 14.5px;
     text-align: center;
 }
 
 /* -----------------------
-*  회칙 (bylaws) document typography, inside .notice_item_scroll
+*  회칙 (bylaws) document typography
 * -----------------------*/
 .bylaws_doc_title {
     margin: 0 0 4px;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: var(--font-weight-bold);
     text-align: center;
 }
 .bylaws_doc_date {
-    margin: 0 0 24px;
+    margin: 0 0 32px;
     font-size: 13px;
     color: var(--fontGray);
     text-align: center;
 }
 .bylaws_chapter {
-    margin: 28px 0 12px;
-    font-size: 15.5px;
+    margin: 32px 0 14px;
+    font-size: 17px;
     font-weight: var(--font-weight-bold);
     color: var(--osullocGreen);
 }
@@ -116,24 +136,24 @@
     margin-top: 0;
 }
 .bylaws_article {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 .bylaws_article h5 {
-    margin: 0 0 4px;
-    font-size: 14.5px;
+    margin: 0 0 6px;
+    font-size: 15.5px;
     font-weight: var(--font-weight-semibold);
 }
 .bylaws_article p {
     margin: 0 0 4px;
-    font-size: 14px;
-    line-height: 1.7;
+    font-size: 14.5px;
+    line-height: 1.75;
     color: #333;
 }
 .bylaws_subitems {
     margin: 0 0 4px;
     padding-left: 1.6em;
-    font-size: 14px;
-    line-height: 1.7;
+    font-size: 14.5px;
+    line-height: 1.75;
     color: #333;
 }
 .bylaws_subitems li {
@@ -141,16 +161,16 @@
 }
 
 @media all and (max-width: 640px) {
-    .notice_item_toggle {
-        flex-wrap: wrap;
-        padding: 18px 2px;
+    .notice_item_link {
+        padding: 16px 2px;
     }
-    .notice_item_date {
-        order: 3;
-        flex-basis: 100%;
+    .notice_detail_meta {
+        margin-bottom: 20px;
     }
-    .notice_item_scroll {
-        max-height: 360px;
-        padding: 16px 16px;
+    .bylaws_doc_title {
+        font-size: 17px;
+    }
+    .bylaws_chapter {
+        font-size: 15px;
     }
 }
