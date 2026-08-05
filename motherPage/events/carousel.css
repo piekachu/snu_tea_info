@@ -1,4 +1,7 @@
-/* upcoming-events carousel — Events page only; requires common.css to be loaded first */
+/* upcoming-events carousel — used on the Events page and embedded on the
+   main hub page (both the curated-events carousel and, via
+   join/join-carousel.js, the 소모임 preview carousel); requires common.css
+   to be loaded first */
 
 .event_carousel {
     max-width: 1100px;
@@ -203,6 +206,43 @@
     overflow: hidden;
 }
 
+/* "add" card — stands in for the whole card row (join/join-carousel.js)
+   when there's nothing upcoming yet, instead of a plain empty carousel or
+   hiding the section outright; same footprint as a real .carousel_card
+   (same flex-basis, same rounded corners) so it doesn't jump the layout */
+.carousel_card_add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 258px;
+    border: 1.5px dashed rgba(0, 0, 0, 0.15);
+    color: var(--fontGray);
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+.carousel_card_add:hover {
+    border-color: var(--osullocGreen);
+    color: var(--osullocGreen);
+    background: var(--osullocGreenS);
+}
+.carousel_add_icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    font-size: 22px;
+    line-height: 1;
+}
+.carousel_add_label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: var(--font-weight-semibold);
+}
+
 @media all and (max-width: 640px) {
     .carousel_header {
         padding: 6px 2px 14px;
@@ -225,5 +265,8 @@
     }
     .carousel_body {
         padding: 12px 14px 14px;
+    }
+    .carousel_card_add {
+        min-height: 200px;
     }
 }

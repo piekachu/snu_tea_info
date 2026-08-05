@@ -16,6 +16,7 @@
 
     <!--공통 css-->
     <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="notice.css">
 
     <title>공지사항/Q&amp;A</title>
 
@@ -36,8 +37,8 @@
     <nav class="home_nav" aria-label="주요 메뉴">
         <a href="../index.html">Home</a>
         <a href="../index.html#events">Events</a>
-        <a href="../index.html#notice" class="active">공지사항/Q&amp;A</a>
         <a href="../index.html#join">소모임 신청</a>
+        <a href="../index.html#notice" class="active">공지사항/Q&amp;A</a>
     </nav>
 
     <main id="container" class="home">
@@ -48,7 +49,30 @@
                 <h2 class="title">공지사항/Q&amp;A</h2>
             </div>
 
-            <h1 class="under-construction">공사중</h1>
+            <p class="notice_intro">설다연의 공지사항을 확인하세요.</p>
+
+            <!-- new notices go at the top of this list; each one is its
+                 own page (see e.g. bylaws.html) rather than expanding here -->
+            <ul class="notice_list">
+                <li class="notice_item">
+                    <a class="notice_item_link" href="newmember-ot.html">
+                        <span class="notice_item_title">신입부원 OT 자료</span>
+                        <span class="notice_item_date">2026년 8월 5일</span>
+                        <svg class="notice_item_arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </li>
+                <li class="notice_item">
+                    <a class="notice_item_link" href="bylaws.html">
+                        <span class="notice_item_title">설다연 회칙 (1판, ver.3)</span>
+                        <span class="notice_item_date">2026년 8월 5일</span>
+                        <svg class="notice_item_arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
 
         </div>
     </main>
