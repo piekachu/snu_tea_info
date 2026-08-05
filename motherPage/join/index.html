@@ -16,6 +16,8 @@
 
     <!--공통 css-->
     <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="../events/calendar.css">
+    <link rel="stylesheet" href="join.css">
 
     <title>소모임 신청</title>
 
@@ -48,10 +50,107 @@
                 <h2 class="title">소모임 신청</h2>
             </div>
 
-            <h1 class="under-construction">공사중</h1>
+            <p class="join_intro">
+                원하는 날짜를 골라 새로운 소모임을 열거나, 이미 열린 소모임에 참가 신청을 해보세요.
+                누구나 자유롭게 만들고 신청할 수 있어요.
+            </p>
+
+            <div id="joinDemoBanner" class="join_demo_banner" hidden>
+                데모 모드로 실행 중이에요 — 지금 만든 소모임과 신청은 <strong>이 브라우저에만</strong> 저장돼요.
+                모두에게 공유되려면 <code>apps-script/SETUP.md</code> 안내에 따라 배포를 완료해주세요.
+            </div>
+
+            <p id="joinLoading" class="join_loading">불러오는 중...</p>
+            <p id="joinError" class="join_error" hidden>정보를 불러오지 못했어요. 새로고침 해주세요.</p>
+
+            <div id="joinContent" hidden>
+                <section class="calendar" aria-label="소모임 일정">
+                    <div class="calendar_header">
+                        <button type="button" id="calPrev" class="calendar_nav" aria-label="이전 달">&#8249;</button>
+                        <div class="calendar_titlewrap">
+                            <h3 id="calLabel" class="calendar_label"></h3>
+                            <button type="button" id="calToday" class="calendar_today">오늘</button>
+                        </div>
+                        <button type="button" id="calNext" class="calendar_nav" aria-label="다음 달">&#8250;</button>
+                    </div>
+                    <div class="calendar_weekdays" id="calWeekdays"></div>
+                    <div class="calendar_grid" id="calGrid"></div>
+                </section>
+
+                <section class="join_daypanel" id="joinDayPanel" aria-label="선택한 날짜의 소모임">
+                    <div class="join_daypanel_header">
+                        <h3 class="join_daypanel_date" id="joinDayPanelDate"></h3>
+                        <button type="button" class="join_btn_primary join_btn_small" id="joinCreateBtn">+ 새 소모임 만들기</button>
+                    </div>
+                    <div class="join_event_list" id="joinEventList"></div>
+                </section>
+            </div>
 
         </div>
     </main>
+
+    <!-- 소모임 만들기 modal -->
+    <div class="join_modal_overlay" id="createModalOverlay" role="dialog" aria-modal="true" aria-labelledby="createModalTitle">
+        <div class="join_modal">
+            <button type="button" class="join_modal_close" data-close-modal="create" aria-label="닫기">&times;</button>
+            <h3 class="join_modal_title" id="createModalTitle">새 소모임 만들기</h3>
+            <p class="join_modal_subtitle" id="createModalDate"></p>
+            <form id="createEventForm" novalidate>
+                <div class="join_field">
+                    <label for="createTitle">소모임 이름 *</label>
+                    <input type="text" id="createTitle" maxlength="60" required placeholder="예: 저녁 다과회">
+                </div>
+                <div class="join_field_row">
+                    <div class="join_field">
+                        <label for="createTime">시간</label>
+                        <input type="time" id="createTime">
+                    </div>
+                    <div class="join_field">
+                        <label for="createCapacity">정원</label>
+                        <input type="number" id="createCapacity" min="1" placeholder="무제한">
+                    </div>
+                </div>
+                <div class="join_field">
+                    <label for="createLocation">장소</label>
+                    <input type="text" id="createLocation" maxlength="60" placeholder="예: 학생회관 3층 동아리방">
+                </div>
+                <div class="join_field">
+                    <label for="createHost">주최자 이름 *</label>
+                    <input type="text" id="createHost" maxlength="30" required placeholder="닉네임도 좋아요">
+                </div>
+                <div class="join_field">
+                    <label for="createDesc">소개</label>
+                    <textarea id="createDesc" rows="3" maxlength="300" placeholder="어떤 자리인지 간단히 소개해주세요"></textarea>
+                </div>
+                <p class="join_form_error" id="createFormError" hidden></p>
+                <div class="join_form_actions">
+                    <button type="button" class="join_btn_secondary" data-close-modal="create">취소</button>
+                    <button type="submit" class="join_btn_primary">만들기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 소모임 상세/신청 modal -->
+    <div class="join_modal_overlay" id="detailModalOverlay" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
+        <div class="join_modal">
+            <button type="button" class="join_modal_close" data-close-modal="detail" aria-label="닫기">&times;</button>
+            <h3 class="join_modal_title" id="detailModalTitle"></h3>
+            <p class="join_modal_subtitle" id="detailModalMeta"></p>
+            <p class="join_detail_desc" id="detailModalDesc"></p>
+
+            <div class="join_participants">
+                <p class="join_participants_title" id="detailParticipantsTitle"></p>
+                <div class="join_participants_list" id="detailParticipantsList"></div>
+            </div>
+
+            <div id="detailSignupArea"></div>
+            <div id="detailHostArea"></div>
+        </div>
+    </div>
+
+    <script src="join-config.js"></script>
+    <script src="join.js"></script>
 
     <!-- footer -->
     <footer class="footer">
