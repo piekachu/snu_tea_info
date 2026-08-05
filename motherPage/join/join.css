@@ -398,6 +398,12 @@ body.join-modal-open {
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     text-align: right;
 }
+.join_host_actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
 .join_admin_link {
     display: inline-block;
     margin-top: 10px;

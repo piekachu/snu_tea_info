@@ -107,8 +107,8 @@
                         <input type="time" id="createTime">
                     </div>
                     <div class="join_field">
-                        <label for="createCapacity">정원</label>
-                        <input type="number" id="createCapacity" min="1" placeholder="무제한">
+                        <label for="createCapacity">정원 (본인 포함) *</label>
+                        <input type="number" id="createCapacity" min="1" value="1" required>
                     </div>
                 </div>
                 <div class="join_field">
@@ -116,8 +116,16 @@
                     <input type="text" id="createLocation" maxlength="60" placeholder="예: 학생회관 3층 동아리방">
                 </div>
                 <div class="join_field">
+                    <label for="createMapLink">지도 링크 (선택)</label>
+                    <input type="text" id="createMapLink" maxlength="300" placeholder="네이버 지도 공유 링크를 붙여넣으면 그 링크가 바로 열려요">
+                </div>
+                <div class="join_field">
                     <label for="createHost">주최자 이름 *</label>
                     <input type="text" id="createHost" maxlength="30" required placeholder="닉네임도 좋아요">
+                </div>
+                <div class="join_field" id="createPasswordField">
+                    <label for="createPassword">비밀번호 *</label>
+                    <input type="password" id="createPassword" maxlength="60" required placeholder="나중에 수정/삭제할 때 필요해요">
                 </div>
                 <div class="join_field">
                     <label for="createDesc">소개</label>
@@ -126,7 +134,7 @@
                 <p class="join_form_error" id="createFormError" hidden></p>
                 <div class="join_form_actions">
                     <button type="button" class="join_btn_secondary" data-close-modal="create">취소</button>
-                    <button type="submit" class="join_btn_primary">만들기</button>
+                    <button type="submit" class="join_btn_primary" id="createSubmitBtn">만들기</button>
                 </div>
             </form>
         </div>

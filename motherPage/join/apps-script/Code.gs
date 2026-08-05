@@ -6,20 +6,34 @@
  * in SETUP.md next to this file.
  *
  * Data model: two sheet tabs.
- *   Events:  id | date | time | title | location | capacity | host | description | createdAt | editToken
+ *   Events:  id | date | time | title | location | mapLink | capacity | host | description | password | hostSignupId | createdAt | editToken
  *   Signups: id | eventId | name | contact | createdAt | editToken
  *
  * editToken is a random id handed back to whoever created a row (once, in
- * the POST response) so their browser can prove ownership later to cancel a
- * signup or delete an event. It is never included in list responses, and
+ * the response) so their browser can prove ownership later without
+ * retyping anything. `password` is a second, explicit path to that same
+ * ownership — set by the creator at creation time — so they can still
+ * edit/delete their own event from a different browser or device, not just
+ * the one they created it in. Either one alone is enough to prove
+ * ownership; an admin override (see getAdminPassword_) is a third path that
+ * works regardless of who created the event.
+ *
+ * `password` is never included in list responses, same as editToken;
  * `contact` (a signup's phone/kakao/etc.) is only ever visible to whoever
  * owns this spreadsheet directly — the public list only exposes names.
+ *
+ * Every event's capacity counts the creator as one of the spots (see
+ * createEvent_) — an auto-created Signups row using the host's name,
+ * tracked by the event's `hostSignupId`. That auto-signup's own editToken
+ * is never handed to any client, so nobody can cancel it independently via
+ * cancelSignup — removing the creator's attendance means deleting (or
+ * editing) the event itself.
  */
 
 const EVENTS_SHEET = "Events";
 const SIGNUPS_SHEET = "Signups";
 
-const EVENTS_HEADERS = ["id", "date", "time", "title", "location", "capacity", "host", "description", "createdAt", "editToken"];
+const EVENTS_HEADERS = ["id", "date", "time", "title", "location", "mapLink", "capacity", "host", "description", "password", "hostSignupId", "createdAt", "editToken"];
 const SIGNUPS_HEADERS = ["id", "eventId", "name", "contact", "createdAt", "editToken"];
 
 /** Run this once from the Apps Script editor (select "setup" > Run) before deploying. */
@@ -70,7 +84,13 @@ function handleAction_(action, params) {
     return { ok: true, events: publicEvents_(), signups: publicSignups_() };
   }
 
-  const writeActions = { createEvent: createEvent_, signup: signUp_, cancelSignup: cancelSignup_, deleteEvent: deleteEvent_ };
+  const writeActions = {
+    createEvent: createEvent_,
+    updateEvent: updateEvent_,
+    signup: signUp_,
+    cancelSignup: cancelSignup_,
+    deleteEvent: deleteEvent_,
+  };
   const handler = writeActions[action];
   if (!handler) return { ok: false, error: "unknown action" };
 
@@ -123,10 +143,13 @@ function publicEvents_() {
     time: asTimeString_(ev.time),
     title: ev.title,
     location: ev.location,
+    mapLink: ev.mapLink,
     capacity: ev.capacity,
     host: ev.host,
     description: ev.description,
+    hostSignupId: ev.hostSignupId,
     createdAt: ev.createdAt,
+    // password and editToken deliberately omitted — private
   }));
 }
 
@@ -140,27 +163,56 @@ function publicSignups_() {
   }));
 }
 
-function createEvent_(body) {
+// shared validation for the fields createEvent_/updateEvent_ both take;
+// returns either {error: "..."} or the cleaned-up field values
+function validateEventFields_(body, existingSignupCount) {
   const title = String(body.title || "").trim();
   const date = String(body.date || "").trim();
   const host = String(body.host || "").trim();
   if (!title || !date || !host) {
-    return { ok: false, error: "제목, 날짜, 주최자 이름은 필수예요." };
+    return { error: "제목, 날짜, 주최자 이름은 필수예요." };
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return { ok: false, error: "날짜 형식이 올바르지 않아요." };
+    return { error: "날짜 형식이 올바르지 않아요." };
   }
-  if (body.capacity !== "" && body.capacity != null && (!Number.isFinite(Number(body.capacity)) || Number(body.capacity) < 1)) {
-    return { ok: false, error: "정원은 1 이상의 숫자여야 해요." };
+
+  const capacity = Number(body.capacity);
+  if (body.capacity === "" || body.capacity == null || !Number.isFinite(capacity) || capacity < 1) {
+    return { error: "정원은 1 이상의 숫자여야 해요 (본인 포함)." };
   }
+  if (existingSignupCount != null && capacity < existingSignupCount) {
+    return { error: `이미 ${existingSignupCount}명이 참가 중이라 정원을 그보다 줄일 수 없어요.` };
+  }
+
+  return {
+    title,
+    date,
+    host,
+    capacity,
+    time: String(body.time || "").trim(),
+    location: String(body.location || "").trim(),
+    mapLink: String(body.mapLink || "").trim(),
+    description: String(body.description || "").trim(),
+  };
+}
+
+function createEvent_(body) {
+  const password = String(body.password || "");
+  if (!password) return { ok: false, error: "비밀번호를 설정해주세요. 나중에 수정/삭제할 때 필요해요." };
+
+  const fields = validateEventFields_(body, null);
+  if (fields.error) return { ok: false, error: fields.error };
+  const { title, date, host, capacity, time, location, mapLink, description } = fields;
 
   const id = Utilities.getUuid();
   const editToken = Utilities.getUuid();
   const now = new Date().toISOString();
-  const time = String(body.time || "").trim();
-  const location = String(body.location || "").trim();
-  const description = String(body.description || "").trim();
-  const capacity = body.capacity === "" || body.capacity == null ? "" : Number(body.capacity);
+
+  // the creator counts toward their own capacity — auto-signup them so the
+  // headcount starts at 1/N instead of 0/N
+  const hostSignupId = Utilities.getUuid();
+  const hostSignupToken = Utilities.getUuid();
+  ensureSheet_(SIGNUPS_SHEET, SIGNUPS_HEADERS).appendRow([hostSignupId, id, host, "", now, hostSignupToken]);
 
   const sheet = ensureSheet_(EVENTS_SHEET, EVENTS_HEADERS);
   // appendRow() alone isn't enough to keep "2026-08-05" as text — Sheets can
@@ -169,11 +221,11 @@ function createEvent_(body) {
   // text on this exact row's date/time cells right before writing avoids that.
   const row = sheet.getLastRow() + 1;
   sheet.getRange(row, 2, 1, 2).setNumberFormat("@");
-  sheet.getRange(row, 1, 1, EVENTS_HEADERS.length).setValues([[id, date, time, title, location, capacity, host, description, now, editToken]]);
+  sheet.getRange(row, 1, 1, EVENTS_HEADERS.length).setValues([[id, date, time, title, location, mapLink, capacity, host, description, password, hostSignupId, now, editToken]]);
 
   return {
     ok: true,
-    event: { id, date, time, title, location, capacity, host, description, createdAt: now },
+    event: { id, date, time, title, location, mapLink, capacity, host, description, hostSignupId, createdAt: now },
     editToken,
   };
 }
@@ -187,30 +239,74 @@ function getAdminPassword_() {
   return PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD") || "";
 }
 
-function deleteEvent_(body) {
-  const id = String(body.id || "");
+// true if this request proves ownership of `target` — either its editToken
+// (same browser that created it) or its password (set at creation, works
+// from anywhere)
+function isEventOwner_(target, body) {
   const editToken = String(body.editToken || "");
+  const password = String(body.password || "");
+  return (editToken !== "" && String(target.editToken) === editToken) || (password !== "" && String(target.password) === password);
+}
+function isAdminRequest_(body) {
+  const adminSecret = getAdminPassword_();
   const adminPassword = String(body.adminPassword || "");
+  return adminSecret !== "" && adminPassword === adminSecret;
+}
 
+function updateEvent_(body) {
+  const id = String(body.id || "");
   const target = sheetRows_(EVENTS_SHEET).find((r) => r.id === id);
   if (!target) return { ok: false, error: "존재하지 않는 소모임이에요." };
 
-  const isOwner = editToken !== "" && String(target.editToken) === editToken;
-  const adminSecret = getAdminPassword_();
-  const isAdmin = adminSecret !== "" && adminPassword === adminSecret;
-  if (!isOwner && !isAdmin) return { ok: false, error: "삭제 권한이 없어요." };
-
-  const signups = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === id);
-  if (signups.length > 0 && !isAdmin) {
-    return { ok: false, error: "신청자가 있어 삭제할 수 없어요." };
+  if (!isEventOwner_(target, body) && !isAdminRequest_(body)) {
+    return { ok: false, error: "수정 권한이 없어요. 비밀번호를 확인해주세요." };
   }
 
-  // the creator can only remove an empty event (checked above), but an
-  // admin clearing out a problem event (spam, etc.) needs to take its
-  // signups down with it rather than leave them pointing at nothing
-  if (isAdmin && signups.length > 0) {
+  const currentSignupCount = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === id).length;
+  const fields = validateEventFields_(body, currentSignupCount);
+  if (fields.error) return { ok: false, error: fields.error };
+  const { title, date, host, capacity, time, location, mapLink, description } = fields;
+
+  const sheet = ensureSheet_(EVENTS_SHEET, EVENTS_HEADERS);
+  sheet.getRange(target._row, 2, 1, 2).setNumberFormat("@"); // keep date/time as text
+  // columns 2..9: date | time | title | location | mapLink | capacity | host | description
+  sheet.getRange(target._row, 2, 1, 8).setValues([[date, time, title, location, mapLink, capacity, host, description]]);
+
+  // keep the host's own auto-signup's displayed name in sync if it changed
+  if (target.hostSignupId && String(target.host) !== host) {
+    const hostSignup = sheetRows_(SIGNUPS_SHEET).find((s) => s.id === target.hostSignupId);
+    if (hostSignup) {
+      SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SIGNUPS_SHEET).getRange(hostSignup._row, 3).setValue(host);
+    }
+  }
+
+  return {
+    ok: true,
+    event: { id, date, time, title, location, mapLink, capacity, host, description, hostSignupId: target.hostSignupId, createdAt: target.createdAt },
+  };
+}
+
+function deleteEvent_(body) {
+  const id = String(body.id || "");
+  const target = sheetRows_(EVENTS_SHEET).find((r) => r.id === id);
+  if (!target) return { ok: false, error: "존재하지 않는 소모임이에요." };
+
+  const isAdmin = isAdminRequest_(body);
+  if (!isEventOwner_(target, body) && !isAdmin) {
+    return { ok: false, error: "삭제 권한이 없어요. 비밀번호를 확인해주세요." };
+  }
+
+  const allSignups = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === id);
+  const otherSignups = allSignups.filter((s) => s.id !== target.hostSignupId);
+  if (otherSignups.length > 0 && !isAdmin) {
+    return { ok: false, error: "다른 참가자가 있어 삭제할 수 없어요." };
+  }
+
+  // safe to clear every signup tied to this event now — either it's just
+  // the creator's own auto-signup, or an admin is force-clearing everything
+  if (allSignups.length > 0) {
     const signupSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SIGNUPS_SHEET);
-    signups
+    allSignups
       .map((s) => s._row)
       .sort((a, b) => b - a) // delete bottom-up so earlier row indices stay valid
       .forEach((row) => signupSheet.deleteRow(row));
