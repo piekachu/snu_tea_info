@@ -385,6 +385,20 @@ body.join-modal-open {
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     text-align: right;
 }
+.join_admin_link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: rgba(0, 0, 0, 0.3);
+    font-size: 11.5px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.join_admin_link:hover {
+    color: var(--fontGray);
+}
 .join_host_note {
     margin: 8px 0 0;
     color: var(--fontGray);

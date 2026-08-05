@@ -96,15 +96,27 @@
         return { ok: true, event, editToken };
     }
 
+    // demo mode has no real backend to hold a secret, so "admin" here is
+    // just this fixed local password — enough to exercise the admin-delete
+    // UI/flow before a real backend exists; the real check happens in
+    // Code.gs's deleteEvent_ once join-config.js points at a live deployment
+    const DEMO_ADMIN_PASSWORD = "admin";
+
     function demoDeleteEvent(body) {
         const d = loadDemo();
         const idx = d.events.findIndex((e) => e.id === body.id);
         if (idx === -1) return { ok: false, error: "존재하지 않는 소모임이에요." };
-        if (d.events[idx].editToken !== body.editToken && myEventToken(body.id) !== body.editToken) {
-            return { ok: false, error: "삭제 권한이 없어요." };
-        }
+
+        const isOwner = !!body.editToken && d.events[idx].editToken === body.editToken;
+        const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
+        if (!isOwner && !isAdmin) return { ok: false, error: "삭제 권한이 없어요." };
+
         const signupCount = d.signups.filter((s) => s.eventId === body.id).length;
-        if (signupCount > 0) return { ok: false, error: "신청자가 있어 삭제할 수 없어요." };
+        if (signupCount > 0 && !isAdmin) return { ok: false, error: "신청자가 있어 삭제할 수 없어요." };
+        if (isAdmin && signupCount > 0) {
+            d.signups = d.signups.filter((s) => s.eventId !== body.id);
+        }
+
         d.events.splice(idx, 1);
         saveDemo(d);
         return { ok: true };
@@ -570,24 +582,33 @@
     function renderHostArea(ev, participants) {
         const area = els.detailHostArea;
         area.innerHTML = "";
-        const editToken = myEventToken(ev.id);
-        if (!editToken) return;
-
         area.className = "join_host_area";
-        if (participants.length > 0) {
-            area.appendChild(el("p", "join_host_note", "신청자가 있어 이 소모임은 삭제할 수 없어요."));
-            return;
+
+        const editToken = myEventToken(ev.id);
+        if (editToken) {
+            if (participants.length > 0) {
+                area.appendChild(el("p", "join_host_note", "신청자가 있어 이 소모임은 삭제할 수 없어요."));
+            } else {
+                const deleteBtn = el("button", "join_btn_danger", "이 소모임 삭제하기");
+                deleteBtn.type = "button";
+                deleteBtn.addEventListener("click", () => handleDeleteEvent(ev.id, { editToken }));
+                area.appendChild(deleteBtn);
+            }
         }
-        const deleteBtn = el("button", "join_btn_danger", "이 소모임 삭제하기");
-        deleteBtn.type = "button";
-        deleteBtn.addEventListener("click", () => handleDeleteEvent(ev.id, editToken));
-        area.appendChild(deleteBtn);
+
+        // always available, to anyone — not just the creator — so an admin
+        // can remove a problem event (spam, duplicate, etc.) even with
+        // signups on it; the server is the one actually checking the password
+        const adminLink = el("button", "join_admin_link", "관리자 권한으로 삭제");
+        adminLink.type = "button";
+        adminLink.addEventListener("click", () => handleAdminDelete(ev.id));
+        area.appendChild(adminLink);
     }
 
-    async function handleDeleteEvent(eventId, editToken) {
+    async function handleDeleteEvent(eventId, auth) {
         if (!window.confirm("이 소모임을 삭제할까요? 되돌릴 수 없어요.")) return;
         try {
-            const result = await apiPost("deleteEvent", { id: eventId, editToken });
+            const result = await apiPost("deleteEvent", { id: eventId, ...auth });
             if (result.ok) {
                 forgetEventToken(eventId);
                 closeModal(els.detailModalOverlay);
@@ -599,6 +620,12 @@
             console.error(err);
             window.alert("네트워크 오류가 발생했어요.");
         }
+    }
+
+    async function handleAdminDelete(eventId) {
+        const password = window.prompt("관리자 비밀번호를 입력해주세요.");
+        if (password == null || password === "") return; // cancelled
+        await handleDeleteEvent(eventId, { adminPassword: password });
     }
 
     // ---------- modal plumbing ----------

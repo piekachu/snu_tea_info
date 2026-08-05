@@ -178,15 +178,43 @@ function createEvent_(body) {
   };
 }
 
+// The admin password lives in this project's Script Properties (Project
+// Settings > Script Properties > ADMIN_PASSWORD in the Apps Script editor),
+// never in this file — so it isn't visible to anyone reading the source or
+// this repo. Leaving it unset (the default) means the admin override is
+// simply never available to anyone, including a blank submitted password.
+function getAdminPassword_() {
+  return PropertiesService.getScriptProperties().getProperty("ADMIN_PASSWORD") || "";
+}
+
 function deleteEvent_(body) {
   const id = String(body.id || "");
   const editToken = String(body.editToken || "");
+  const adminPassword = String(body.adminPassword || "");
+
   const target = sheetRows_(EVENTS_SHEET).find((r) => r.id === id);
   if (!target) return { ok: false, error: "존재하지 않는 소모임이에요." };
-  if (String(target.editToken) !== editToken) return { ok: false, error: "삭제 권한이 없어요." };
 
-  const signupCount = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === id).length;
-  if (signupCount > 0) return { ok: false, error: "신청자가 있어 삭제할 수 없어요." };
+  const isOwner = editToken !== "" && String(target.editToken) === editToken;
+  const adminSecret = getAdminPassword_();
+  const isAdmin = adminSecret !== "" && adminPassword === adminSecret;
+  if (!isOwner && !isAdmin) return { ok: false, error: "삭제 권한이 없어요." };
+
+  const signups = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === id);
+  if (signups.length > 0 && !isAdmin) {
+    return { ok: false, error: "신청자가 있어 삭제할 수 없어요." };
+  }
+
+  // the creator can only remove an empty event (checked above), but an
+  // admin clearing out a problem event (spam, etc.) needs to take its
+  // signups down with it rather than leave them pointing at nothing
+  if (isAdmin && signups.length > 0) {
+    const signupSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SIGNUPS_SHEET);
+    signups
+      .map((s) => s._row)
+      .sort((a, b) => b - a) // delete bottom-up so earlier row indices stay valid
+      .forEach((row) => signupSheet.deleteRow(row));
+  }
 
   SpreadsheetApp.getActiveSpreadsheet().getSheetByName(EVENTS_SHEET).deleteRow(target._row);
   return { ok: true };
