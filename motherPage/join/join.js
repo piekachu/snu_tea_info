@@ -234,6 +234,19 @@
         return { ok: true };
     }
 
+    function demoEventParticipants(body) {
+        const d = loadDemo();
+        const target = d.events.find((e) => e.id === body.id);
+        if (!target) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
+        const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
+        if (!isOwner && !isAdmin) return { ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." };
+        const participants = d.signups
+            .filter((s) => s.eventId === body.id)
+            .map((s) => ({ id: s.id, name: s.name, contact: s.contact || "", isHost: s.id === target.hostSignupId, createdAt: s.createdAt }));
+        return { ok: true, participants };
+    }
+
     // ---------- API layer ----------
     function sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
@@ -274,6 +287,8 @@
                     return demoSignup(payload);
                 case "cancelSignup":
                     return demoCancelSignup(payload);
+                case "eventParticipants":
+                    return demoEventParticipants(payload);
                 default:
                     return { ok: false, error: "unknown action" };
             }
@@ -760,7 +775,7 @@
         contactInput.type = "text";
         contactInput.id = "signupContact";
         contactInput.maxLength = 60;
-        contactInput.placeholder = "카카오톡 ID / 전화번호 등 (주최자에게만 전달돼요)";
+        contactInput.placeholder = "카카오톡 ID / 전화번호 등 (주최자만 볼 수 있어요)";
         contactField.appendChild(contactLabel);
         contactField.appendChild(contactInput);
 
@@ -861,11 +876,22 @@
                 deleteBtn.addEventListener("click", () => handleDeleteEvent(ev, auth));
                 actions.appendChild(deleteBtn);
             }
+
+            // host-only: fetch the participant list WITH contacts (the public
+            // list never carries them) — server re-checks ownership
+            const contactsBtn = el("button", "join_btn_secondary join_btn_small", "참가자 연락처 보기");
+            contactsBtn.type = "button";
+            actions.appendChild(contactsBtn);
+
             area.appendChild(actions);
 
             if (otherParticipants.length > 0) {
                 area.appendChild(el("p", "join_host_note", "다른 참가자가 있어 삭제할 수 없어요."));
             }
+
+            const contactsBody = el("div", "join_host_contacts_body");
+            area.appendChild(contactsBody);
+            contactsBtn.addEventListener("click", () => handleShowParticipants(ev, auth, contactsBody, contactsBtn));
         } else {
             const unlockBtn = el("button", "join_admin_link", "비밀번호로 관리 (수정/삭제)");
             unlockBtn.type = "button";
@@ -890,6 +916,45 @@
         // we forget it again so the unlock prompt comes back
         unlockedEventPasswords[ev.id] = password;
         renderDetailModal();
+    }
+
+    async function handleShowParticipants(ev, auth, container, btn) {
+        btn.disabled = true;
+        try {
+            const result = await apiPost("eventParticipants", { id: ev.id, ...auth });
+            if (!result.ok) {
+                window.alert(result.error || "참가자 목록을 불러오지 못했어요.");
+                // a wrong unlocked password surfaces here — forget it so the
+                // "비밀번호로 관리" prompt comes back
+                if (auth.password) {
+                    delete unlockedEventPasswords[ev.id];
+                    renderDetailModal();
+                }
+                return;
+            }
+            renderParticipantContacts(container, result.participants);
+            btn.hidden = true;
+        } catch (err) {
+            console.error(err);
+            window.alert("네트워크 오류가 발생했어요.");
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function renderParticipantContacts(container, participants) {
+        container.innerHTML = "";
+        container.appendChild(el("p", "join_host_contacts_title", "참가자 연락처 (주최자 전용)"));
+        const list = el("ul", "join_host_contacts_list");
+        participants.forEach((p) => {
+            const item = el("li", "join_host_contacts_item");
+            item.appendChild(el("span", "join_host_contacts_name", p.isHost ? `${p.name} (주최자)` : p.name));
+            const contact = el("span", "join_host_contacts_contact", p.contact ? p.contact : "연락처 미입력");
+            if (!p.contact) contact.classList.add("is-empty");
+            item.appendChild(contact);
+            list.appendChild(item);
+        });
+        container.appendChild(list);
     }
 
     async function handleDeleteEvent(ev, auth) {

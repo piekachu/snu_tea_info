@@ -83,6 +83,11 @@ function handleAction_(action, params) {
   if (action === "list") {
     return { ok: true, events: publicEvents_(), signups: publicSignups_() };
   }
+  // read-only, but returns the private `contact` field, so it's gated by
+  // event ownership (editToken/password) or admin — see eventParticipants_
+  if (action === "eventParticipants") {
+    return eventParticipants_(params);
+  }
 
   const writeActions = {
     createEvent: createEvent_,
@@ -251,6 +256,30 @@ function isAdminRequest_(body) {
   const adminSecret = getAdminPassword_();
   const adminPassword = String(body.adminPassword || "");
   return adminSecret !== "" && adminPassword === adminSecret;
+}
+
+// full participant list INCLUDING each signup's private `contact`, for the
+// host (or admin) only — the public list action never exposes contacts.
+// Same ownership proof as edit/delete: editToken, password, or admin.
+function eventParticipants_(body) {
+  const id = String(body.id || "");
+  const target = sheetRows_(EVENTS_SHEET).find((r) => r.id === id);
+  if (!target) return { ok: false, error: "존재하지 않는 소모임이에요." };
+
+  if (!isEventOwner_(target, body) && !isAdminRequest_(body)) {
+    return { ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." };
+  }
+
+  const participants = sheetRows_(SIGNUPS_SHEET)
+    .filter((s) => s.eventId === id)
+    .map((s) => ({
+      id: s.id,
+      name: s.name,
+      contact: s.contact,
+      isHost: s.id === target.hostSignupId,
+      createdAt: s.createdAt,
+    }));
+  return { ok: true, participants };
 }
 
 function updateEvent_(body) {
