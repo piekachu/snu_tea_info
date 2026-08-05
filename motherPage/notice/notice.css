@@ -82,6 +82,15 @@
     border-radius: 12px;
 }
 
+/* shown while an entry's content hasn't been filled in yet */
+.notice_item_placeholder {
+    margin: 0;
+    padding: 4px 0;
+    color: var(--fontGray);
+    font-size: 14px;
+    text-align: center;
+}
+
 /* -----------------------
 *  회칙 (bylaws) document typography, inside .notice_item_scroll
 * -----------------------*/
