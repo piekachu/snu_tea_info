@@ -72,28 +72,106 @@
 
     function demoList() {
         const d = loadDemo();
-        return { ok: true, events: d.events, signups: d.signups.map((s) => ({ id: s.id, eventId: s.eventId, name: s.name, createdAt: s.createdAt })) };
+        // mirrors publicEvents_/publicSignups_ in Code.gs — password/editToken
+        // stay out of the array the rest of the page actually renders from,
+        // even though it's all local anyway in demo mode
+        const events = d.events.map((e) => ({
+            id: e.id,
+            date: e.date,
+            time: e.time,
+            title: e.title,
+            location: e.location,
+            mapLink: e.mapLink,
+            capacity: e.capacity,
+            host: e.host,
+            description: e.description,
+            hostSignupId: e.hostSignupId,
+            createdAt: e.createdAt,
+        }));
+        const signups = d.signups.map((s) => ({ id: s.id, eventId: s.eventId, name: s.name, createdAt: s.createdAt }));
+        return { ok: true, events, signups };
     }
 
-    function demoCreateEvent(body) {
+    // shared by demoCreateEvent/demoUpdateEvent — mirrors validateEventFields_ in Code.gs
+    function validateDemoEventFields(body, existingSignupCount) {
         const title = String(body.title || "").trim();
         const date = String(body.date || "").trim();
         const host = String(body.host || "").trim();
         if (!title || !date || !host) {
-            return { ok: false, error: "제목, 날짜, 주최자 이름은 필수예요." };
+            return { error: "제목, 날짜, 주최자 이름은 필수예요." };
         }
-        if (body.capacity !== "" && body.capacity != null && (!Number.isFinite(Number(body.capacity)) || Number(body.capacity) < 1)) {
-            return { ok: false, error: "정원은 1 이상의 숫자여야 해요." };
+        const capacity = Number(body.capacity);
+        if (body.capacity === "" || body.capacity == null || !Number.isFinite(capacity) || capacity < 1) {
+            return { error: "정원은 1 이상의 숫자여야 해요 (본인 포함)." };
         }
+        if (existingSignupCount != null && capacity < existingSignupCount) {
+            return { error: `이미 ${existingSignupCount}명이 참가 중이라 정원을 그보다 줄일 수 없어요.` };
+        }
+        return {
+            title,
+            date,
+            host,
+            capacity,
+            time: String(body.time || "").trim(),
+            location: String(body.location || "").trim(),
+            mapLink: String(body.mapLink || "").trim(),
+            description: String(body.description || "").trim(),
+        };
+    }
+
+    function demoCreateEvent(body) {
+        const password = String(body.password || "");
+        if (!password) return { ok: false, error: "비밀번호를 설정해주세요. 나중에 수정/삭제할 때 필요해요." };
+
+        const fields = validateDemoEventFields(body, null);
+        if (fields.error) return { ok: false, error: fields.error };
+
         const d = loadDemo();
         const id = uid();
         const editToken = uid();
         const createdAt = new Date().toISOString();
-        const capacity = body.capacity === "" || body.capacity == null ? "" : Number(body.capacity);
-        const event = { id, date, time: String(body.time || "").trim(), title, location: String(body.location || "").trim(), capacity, host, description: String(body.description || "").trim(), createdAt };
+
+        // the creator counts toward their own capacity — auto-signup them so
+        // the headcount starts at 1/N instead of 0/N (see Code.gs's createEvent_)
+        const hostSignupId = uid();
+        d.signups.push({ id: hostSignupId, eventId: id, name: fields.host, contact: "", createdAt, editToken: uid() });
+
+        const event = { id, date: fields.date, time: fields.time, title: fields.title, location: fields.location, mapLink: fields.mapLink, capacity: fields.capacity, host: fields.host, description: fields.description, password, hostSignupId, createdAt, editToken };
         d.events.push(event);
         saveDemo(d);
         return { ok: true, event, editToken };
+    }
+
+    function demoUpdateEvent(body) {
+        const d = loadDemo();
+        const idx = d.events.findIndex((e) => e.id === body.id);
+        if (idx === -1) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        const target = d.events[idx];
+
+        const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
+        const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
+        if (!isOwner && !isAdmin) return { ok: false, error: "수정 권한이 없어요. 비밀번호를 확인해주세요." };
+
+        const currentSignupCount = d.signups.filter((s) => s.eventId === body.id).length;
+        const fields = validateDemoEventFields(body, currentSignupCount);
+        if (fields.error) return { ok: false, error: fields.error };
+
+        const oldHost = target.host;
+        Object.assign(target, {
+            title: fields.title,
+            time: fields.time,
+            location: fields.location,
+            mapLink: fields.mapLink,
+            capacity: fields.capacity,
+            host: fields.host,
+            description: fields.description,
+        });
+        if (target.hostSignupId && oldHost !== fields.host) {
+            const hostSignup = d.signups.find((s) => s.id === target.hostSignupId);
+            if (hostSignup) hostSignup.name = fields.host;
+        }
+        saveDemo(d);
+        return { ok: true, event: target };
     }
 
     // demo mode has no real backend to hold a secret, so "admin" here is
@@ -106,17 +184,19 @@
         const d = loadDemo();
         const idx = d.events.findIndex((e) => e.id === body.id);
         if (idx === -1) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        const target = d.events[idx];
 
-        const isOwner = !!body.editToken && d.events[idx].editToken === body.editToken;
+        const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
-        if (!isOwner && !isAdmin) return { ok: false, error: "삭제 권한이 없어요." };
+        if (!isOwner && !isAdmin) return { ok: false, error: "삭제 권한이 없어요. 비밀번호를 확인해주세요." };
 
-        const signupCount = d.signups.filter((s) => s.eventId === body.id).length;
-        if (signupCount > 0 && !isAdmin) return { ok: false, error: "신청자가 있어 삭제할 수 없어요." };
-        if (isAdmin && signupCount > 0) {
-            d.signups = d.signups.filter((s) => s.eventId !== body.id);
-        }
+        const allSignups = d.signups.filter((s) => s.eventId === body.id);
+        const otherSignups = allSignups.filter((s) => s.id !== target.hostSignupId);
+        if (otherSignups.length > 0 && !isAdmin) return { ok: false, error: "다른 참가자가 있어 삭제할 수 없어요." };
 
+        // safe to clear every signup tied to this event now — either it's
+        // just the creator's own auto-signup, or an admin is force-clearing
+        d.signups = d.signups.filter((s) => s.eventId !== body.id);
         d.events.splice(idx, 1);
         saveDemo(d);
         return { ok: true };
@@ -185,6 +265,8 @@
             switch (action) {
                 case "createEvent":
                     return demoCreateEvent(payload);
+                case "updateEvent":
+                    return demoUpdateEvent(payload);
                 case "deleteEvent":
                     return demoDeleteEvent(payload);
                 case "signup":
@@ -227,21 +309,27 @@
         return `${period} ${h12}:${pad2(m)}`;
     }
 
+    // falls back to a Naver Map search for the venue text when the creator
+    // didn't paste an actual map link — there's no stored coordinate to
+    // point at otherwise, since anyone can type any venue name here, unlike
+    // the curated event pages
+    function naverSearchUrl(text) {
+        return `https://map.naver.com/p/search/${encodeURIComponent(text)}`;
+    }
+
     // one dt/dd row in the event-page-style info list (.event_meta_list,
-    // shared with event subpages via subpage.css); `mapLink` adds a "지도에서
-    // 보기" link next to the value, pointed at a Naver Map search for the
-    // venue text — there's no stored coordinate to link to directly since
-    // anyone can type any venue name here, unlike the curated event pages
+    // shared with event subpages via subpage.css); `mapHref` adds a
+    // "지도에서 보기" link next to the value, pointed wherever it says
     function addMetaRow(list, label, value, opts) {
         if (!value) return;
         const row = el("div", "event_meta_row");
         row.appendChild(el("dt", null, label));
         const dd = document.createElement("dd");
         dd.textContent = value;
-        if (opts && opts.mapLink) {
+        if (opts && opts.mapHref) {
             dd.appendChild(document.createTextNode(" · "));
             const link = document.createElement("a");
-            link.href = `https://map.naver.com/p/search/${encodeURIComponent(value)}`;
+            link.href = opts.mapHref;
             link.target = "_blank";
             link.rel = "noopener noreferrer";
             link.className = "event_meta_link";
@@ -463,11 +551,42 @@
         });
     }
 
-    // ---------- create-event modal ----------
+    // ---------- create/edit event modal (one modal, two modes) ----------
+    // non-null while editing an existing event instead of creating a new one
+    let editingEvent = null;
+
     function openCreateModal() {
+        editingEvent = null;
+        els.createForm.reset();
+        els.createCapacity.value = "1";
+        els.createFormError.hidden = true;
+        els.createModalTitle.textContent = "새 소모임 만들기";
+        els.createSubmitBtn.textContent = "만들기";
+        els.createPasswordField.hidden = false;
+        els.createPassword.required = true;
+        els.createModalDate.textContent = formatDateLabel(selectedDateKey);
+        openModal(els.createModalOverlay);
+        els.createTitle.focus();
+    }
+
+    function openEditModal(ev) {
+        editingEvent = ev;
         els.createForm.reset();
         els.createFormError.hidden = true;
-        els.createModalDate.textContent = formatDateLabel(selectedDateKey);
+        els.createModalTitle.textContent = "소모임 수정하기";
+        els.createSubmitBtn.textContent = "수정하기";
+        // editing never touches the password (there's no "change password"
+        // here) or the date (reschedule = delete + recreate, for now)
+        els.createPasswordField.hidden = true;
+        els.createPassword.required = false;
+        els.createModalDate.textContent = formatDateLabel(ev.date);
+        els.createTitle.value = ev.title;
+        els.createTime.value = ev.time || "";
+        els.createCapacity.value = ev.capacity;
+        els.createLocation.value = ev.location || "";
+        els.createMapLink.value = ev.mapLink || "";
+        els.createHost.value = ev.host;
+        els.createDesc.value = ev.description || "";
         openModal(els.createModalOverlay);
         els.createTitle.focus();
     }
@@ -479,21 +598,32 @@
         const submitBtn = els.createForm.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
         try {
-            const result = await apiPost("createEvent", {
-                date: selectedDateKey,
+            const fields = {
                 title: els.createTitle.value,
                 time: els.createTime.value,
                 capacity: els.createCapacity.value,
                 location: els.createLocation.value,
+                mapLink: els.createMapLink.value,
                 host: els.createHost.value,
                 description: els.createDesc.value,
-            });
+            };
+
+            let result;
+            if (editingEvent) {
+                const auth = getEventAuth(editingEvent);
+                result = await apiPost("updateEvent", { id: editingEvent.id, date: editingEvent.date, ...auth, ...fields });
+            } else {
+                result = await apiPost("createEvent", { date: selectedDateKey, password: els.createPassword.value, ...fields });
+            }
+
             if (!result.ok) {
-                els.createFormError.textContent = result.error || "만들지 못했어요. 다시 시도해주세요.";
+                els.createFormError.textContent = result.error || "저장하지 못했어요. 다시 시도해주세요.";
                 els.createFormError.hidden = false;
                 return;
             }
-            rememberEventToken(result.event.id, result.editToken);
+            if (!editingEvent) {
+                rememberEventToken(result.event.id, result.editToken);
+            }
             closeModal(els.createModalOverlay);
             await refresh();
             openDetailModal(result.event.id);
@@ -532,7 +662,7 @@
 
         els.detailModalMetaList.innerHTML = "";
         addMetaRow(els.detailModalMetaList, "일시", [formatDateLabel(ev.date), formatTime(ev.time)].filter(Boolean).join(" · "));
-        addMetaRow(els.detailModalMetaList, "장소", ev.location, { mapLink: true });
+        addMetaRow(els.detailModalMetaList, "장소", ev.location, { mapHref: ev.mapLink || (ev.location ? naverSearchUrl(ev.location) : null) });
         addMetaRow(els.detailModalMetaList, "주최자", ev.host);
         addMetaRow(els.detailModalMetaList, "정원", ev.capacity === "" || ev.capacity == null ? "무제한" : `${ev.capacity}명`);
 
@@ -546,7 +676,8 @@
             els.detailParticipantsList.appendChild(el("span", "join_empty_state", "아직 신청자가 없어요."));
         } else {
             participants.forEach((s) => {
-                els.detailParticipantsList.appendChild(el("span", "join_participant_chip", s.name));
+                const isHost = s.id === ev.hostSignupId;
+                els.detailParticipantsList.appendChild(el("span", "join_participant_chip", isHost ? `${s.name} (주최자)` : s.name));
             });
         }
 
@@ -567,6 +698,14 @@
             cancelBtn.addEventListener("click", () => handleCancelSignup(mySignupId));
             area.appendChild(state);
             area.appendChild(cancelBtn);
+            return;
+        }
+
+        // the creator is already "in" via their auto-signup at creation —
+        // no separate signup action makes sense for them (edit/delete
+        // instead, in the host area below)
+        if (getEventAuth(ev)) {
+            area.appendChild(el("div", "join_signup_state", "✅ 주최자로 참여 중이에요."));
             return;
         }
 
@@ -657,21 +796,57 @@
         }
     }
 
+    // password typed in to unlock edit/delete from a browser that doesn't
+    // already hold the event's editToken — kept only in memory (never
+    // localStorage, never resent anywhere but this event's own API calls),
+    // so it's gone again on refresh and must be re-entered each session
+    let unlockedEventPasswords = {};
+
+    // {editToken} if this browser created the event, else {password} if the
+    // owner unlocked it this session, else null (not authorized — the
+    // "관리자 권한으로" path is separate, see handleAdminDelete)
+    function getEventAuth(ev) {
+        const editToken = myEventToken(ev.id);
+        if (editToken) return { editToken };
+        const password = unlockedEventPasswords[ev.id];
+        if (password) return { password };
+        return null;
+    }
+
     function renderHostArea(ev, participants) {
         const area = els.detailHostArea;
         area.innerHTML = "";
         area.className = "join_host_area";
 
-        const editToken = myEventToken(ev.id);
-        if (editToken) {
-            if (participants.length > 0) {
-                area.appendChild(el("p", "join_host_note", "신청자가 있어 이 소모임은 삭제할 수 없어요."));
-            } else {
+        const auth = getEventAuth(ev);
+        if (auth) {
+            const actions = el("div", "join_host_actions");
+
+            const editBtn = el("button", "join_btn_secondary join_btn_small", "이 소모임 수정하기");
+            editBtn.type = "button";
+            editBtn.addEventListener("click", () => openEditModal(ev));
+            actions.appendChild(editBtn);
+
+            // the creator's own auto-signup doesn't count as "another
+            // participant" here — an untouched, just-created event should
+            // still be deletable
+            const otherParticipants = participants.filter((p) => p.id !== ev.hostSignupId);
+            if (otherParticipants.length === 0) {
                 const deleteBtn = el("button", "join_btn_danger", "이 소모임 삭제하기");
                 deleteBtn.type = "button";
-                deleteBtn.addEventListener("click", () => handleDeleteEvent(ev.id, { editToken }));
-                area.appendChild(deleteBtn);
+                deleteBtn.addEventListener("click", () => handleDeleteEvent(ev, auth));
+                actions.appendChild(deleteBtn);
             }
+            area.appendChild(actions);
+
+            if (otherParticipants.length > 0) {
+                area.appendChild(el("p", "join_host_note", "다른 참가자가 있어 삭제할 수 없어요."));
+            }
+        } else {
+            const unlockBtn = el("button", "join_admin_link", "비밀번호로 관리 (수정/삭제)");
+            unlockBtn.type = "button";
+            unlockBtn.addEventListener("click", () => handleOwnerUnlock(ev));
+            area.appendChild(unlockBtn);
         }
 
         // always available, to anyone — not just the creator — so an admin
@@ -679,20 +854,35 @@
         // signups on it; the server is the one actually checking the password
         const adminLink = el("button", "join_admin_link", "관리자 권한으로 삭제");
         adminLink.type = "button";
-        adminLink.addEventListener("click", () => handleAdminDelete(ev.id));
+        adminLink.addEventListener("click", () => handleAdminDelete(ev));
         area.appendChild(adminLink);
     }
 
-    async function handleDeleteEvent(eventId, auth) {
+    function handleOwnerUnlock(ev) {
+        const password = window.prompt("이 소모임을 만들 때 설정한 비밀번호를 입력해주세요.");
+        if (password == null || password === "") return; // cancelled
+        // not verified until the first actual edit/delete attempt — a wrong
+        // password just surfaces as that action's own error, at which point
+        // we forget it again so the unlock prompt comes back
+        unlockedEventPasswords[ev.id] = password;
+        renderDetailModal();
+    }
+
+    async function handleDeleteEvent(ev, auth) {
         if (!window.confirm("이 소모임을 삭제할까요? 되돌릴 수 없어요.")) return;
         try {
-            const result = await apiPost("deleteEvent", { id: eventId, ...auth });
+            const result = await apiPost("deleteEvent", { id: ev.id, ...auth });
             if (result.ok) {
-                forgetEventToken(eventId);
+                forgetEventToken(ev.id);
+                delete unlockedEventPasswords[ev.id];
                 closeModal(els.detailModalOverlay);
                 await refresh();
             } else {
                 window.alert(result.error || "삭제하지 못했어요.");
+                if (auth.password) {
+                    delete unlockedEventPasswords[ev.id];
+                    renderDetailModal();
+                }
             }
         } catch (err) {
             console.error(err);
@@ -700,10 +890,10 @@
         }
     }
 
-    async function handleAdminDelete(eventId) {
+    async function handleAdminDelete(ev) {
         const password = window.prompt("관리자 비밀번호를 입력해주세요.");
         if (password == null || password === "") return; // cancelled
-        await handleDeleteEvent(eventId, { adminPassword: password });
+        await handleDeleteEvent(ev, { adminPassword: password });
     }
 
     // ---------- modal plumbing ----------
@@ -750,13 +940,18 @@
             eventList: document.getElementById("joinEventList"),
             createBtn: document.getElementById("joinCreateBtn"),
             createModalOverlay: document.getElementById("createModalOverlay"),
+            createModalTitle: document.getElementById("createModalTitle"),
             createModalDate: document.getElementById("createModalDate"),
             createForm: document.getElementById("createEventForm"),
             createFormError: document.getElementById("createFormError"),
+            createSubmitBtn: document.getElementById("createSubmitBtn"),
             createTitle: document.getElementById("createTitle"),
             createTime: document.getElementById("createTime"),
             createCapacity: document.getElementById("createCapacity"),
             createLocation: document.getElementById("createLocation"),
+            createMapLink: document.getElementById("createMapLink"),
+            createPasswordField: document.getElementById("createPasswordField"),
+            createPassword: document.getElementById("createPassword"),
             createHost: document.getElementById("createHost"),
             createDesc: document.getElementById("createDesc"),
             detailModalOverlay: document.getElementById("detailModalOverlay"),
