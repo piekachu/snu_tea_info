@@ -1,13 +1,18 @@
 /* main hub page (index.html) only — requires common.css to be loaded first.
-   Modeled on the apple.com/kr/store screenshots in this folder: a
-   persistent light-gray backdrop with a bold top-left page headline, then
-   plain top-left section labels each followed by a row of white,
-   shadow-free cards — no card borders, no drop shadows, no alternating
-   background bands. Color contrast comes only from the white cards
-   against the gray page. */
+   A clean white page with a bold top-left headline, then plain top-left
+   section labels each followed by a row of cards. The cards carry a
+   hairline border (rather than a drop shadow) so they stay defined against
+   the white background. */
 
 #container.home {
-    background: #f5f5f7;
+    background: #fff;
+}
+
+/* keep the cards defined on the white page — a hairline border instead of
+   a shadow, so the flat look holds. Scoped to .home_band so the Events
+   page's own carousel is untouched. */
+.home_band .carousel_card {
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .home_hero {
