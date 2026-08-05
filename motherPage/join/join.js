@@ -10,6 +10,11 @@
     const DEMO_MODE = !API_URL;
     const DEMO_KEY = "joinDemoData_v1";
     const TOKENS_KEY = "joinEditTokens_v1";
+    // stale-while-revalidate cache of the last successful `list` response.
+    // The Apps Script call takes ~3-8s, so a repeat visit paints from this
+    // instantly and then refreshes in the background. Real mode only (demo
+    // data is already local). Shared with join-carousel.js on the home page.
+    const LIST_CACHE_KEY = "joinListCache_v1";
 
     const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -1004,11 +1009,29 @@
     }
 
     // ---------- data refresh ----------
+    function loadListCache() {
+        try {
+            const parsed = JSON.parse(localStorage.getItem(LIST_CACHE_KEY));
+            if (parsed && Array.isArray(parsed.events) && Array.isArray(parsed.signups)) return parsed;
+        } catch (err) {
+            /* ignore malformed cache */
+        }
+        return null;
+    }
+    function saveListCache(data) {
+        try {
+            localStorage.setItem(LIST_CACHE_KEY, JSON.stringify({ events: data.events, signups: data.signups }));
+        } catch (err) {
+            /* storage full / unavailable — not fatal */
+        }
+    }
+
     async function refresh() {
         const result = await apiList();
         if (!result.ok) throw new Error(result.error || "list failed");
         events = result.events || [];
         signups = result.signups || [];
+        if (!DEMO_MODE) saveListCache({ events, signups });
         renderCalendar();
         renderDayPanel();
     }
@@ -1094,15 +1117,36 @@
             if (els.detailModalOverlay.classList.contains("is-open")) closeModal(els.detailModalOverlay);
         });
 
+        // Reveal the calendar shell immediately instead of blocking the whole
+        // page on the 3-8s Apps Script call behind a spinner — the calendar,
+        // month nav, day panel and "새 소모임 만들기" all work with no server
+        // data; only the event pills need the fetch. On a repeat visit we also
+        // paint the last cached events instantly, then quietly revalidate.
+        els.content.hidden = false;
+
+        const cached = DEMO_MODE ? null : loadListCache();
+        if (cached) {
+            events = cached.events;
+            signups = cached.signups;
+        }
+        renderCalendar();
+        renderDayPanel();
+
+        // cached (or demo) → nothing to wait for; cold first load → keep the
+        // small "불러오는 중" hint up so an empty calendar doesn't read as
+        // "no events" while the background fetch is still running
+        els.loading.hidden = !!cached || DEMO_MODE;
+
         try {
             await refresh();
-            els.loading.hidden = true;
-            els.content.hidden = false;
             openSharedEventIfAny();
         } catch (err) {
             console.error(err);
+            // the shell is already up; only flag an error if we had nothing
+            // cached to show in the first place
+            if (!cached) els.error.hidden = false;
+        } finally {
             els.loading.hidden = true;
-            els.error.hidden = false;
         }
     }
 

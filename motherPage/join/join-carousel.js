@@ -18,6 +18,27 @@
     const API_URL = (window.JOIN_APPS_SCRIPT_URL || "").trim();
     const DEMO_MODE = !API_URL;
     const DEMO_KEY = "joinDemoData_v1";
+    // shared stale-while-revalidate cache with join.js (same key) — the Apps
+    // Script call is ~3-8s, so paint this preview from cache instantly and
+    // refresh in the background
+    const LIST_CACHE_KEY = "joinListCache_v1";
+
+    function loadListCache() {
+        try {
+            const parsed = JSON.parse(localStorage.getItem(LIST_CACHE_KEY));
+            if (parsed && Array.isArray(parsed.events) && Array.isArray(parsed.signups)) return parsed;
+        } catch (err) {
+            /* ignore malformed cache */
+        }
+        return null;
+    }
+    function saveListCache(data) {
+        try {
+            localStorage.setItem(LIST_CACHE_KEY, JSON.stringify({ events: data.events, signups: data.signups }));
+        } catch (err) {
+            /* not fatal */
+        }
+    }
 
     function pad2(n) {
         return String(n).padStart(2, "0");
@@ -65,7 +86,9 @@
                 const res = await fetch(`${API_URL}?action=list`, { method: "GET", cache: "no-store" });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
-                return { events: data.events || [], signups: data.signups || [] };
+                const out = { events: data.events || [], signups: data.signups || [] };
+                saveListCache(out);
+                return out;
             } catch (err) {
                 lastErr = err;
                 if (attempt === 0) await sleep(700);
@@ -154,40 +177,27 @@
         const controls = section ? section.querySelector(".carousel_controls") : null;
         if (!section || !track) return;
 
-        let events;
-        let signups;
-        try {
-            const data = await fetchEvents();
-            events = data.events;
-            signups = data.signups;
-        } catch (err) {
-            // a real fetch failure, not "zero events" — we don't actually
-            // know how many there are, so hide rather than show a
-            // misleadingly-empty "add" prompt
-            console.error("[join-carousel]", err);
-            section.style.display = "none";
-            return;
+        // (re)build the card row from a given events/signups snapshot — called
+        // once from cache (instant) and again after the fresh fetch resolves
+        function render(events, signups) {
+            const today = todayKey();
+            const upcoming = events
+                .filter((event) => event.date >= today)
+                .slice()
+                .sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")));
+
+            track.innerHTML = "";
+            if (upcoming.length === 0) {
+                if (controls) controls.style.display = "none";
+                track.appendChild(renderAddCard());
+                return;
+            }
+            if (controls) controls.style.display = "";
+            upcoming.forEach((event) => {
+                const count = signups.filter((s) => s.eventId === event.id).length;
+                track.appendChild(renderCard(event, count));
+            });
         }
-
-        const today = todayKey();
-        const upcoming = events
-            .filter((event) => event.date >= today)
-            .slice()
-            .sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")));
-
-        track.innerHTML = "";
-
-        if (upcoming.length === 0) {
-            if (controls) controls.style.display = "none";
-            track.appendChild(renderAddCard());
-            return;
-        }
-
-        if (controls) controls.style.display = "";
-        upcoming.forEach((event) => {
-            const count = signups.filter((s) => s.eventId === event.id).length;
-            track.appendChild(renderCard(event, count));
-        });
 
         function scrollByCard(direction) {
             const card = track.querySelector(".carousel_card");
@@ -196,6 +206,20 @@
         }
         prevBtn?.addEventListener("click", () => scrollByCard(-1));
         nextBtn?.addEventListener("click", () => scrollByCard(1));
+
+        // instant paint from cache (real mode), then revalidate
+        const cached = DEMO_MODE ? null : loadListCache();
+        if (cached) render(cached.events, cached.signups);
+
+        try {
+            const data = await fetchEvents();
+            render(data.events, data.signups);
+        } catch (err) {
+            console.error("[join-carousel]", err);
+            // nothing to show at all (no cache + fetch failed) → hide the
+            // section rather than a misleadingly-empty "add" prompt
+            if (!cached) section.style.display = "none";
+        }
     }
 
     if (document.readyState === "loading") {
