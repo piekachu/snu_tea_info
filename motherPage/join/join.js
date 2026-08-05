@@ -206,6 +206,7 @@
         const d = loadDemo();
         const event = d.events.find((e) => e.id === body.eventId);
         if (!event) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        if (signupsClosed(event)) return { ok: false, error: "신청이 마감되었어요. (행사 24시간 전 마감)" };
         const name = String(body.name || "").trim();
         if (!name) return { ok: false, error: "이름을 입력해주세요." };
         const existing = d.signups.filter((s) => s.eventId === body.eventId);
@@ -409,6 +410,24 @@
     function isFull(event) {
         if (event.capacity === "" || event.capacity == null) return false;
         return signupsForEvent(event.id).length >= Number(event.capacity);
+    }
+
+    const SIGNUP_CLOSE_BEFORE_MS = 24 * 60 * 60 * 1000; // signups close 24h before the event starts
+
+    // the event's start as a Date in the viewer's local time — the whole app
+    // treats these stored date/time strings as Korea wall-clock (the club's
+    // local time), and Korean visitors' browsers are in that same zone, so
+    // parsing them locally matches. The server re-checks in the sheet's
+    // timezone anyway (signupsClosed_ in Code.gs), so this is only the UI hint.
+    function eventStartDate(event) {
+        if (!event || !event.date) return null;
+        const d = new Date(`${event.date}T${event.time || "00:00"}:00`);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    function signupsClosed(event) {
+        const start = eventStartDate(event);
+        if (!start) return false;
+        return Date.now() >= start.getTime() - SIGNUP_CLOSE_BEFORE_MS;
     }
 
     // ---------- DOM refs (filled in on init) ----------
@@ -711,6 +730,11 @@
 
         if (isFull(ev)) {
             area.appendChild(el("div", "join_signup_state is-full", "정원이 찼습니다."));
+            return;
+        }
+
+        if (signupsClosed(ev)) {
+            area.appendChild(el("div", "join_signup_state is-closed", "신청이 마감되었어요. (행사 24시간 전 마감)"));
             return;
         }
 

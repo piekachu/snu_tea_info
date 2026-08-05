@@ -316,6 +316,27 @@ function deleteEvent_(body) {
   return { ok: true };
 }
 
+// signups close this long before the event's start
+const SIGNUP_CLOSE_BEFORE_MS = 24 * 60 * 60 * 1000;
+
+// true once we're within 24h of the event start. Both "now" and the stored
+// event date/time are compared in the spreadsheet's own timezone (the club's
+// local time) — nowStr and the event string are each parsed as if UTC, so
+// the shared offset cancels and only the wall-clock gap matters. Unknown/
+// unparseable dates never block (returns false), so a bad row can't lock
+// everyone out.
+function signupsClosed_(event) {
+  const date = String(asDateString_(event.date) || "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  const time = String(asTimeString_(event.time) || "").trim() || "00:00";
+
+  const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
+  const nowMs = new Date(Utilities.formatDate(new Date(), tz, "yyyy-MM-dd'T'HH:mm:ss") + "Z").getTime();
+  const startMs = new Date(date + "T" + time + ":00Z").getTime();
+  if (isNaN(startMs)) return false;
+  return nowMs >= startMs - SIGNUP_CLOSE_BEFORE_MS;
+}
+
 function signUp_(body) {
   const eventId = String(body.eventId || "");
   const name = String(body.name || "").trim();
@@ -323,6 +344,8 @@ function signUp_(body) {
 
   const event = sheetRows_(EVENTS_SHEET).find((r) => r.id === eventId);
   if (!event) return { ok: false, error: "존재하지 않는 소모임이에요." };
+
+  if (signupsClosed_(event)) return { ok: false, error: "신청이 마감되었어요. (행사 24시간 전 마감)" };
 
   const existingSignups = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === eventId);
   if (event.capacity !== "" && existingSignups.length >= Number(event.capacity)) {

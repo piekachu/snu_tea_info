@@ -378,6 +378,10 @@ body.join-modal-open {
     background: rgba(178, 59, 59, 0.08);
     color: #b23b3b;
 }
+.join_signup_state.is-closed {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--fontGray);
+}
 .join_cancel_link {
     margin-top: 8px;
     padding: 0;
