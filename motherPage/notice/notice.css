@@ -1,0 +1,91 @@
+/* 공지사항/Q&A page — requires common.css to be loaded first */
+
+.notice_intro {
+    max-width: 720px;
+    margin: 0 auto 32px;
+    color: var(--fontGray);
+    font-size: 15px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.notice_list {
+    max-width: 780px;
+    margin: 0 auto 60px;
+    padding: 0;
+    list-style: none;
+}
+
+.notice_item {
+    padding: 24px 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.notice_item:first-child {
+    padding-top: 0;
+}
+.notice_item:last-child {
+    border-bottom: none;
+}
+
+.notice_item_header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.notice_item_title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: var(--font-weight-bold);
+    color: var(--fontColor);
+}
+
+.notice_item_date {
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--fontGray);
+}
+
+.notice_item_desc {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--fontGray);
+}
+
+.notice_item_attachment {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 7px 16px;
+    background: var(--osullocGreenS);
+    color: var(--osullocGreen);
+    font-size: 13px;
+    font-weight: var(--font-weight-semibold);
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.notice_item_attachment:hover {
+    background: var(--osullocGreen);
+    color: #fff;
+}
+.notice_item_attachment svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+@media all and (max-width: 640px) {
+    .notice_item_header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    .notice_item {
+        padding: 18px 2px;
+    }
+}
