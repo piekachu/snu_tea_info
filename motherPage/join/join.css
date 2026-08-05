@@ -378,6 +378,10 @@ body.join-modal-open {
     background: rgba(178, 59, 59, 0.08);
     color: #b23b3b;
 }
+.join_signup_state.is-closed {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--fontGray);
+}
 .join_cancel_link {
     margin-top: 8px;
     padding: 0;
@@ -403,6 +407,49 @@ body.join-modal-open {
     justify-content: flex-end;
     flex-wrap: wrap;
     gap: 10px;
+}
+/* host-only participant contact list (revealed by "참가자 연락처 보기") */
+.join_host_contacts_body {
+    text-align: left;
+}
+.join_host_contacts_body:not(:empty) {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: #f6fbf6;
+    border-radius: 8px;
+}
+.join_host_contacts_title {
+    margin: 0 0 10px;
+    font-size: 12.5px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--fontGray);
+}
+.join_host_contacts_list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.join_host_contacts_item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13.5px;
+}
+.join_host_contacts_name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--fontColor);
+}
+.join_host_contacts_contact {
+    color: var(--fontColor);
+    text-align: right;
+    word-break: break-all;
+}
+.join_host_contacts_contact.is-empty {
+    color: rgba(0, 0, 0, 0.3);
 }
 .join_admin_link {
     display: inline-block;

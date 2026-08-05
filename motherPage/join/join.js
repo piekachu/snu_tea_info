@@ -10,6 +10,11 @@
     const DEMO_MODE = !API_URL;
     const DEMO_KEY = "joinDemoData_v1";
     const TOKENS_KEY = "joinEditTokens_v1";
+    // stale-while-revalidate cache of the last successful `list` response.
+    // The Apps Script call takes ~3-8s, so a repeat visit paints from this
+    // instantly and then refreshes in the background. Real mode only (demo
+    // data is already local). Shared with join-carousel.js on the home page.
+    const LIST_CACHE_KEY = "joinListCache_v1";
 
     const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -206,6 +211,7 @@
         const d = loadDemo();
         const event = d.events.find((e) => e.id === body.eventId);
         if (!event) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        if (signupsClosed(event)) return { ok: false, error: "신청이 마감되었어요. (행사 24시간 전 마감)" };
         const name = String(body.name || "").trim();
         if (!name) return { ok: false, error: "이름을 입력해주세요." };
         const existing = d.signups.filter((s) => s.eventId === body.eventId);
@@ -231,6 +237,19 @@
         d.signups.splice(idx, 1);
         saveDemo(d);
         return { ok: true };
+    }
+
+    function demoEventParticipants(body) {
+        const d = loadDemo();
+        const target = d.events.find((e) => e.id === body.id);
+        if (!target) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
+        const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
+        if (!isOwner && !isAdmin) return { ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." };
+        const participants = d.signups
+            .filter((s) => s.eventId === body.id)
+            .map((s) => ({ id: s.id, name: s.name, contact: s.contact || "", isHost: s.id === target.hostSignupId, createdAt: s.createdAt }));
+        return { ok: true, participants };
     }
 
     // ---------- API layer ----------
@@ -273,6 +292,8 @@
                     return demoSignup(payload);
                 case "cancelSignup":
                     return demoCancelSignup(payload);
+                case "eventParticipants":
+                    return demoEventParticipants(payload);
                 default:
                     return { ok: false, error: "unknown action" };
             }
@@ -409,6 +430,24 @@
     function isFull(event) {
         if (event.capacity === "" || event.capacity == null) return false;
         return signupsForEvent(event.id).length >= Number(event.capacity);
+    }
+
+    const SIGNUP_CLOSE_BEFORE_MS = 24 * 60 * 60 * 1000; // signups close 24h before the event starts
+
+    // the event's start as a Date in the viewer's local time — the whole app
+    // treats these stored date/time strings as Korea wall-clock (the club's
+    // local time), and Korean visitors' browsers are in that same zone, so
+    // parsing them locally matches. The server re-checks in the sheet's
+    // timezone anyway (signupsClosed_ in Code.gs), so this is only the UI hint.
+    function eventStartDate(event) {
+        if (!event || !event.date) return null;
+        const d = new Date(`${event.date}T${event.time || "00:00"}:00`);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    function signupsClosed(event) {
+        const start = eventStartDate(event);
+        if (!start) return false;
+        return Date.now() >= start.getTime() - SIGNUP_CLOSE_BEFORE_MS;
     }
 
     // ---------- DOM refs (filled in on init) ----------
@@ -714,6 +753,11 @@
             return;
         }
 
+        if (signupsClosed(ev)) {
+            area.appendChild(el("div", "join_signup_state is-closed", "신청이 마감되었어요. (행사 24시간 전 마감)"));
+            return;
+        }
+
         const form = document.createElement("form");
         form.className = "join_signup_form";
 
@@ -736,7 +780,7 @@
         contactInput.type = "text";
         contactInput.id = "signupContact";
         contactInput.maxLength = 60;
-        contactInput.placeholder = "카카오톡 ID / 전화번호 등 (주최자에게만 전달돼요)";
+        contactInput.placeholder = "카카오톡 ID / 전화번호 등 (주최자만 볼 수 있어요)";
         contactField.appendChild(contactLabel);
         contactField.appendChild(contactInput);
 
@@ -837,11 +881,22 @@
                 deleteBtn.addEventListener("click", () => handleDeleteEvent(ev, auth));
                 actions.appendChild(deleteBtn);
             }
+
+            // host-only: fetch the participant list WITH contacts (the public
+            // list never carries them) — server re-checks ownership
+            const contactsBtn = el("button", "join_btn_secondary join_btn_small", "참가자 연락처 보기");
+            contactsBtn.type = "button";
+            actions.appendChild(contactsBtn);
+
             area.appendChild(actions);
 
             if (otherParticipants.length > 0) {
                 area.appendChild(el("p", "join_host_note", "다른 참가자가 있어 삭제할 수 없어요."));
             }
+
+            const contactsBody = el("div", "join_host_contacts_body");
+            area.appendChild(contactsBody);
+            contactsBtn.addEventListener("click", () => handleShowParticipants(ev, auth, contactsBody, contactsBtn));
         } else {
             const unlockBtn = el("button", "join_admin_link", "비밀번호로 관리 (수정/삭제)");
             unlockBtn.type = "button";
@@ -866,6 +921,45 @@
         // we forget it again so the unlock prompt comes back
         unlockedEventPasswords[ev.id] = password;
         renderDetailModal();
+    }
+
+    async function handleShowParticipants(ev, auth, container, btn) {
+        btn.disabled = true;
+        try {
+            const result = await apiPost("eventParticipants", { id: ev.id, ...auth });
+            if (!result.ok) {
+                window.alert(result.error || "참가자 목록을 불러오지 못했어요.");
+                // a wrong unlocked password surfaces here — forget it so the
+                // "비밀번호로 관리" prompt comes back
+                if (auth.password) {
+                    delete unlockedEventPasswords[ev.id];
+                    renderDetailModal();
+                }
+                return;
+            }
+            renderParticipantContacts(container, result.participants);
+            btn.hidden = true;
+        } catch (err) {
+            console.error(err);
+            window.alert("네트워크 오류가 발생했어요.");
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function renderParticipantContacts(container, participants) {
+        container.innerHTML = "";
+        container.appendChild(el("p", "join_host_contacts_title", "참가자 연락처 (주최자 전용)"));
+        const list = el("ul", "join_host_contacts_list");
+        participants.forEach((p) => {
+            const item = el("li", "join_host_contacts_item");
+            item.appendChild(el("span", "join_host_contacts_name", p.isHost ? `${p.name} (주최자)` : p.name));
+            const contact = el("span", "join_host_contacts_contact", p.contact ? p.contact : "연락처 미입력");
+            if (!p.contact) contact.classList.add("is-empty");
+            item.appendChild(contact);
+            list.appendChild(item);
+        });
+        container.appendChild(list);
     }
 
     async function handleDeleteEvent(ev, auth) {
@@ -915,11 +1009,29 @@
     }
 
     // ---------- data refresh ----------
+    function loadListCache() {
+        try {
+            const parsed = JSON.parse(localStorage.getItem(LIST_CACHE_KEY));
+            if (parsed && Array.isArray(parsed.events) && Array.isArray(parsed.signups)) return parsed;
+        } catch (err) {
+            /* ignore malformed cache */
+        }
+        return null;
+    }
+    function saveListCache(data) {
+        try {
+            localStorage.setItem(LIST_CACHE_KEY, JSON.stringify({ events: data.events, signups: data.signups }));
+        } catch (err) {
+            /* storage full / unavailable — not fatal */
+        }
+    }
+
     async function refresh() {
         const result = await apiList();
         if (!result.ok) throw new Error(result.error || "list failed");
         events = result.events || [];
         signups = result.signups || [];
+        if (!DEMO_MODE) saveListCache({ events, signups });
         renderCalendar();
         renderDayPanel();
     }
@@ -1005,15 +1117,36 @@
             if (els.detailModalOverlay.classList.contains("is-open")) closeModal(els.detailModalOverlay);
         });
 
+        // Reveal the calendar shell immediately instead of blocking the whole
+        // page on the 3-8s Apps Script call behind a spinner — the calendar,
+        // month nav, day panel and "새 소모임 만들기" all work with no server
+        // data; only the event pills need the fetch. On a repeat visit we also
+        // paint the last cached events instantly, then quietly revalidate.
+        els.content.hidden = false;
+
+        const cached = DEMO_MODE ? null : loadListCache();
+        if (cached) {
+            events = cached.events;
+            signups = cached.signups;
+        }
+        renderCalendar();
+        renderDayPanel();
+
+        // cached (or demo) → nothing to wait for; cold first load → keep the
+        // small "불러오는 중" hint up so an empty calendar doesn't read as
+        // "no events" while the background fetch is still running
+        els.loading.hidden = !!cached || DEMO_MODE;
+
         try {
             await refresh();
-            els.loading.hidden = true;
-            els.content.hidden = false;
             openSharedEventIfAny();
         } catch (err) {
             console.error(err);
+            // the shell is already up; only flag an error if we had nothing
+            // cached to show in the first place
+            if (!cached) els.error.hidden = false;
+        } finally {
             els.loading.hidden = true;
-            els.error.hidden = false;
         }
     }
 

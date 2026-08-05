@@ -83,6 +83,11 @@ function handleAction_(action, params) {
   if (action === "list") {
     return { ok: true, events: publicEvents_(), signups: publicSignups_() };
   }
+  // read-only, but returns the private `contact` field, so it's gated by
+  // event ownership (editToken/password) or admin — see eventParticipants_
+  if (action === "eventParticipants") {
+    return eventParticipants_(params);
+  }
 
   const writeActions = {
     createEvent: createEvent_,
@@ -253,6 +258,30 @@ function isAdminRequest_(body) {
   return adminSecret !== "" && adminPassword === adminSecret;
 }
 
+// full participant list INCLUDING each signup's private `contact`, for the
+// host (or admin) only — the public list action never exposes contacts.
+// Same ownership proof as edit/delete: editToken, password, or admin.
+function eventParticipants_(body) {
+  const id = String(body.id || "");
+  const target = sheetRows_(EVENTS_SHEET).find((r) => r.id === id);
+  if (!target) return { ok: false, error: "존재하지 않는 소모임이에요." };
+
+  if (!isEventOwner_(target, body) && !isAdminRequest_(body)) {
+    return { ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." };
+  }
+
+  const participants = sheetRows_(SIGNUPS_SHEET)
+    .filter((s) => s.eventId === id)
+    .map((s) => ({
+      id: s.id,
+      name: s.name,
+      contact: s.contact,
+      isHost: s.id === target.hostSignupId,
+      createdAt: s.createdAt,
+    }));
+  return { ok: true, participants };
+}
+
 function updateEvent_(body) {
   const id = String(body.id || "");
   const target = sheetRows_(EVENTS_SHEET).find((r) => r.id === id);
@@ -316,6 +345,27 @@ function deleteEvent_(body) {
   return { ok: true };
 }
 
+// signups close this long before the event's start
+const SIGNUP_CLOSE_BEFORE_MS = 24 * 60 * 60 * 1000;
+
+// true once we're within 24h of the event start. Both "now" and the stored
+// event date/time are compared in the spreadsheet's own timezone (the club's
+// local time) — nowStr and the event string are each parsed as if UTC, so
+// the shared offset cancels and only the wall-clock gap matters. Unknown/
+// unparseable dates never block (returns false), so a bad row can't lock
+// everyone out.
+function signupsClosed_(event) {
+  const date = String(asDateString_(event.date) || "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  const time = String(asTimeString_(event.time) || "").trim() || "00:00";
+
+  const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
+  const nowMs = new Date(Utilities.formatDate(new Date(), tz, "yyyy-MM-dd'T'HH:mm:ss") + "Z").getTime();
+  const startMs = new Date(date + "T" + time + ":00Z").getTime();
+  if (isNaN(startMs)) return false;
+  return nowMs >= startMs - SIGNUP_CLOSE_BEFORE_MS;
+}
+
 function signUp_(body) {
   const eventId = String(body.eventId || "");
   const name = String(body.name || "").trim();
@@ -323,6 +373,8 @@ function signUp_(body) {
 
   const event = sheetRows_(EVENTS_SHEET).find((r) => r.id === eventId);
   if (!event) return { ok: false, error: "존재하지 않는 소모임이에요." };
+
+  if (signupsClosed_(event)) return { ok: false, error: "신청이 마감되었어요. (행사 24시간 전 마감)" };
 
   const existingSignups = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === eventId);
   if (event.capacity !== "" && existingSignups.length >= Number(event.capacity)) {
