@@ -62,7 +62,11 @@
 
 .calendar_weekdays {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    /* minmax(0, 1fr) — a plain 1fr floors at the column's min-content, so a
+       long (nowrap) event pill would otherwise widen its column and throw
+       off the whole row; minmax(0, ...) forces 7 truly equal columns and
+       lets the pill ellipsize within its cell instead. */
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -80,11 +84,12 @@
 
 .calendar_grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 .calendar_cell {
     position: relative;
+    min-width: 0; /* let the cell shrink to its 1/7 track so pills ellipsize */
     min-height: 108px;
     padding: 10px 8px;
     box-sizing: border-box;
@@ -129,6 +134,7 @@
     flex-direction: column;
     gap: 5px;
     margin-top: 8px;
+    min-width: 0; /* pills shrink/ellipsize instead of forcing the cell wider */
 }
 
 .calendar_event {
