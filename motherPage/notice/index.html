@@ -32,15 +32,6 @@
         </div>
     </header>
 
-    <!-- left-side site nav: jumps to each section's spot on the home
-         page rather than navigating to the subpage itself -->
-    <nav class="home_nav" aria-label="주요 메뉴">
-        <a href="../index.html">Home</a>
-        <a href="../index.html#events">Events</a>
-        <a href="../index.html#join">소모임 신청</a>
-        <a href="../index.html#notice" class="active">공지사항/Q&amp;A</a>
-    </nav>
-
     <main id="container" class="home">
         <div class="layout_max">
 
@@ -51,11 +42,15 @@
 
             <p class="notice_intro">설다연의 공지사항을 확인하세요.</p>
 
-            <!-- new notices go at the top of this list; each one is its
-                 own page (see e.g. bylaws.html) rather than expanding here -->
+            <!-- Ordering is manual: put every pinned notice (class
+                 "is-pinned") first, in whatever order among themselves you
+                 like, then every regular notice below that, newest first.
+                 Each notice is its own page (see e.g. bylaws.html) rather
+                 than expanding here. -->
             <ul class="notice_list">
-                <li class="notice_item">
+                <li class="notice_item is-pinned">
                     <a class="notice_item_link" href="newmember-ot.html">
+                        <span class="notice_item_badge">고정</span>
                         <span class="notice_item_title">신입부원 OT 자료</span>
                         <span class="notice_item_date">2026년 8월 5일</span>
                         <svg class="notice_item_arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -63,8 +58,9 @@
                         </svg>
                     </a>
                 </li>
-                <li class="notice_item">
+                <li class="notice_item is-pinned">
                     <a class="notice_item_link" href="bylaws.html">
+                        <span class="notice_item_badge">고정</span>
                         <span class="notice_item_title">설다연 회칙 (1판, ver.3)</span>
                         <span class="notice_item_date">2026년 8월 5일</span>
                         <svg class="notice_item_arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
