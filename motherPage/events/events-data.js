@@ -24,6 +24,11 @@
 // as `path`) to an image for the upcoming-events carousel. Omit it and the
 // carousel shows a plain placeholder card instead of a broken image.
 //
+// `applicationDue` is optional — the last date on which signups are accepted
+// (YYYY-MM-DD). Defaults to 3 days before `date` if omitted. Events whose
+// applicationDue has passed are automatically shown as 마감 by
+// effectiveEventStatus(), even if `status` is still set to "recruiting".
+//
 // `location` can be a plain address string, or a map link (e.g. a Naver Map
 // share URL) — events-meta.js auto-detects http(s) URLs and renders those
 // as a "지도에서 보기" link instead of plain text.
