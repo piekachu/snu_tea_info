@@ -31,7 +31,7 @@
             if (event.location && !/^https?:\/\//.test(event.location)) lines.push("", `🚡 장소 : ${event.location}`);
             if (event["인원"] != null) lines.push("", `🙋 인원 : ${event["인원"]}명`);
             if (event.fee) lines.push("", `💴 참가비 : ${event.fee}`);
-            lines.push("", window.location.href);
+            lines.push("", "✅️ 신청 방법 : 아래 링크를 통해 신청", "", window.location.href);
 
             const text = lines.join("\n");
             try {
