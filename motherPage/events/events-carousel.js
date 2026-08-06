@@ -12,43 +12,6 @@
 (function () {
     "use strict";
 
-    // fallback thumbnails for events without a hero image — filenames with
-    // spaces are URL-encoded so the background-image URL stays valid
-    const THUMB_POOL = [
-        "0001.png","0002.png","0101.png","0102.png","0103.png",
-        "0201.png","0202.png","0203.png","0301.png","0302.png",
-        "0401.png","0402.png","0403.png","0501.png","0502.png","0503.png",
-        "1-b98aa004.jpg","9901.png","9902.png","9903.png","9904.png",
-        "IMG_7989.jpeg","IMG_7990.jpeg","IMG_7991.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-33-02 025.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-33-02 026.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-33-02 027.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-33-02 028.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-33-02 029.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-33-02 030.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-40-43 001.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-40-44 002.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-40-44 003.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-40-44 004.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-41-10 001.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-41-10 002.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-41-10 003.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-41-20 001.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-41-20 002.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-41-20 003.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-41-20 004.jpeg",
-        "KakaoTalk_Photo_2026-06-20-14-41-20 005.jpeg",
-        "Picture1.png","img_02.jpg","teainside_04.webp",
-    ].map((f) => `tea_image_pool/${encodeURIComponent(f)}`);
-
-    // deterministic pick — same event always gets the same image
-    function poolThumbnail(event) {
-        const seed = event.path || event.title || "";
-        let hash = 0;
-        for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-        return THUMB_POOL[hash % THUMB_POOL.length];
-    }
-
     // "D-3", "D-DAY", or null for past events
     function dDayLabel(dateString) {
         if (!dateString) return null;
@@ -69,8 +32,11 @@
 
         const thumb = document.createElement("div");
         thumb.className = "carousel_thumb";
-        const thumbSrc = event.thumbnail || poolThumbnail(event);
-        thumb.style.backgroundImage = `url(${pathPrefix}${thumbSrc})`;
+        if (event.thumbnail) {
+            thumb.style.backgroundImage = `url(${pathPrefix}${event.thumbnail})`;
+        } else {
+            thumb.classList.add("is-empty");
+        }
 
         const effectiveStatus = typeof effectiveEventStatus === "function" ? effectiveEventStatus(event) : event.status;
         const status = typeof eventStatuses !== "undefined" ? eventStatuses[effectiveStatus] : null;
