@@ -94,9 +94,20 @@
                 </div>
                 <div class="join_field_row">
                     <div class="join_field">
-                        <label for="createTime">시간</label>
-                        <!-- step 1800s = 30-minute increments (:00 / :30) -->
-                        <input type="time" id="createTime" step="1800">
+                        <label for="createHour">시간</label>
+                        <!-- Split hour + minute selects so neither list is long,
+                             and the minute list is just :00 / :30 — that
+                             hard-enforces 30-minute increments (the native
+                             <input type=time step=1800> only nudged the spinner
+                             and still let you type any minute). Options are
+                             filled in by populateTimeOptions() in join.js;
+                             getTimeValue() joins them back into "HH:MM". -->
+                        <div class="join_time_selects">
+                            <select id="createHour" aria-label="시">
+                                <option value="">선택 안 함</option>
+                            </select>
+                            <select id="createMinute" aria-label="분"></select>
+                        </div>
                     </div>
                     <div class="join_field">
                         <label for="createCapacity">정원 (본인 포함) *</label>
