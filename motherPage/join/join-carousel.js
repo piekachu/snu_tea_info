@@ -113,6 +113,19 @@
         return event.capacity === "" || event.capacity == null ? `신청 ${signupCount}명` : `${signupCount}/${event.capacity}명`;
     }
 
+    // "D-3", "D-DAY", or null for past events
+    function dDayLabel(dateString) {
+        if (!dateString) return null;
+        const parts = dateString.split("-").map(Number);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const eventDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        const diffDays = Math.round((eventDate - today) / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) return null;
+        if (diffDays === 0) return "D-DAY";
+        return `D-${diffDays}`;
+    }
+
     function renderCard(event, signupCount) {
         const card = document.createElement("a");
         card.className = "carousel_card";
@@ -128,6 +141,15 @@
         badge.className = `carousel_status ${past || full ? "event_status_closed" : "event_status_recruiting"}`;
         badge.textContent = past || full ? "마감" : capacityLabel(event, signupCount);
         thumb.appendChild(badge);
+        if (!past) {
+            const dday = dDayLabel(event.date);
+            if (dday) {
+                const ddayEl = document.createElement("span");
+                ddayEl.className = "carousel_dday" + (dday === "D-DAY" ? " is-today" : "");
+                ddayEl.textContent = dday;
+                thumb.appendChild(ddayEl);
+            }
+        }
         card.appendChild(thumb);
 
         const body = document.createElement("div");

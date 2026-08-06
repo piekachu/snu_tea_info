@@ -12,6 +12,19 @@
 (function () {
     "use strict";
 
+    // "D-3", "D-DAY", or null for past events
+    function dDayLabel(dateString) {
+        if (!dateString) return null;
+        const parts = dateString.split("-").map(Number);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const eventDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        const diffDays = Math.round((eventDate - today) / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) return null;
+        if (diffDays === 0) return "D-DAY";
+        return `D-${diffDays}`;
+    }
+
     function renderCard(event, pathPrefix) {
         const card = document.createElement("a");
         card.className = "carousel_card";
@@ -32,6 +45,13 @@
             statusEl.className = `carousel_status event_status_${effectiveStatus}`;
             statusEl.textContent = status.label;
             thumb.appendChild(statusEl);
+        }
+        const dday = dDayLabel(event.date);
+        if (dday) {
+            const ddayEl = document.createElement("span");
+            ddayEl.className = "carousel_dday" + (dday === "D-DAY" ? " is-today" : "");
+            ddayEl.textContent = dday;
+            thumb.appendChild(ddayEl);
         }
         card.appendChild(thumb);
 
