@@ -12,9 +12,9 @@
         return segments.slice(-2).join("/");
     }
 
-    // native share sheet where available, otherwise copy the page link to
-    // the clipboard
-    function createShareButton() {
+    // copies a formatted text block (title, date, location, fee + URL) to the
+    // clipboard so it's ready to paste into KakaoTalk, Instagram notes, etc.
+    function createShareButton(event) {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "event_meta_share_btn";
@@ -25,21 +25,21 @@
             + '</svg>';
 
         btn.addEventListener("click", async () => {
-            const shareData = { title: document.title, url: window.location.href };
-            if (navigator.share) {
-                try {
-                    await navigator.share(shareData);
-                } catch (err) {
-                    // user dismissed the native share sheet — nothing to do
-                }
-                return;
-            }
+            const lines = [event.title];
+            if (typeof formatEventDateTimeKo === "function") lines.push(formatEventDateTimeKo(event));
+            // omit location if it's a bare URL (map link) — the map link row
+            // in the info card already surfaces it; raw URLs look noisy in text
+            if (event.location && !/^https?:\/\//.test(event.location)) lines.push(`📍 ${event.location}`);
+            if (event.fee) lines.push(`💰 ${event.fee}`);
+            lines.push("", window.location.href);
+
+            const text = lines.join("\n");
             try {
-                await navigator.clipboard.writeText(shareData.url);
+                await navigator.clipboard.writeText(text);
                 btn.classList.add("copied");
                 setTimeout(() => btn.classList.remove("copied"), 1500);
             } catch (err) {
-                window.prompt("아래 링크를 복사해주세요:", shareData.url);
+                window.prompt("아래 내용을 복사해주세요:", text);
             }
         });
 
@@ -102,7 +102,7 @@
             }
             // pushed to the right end of the badge row by margin-left: auto
             // (see .event_meta_share_btn in subpage.css)
-            badges.appendChild(createShareButton());
+            badges.appendChild(createShareButton(event));
             main.appendChild(badges);
 
             const list = document.createElement("dl");

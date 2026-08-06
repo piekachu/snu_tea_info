@@ -420,25 +420,20 @@
 
         btn.addEventListener("click", async () => {
             const url = `${window.location.origin}${window.location.pathname}?event=${encodeURIComponent(ev.id)}`;
-            const shareData = {
-                title: `${ev.title} — 소모임 신청`,
-                text: [formatDateLabel(ev.date), formatTime(ev.time), ev.title].filter(Boolean).join(" · "),
-                url,
-            };
-            if (navigator.share) {
-                try {
-                    await navigator.share(shareData);
-                } catch (err) {
-                    // user dismissed the native share sheet — nothing to do
-                }
-                return;
-            }
+            const lines = [ev.title];
+            const datePart = [formatDateLabel(ev.date), formatTime(ev.time)].filter(Boolean).join(" ");
+            if (datePart) lines.push(datePart);
+            if (ev.location) lines.push(`📍 ${ev.location}`);
+            if (ev.host) lines.push(`주최: ${ev.host}`);
+            lines.push("", url);
+
+            const text = lines.join("\n");
             try {
-                await navigator.clipboard.writeText(url);
+                await navigator.clipboard.writeText(text);
                 btn.classList.add("copied");
                 setTimeout(() => btn.classList.remove("copied"), 1500);
             } catch (err) {
-                window.prompt("아래 링크를 복사해주세요:", url);
+                window.prompt("아래 내용을 복사해주세요:", text);
             }
         });
 
