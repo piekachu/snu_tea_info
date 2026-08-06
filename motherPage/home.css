@@ -72,6 +72,17 @@
     text-decoration: underline;
 }
 
+/* introductory text for each section — sits between the header and carousel */
+.home_band_intro {
+    margin-bottom: 24px;
+}
+.home_band_intro p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--fontColor);
+}
+
 /* the events carousel already ships its own box-free styling
    (events/carousel.css) sized for its full-width home on the Events page —
    let it simply fill this band's inner column instead */
