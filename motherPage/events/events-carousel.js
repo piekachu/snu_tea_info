@@ -94,27 +94,22 @@
 
         const pathPrefix = section.dataset.pathPrefix !== undefined ? section.dataset.pathPrefix : "../";
 
-        const allEvents = (typeof teaClubEvents !== "undefined" ? teaClubEvents : [])
+        // all events, newest date first — single pool for every filter;
+        // 전체 and 마감 include past events, status filters narrow within this
+        const allEventsDesc = (typeof teaClubEvents !== "undefined" ? teaClubEvents : [])
             .slice()
-            .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-        // most-recent-first pool for the 마감 filter
-        const allEventsDesc = allEvents.slice().reverse();
-        const upcoming = allEvents
-            .filter((event) => (typeof isPastEvent === "function" ? !isPastEvent(event) : true));
+            .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 
-        if (upcoming.length === 0 && allEvents.length === 0) {
+        if (allEventsDesc.length === 0) {
             section.style.display = "none";
             return;
         }
 
         function renderTrack(filterStatus) {
             track.innerHTML = "";
-            // 마감 filter draws from all events (most recent first, including
-            // past ones) — other filters only show upcoming events
-            const pool = filterStatus === "closed" ? allEventsDesc : upcoming;
             const filtered = filterStatus === "all"
-                ? pool
-                : pool.filter((event) => (typeof effectiveEventStatus === "function" ? effectiveEventStatus(event) : event.status) === filterStatus);
+                ? allEventsDesc
+                : allEventsDesc.filter((event) => (typeof effectiveEventStatus === "function" ? effectiveEventStatus(event) : event.status) === filterStatus);
             filtered.forEach((event) => {
                 track.appendChild(renderCard(event, pathPrefix));
             });
