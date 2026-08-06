@@ -1,0 +1,330 @@
+// Event sign-up system — injects a modal form and participant list for
+// every event subpage whose effectiveEventStatus() is "recruiting".
+// Requires events-data.js to load first.
+//
+// Extra fields per event (optional): add a `signupFields` array to the
+// event's entry in events-data.js, e.g.:
+//   signupFields: [
+//     { name: "affiliation", label: "소속", hint: "학과/단체", required: true },
+//     { name: "dietary",     label: "식이 제한",              required: false }
+//   ]
+// Values are stored in the `metadata` JSON column on the backend.
+(function () {
+    "use strict";
+
+    const API_URL =
+        "https://mzuxduxbzvaekuancotu.supabase.co/functions/v1/event-signup";
+
+    // ── storage helpers ──────────────────────────────────────────────
+
+    function storageKey(path) {
+        return "ev_signup_v1_" + path.replace(/\//g, "_");
+    }
+    function getSaved(path) {
+        try { return JSON.parse(localStorage.getItem(storageKey(path))); }
+        catch { return null; }
+    }
+    function setSaved(path, data) {
+        try { localStorage.setItem(storageKey(path), JSON.stringify(data)); }
+        catch {}
+    }
+    function clearSaved(path) {
+        try { localStorage.removeItem(storageKey(path)); }
+        catch {}
+    }
+
+    // ── API ──────────────────────────────────────────────────────────
+
+    async function api(payload) {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+        return res.json();
+    }
+
+    // ── participant list ─────────────────────────────────────────────
+
+    async function renderList(event, listEl) {
+        try {
+            const result = await api({ action: "listSignups", eventPath: event.path });
+            if (!result.signups) return;
+
+            const confirmed = result.signups.filter(s => !s.waitlisted);
+            const waiting   = result.signups.filter(s =>  s.waitlisted);
+            const cap = event["인원"] ?? null;
+
+            listEl.innerHTML = "";
+
+            // header
+            const hdr = document.createElement("p");
+            hdr.className = "evs_list_hdr";
+            hdr.textContent = cap != null
+                ? `참가 신청 현황  ${confirmed.length} / ${cap}명`
+                : `참가 신청 현황  ${confirmed.length}명`;
+            listEl.appendChild(hdr);
+
+            // confirmed list
+            if (confirmed.length === 0) {
+                const emp = document.createElement("p");
+                emp.className = "evs_list_empty";
+                emp.textContent = "아직 신청자가 없습니다.";
+                listEl.appendChild(emp);
+            } else {
+                const ol = document.createElement("ol");
+                ol.className = "evs_list_names";
+                confirmed.forEach(s => {
+                    const li = document.createElement("li");
+                    li.textContent = s.nickname;
+                    ol.appendChild(li);
+                });
+                listEl.appendChild(ol);
+            }
+
+            // waitlist
+            if (waiting.length > 0) {
+                const whdr = document.createElement("p");
+                whdr.className = "evs_list_hdr evs_list_wait_hdr";
+                whdr.textContent = `대기  ${waiting.length}명`;
+                listEl.appendChild(whdr);
+                const wol = document.createElement("ol");
+                wol.className = "evs_list_names";
+                waiting.forEach(s => {
+                    const li = document.createElement("li");
+                    li.textContent = s.nickname;
+                    wol.appendChild(li);
+                });
+                listEl.appendChild(wol);
+            }
+        } catch { /* list is non-critical — fail silently */ }
+    }
+
+    // ── modal ────────────────────────────────────────────────────────
+
+    function openModal(event, onSuccess) {
+        document.body.classList.add("evs_modal_open");
+        const extra = Array.isArray(event.signupFields) ? event.signupFields : [];
+
+        const overlay = document.createElement("div");
+        overlay.className = "evs_overlay";
+        overlay.setAttribute("role", "dialog");
+        overlay.setAttribute("aria-modal", "true");
+        overlay.setAttribute("aria-labelledby", "evs_dlg_title");
+
+        overlay.innerHTML = `
+<div class="evs_dialog">
+  <button type="button" class="evs_close" aria-label="닫기">&times;</button>
+  <h2 class="evs_dlg_title" id="evs_dlg_title">행사 신청</h2>
+  <p class="evs_dlg_event">${event.title}</p>
+  <form class="evs_form" novalidate>
+    <div class="evs_field">
+      <label class="evs_lbl" for="evs_nick">닉네임 <span class="evs_req">*</span></label>
+      <span class="evs_hint">참가자 명단에 표시됩니다.</span>
+      <input class="evs_input" id="evs_nick" name="nickname" type="text" required autocomplete="off" placeholder="홍길동">
+    </div>
+    <div class="evs_field">
+      <label class="evs_lbl" for="evs_real">실명 <span class="evs_req">*</span></label>
+      <span class="evs_hint">운영진에게만 공개됩니다.</span>
+      <input class="evs_input" id="evs_real" name="realName" type="text" required autocomplete="name" placeholder="홍길동">
+    </div>
+    ${extra.map(f => `
+    <div class="evs_field">
+      <label class="evs_lbl" for="evs_x_${f.name}">${f.label}${f.required ? ' <span class="evs_req">*</span>' : ""}</label>
+      ${f.hint ? `<span class="evs_hint">${f.hint}</span>` : ""}
+      <input class="evs_input" id="evs_x_${f.name}" name="${f.name}" type="${f.type || "text"}" ${f.required ? "required" : ""} autocomplete="off" placeholder="${f.placeholder || ""}">
+    </div>`).join("")}
+    <p class="evs_err" hidden></p>
+    <button type="submit" class="evs_submit">신청하기</button>
+  </form>
+</div>`;
+
+        document.body.appendChild(overlay);
+
+        // focus trap
+        const focusable = Array.from(overlay.querySelectorAll(
+            "button, input, select, textarea, [tabindex]:not([tabindex='-1'])"
+        ));
+        setTimeout(() => focusable[0]?.focus(), 40);
+        overlay.addEventListener("keydown", e => {
+            if (e.key === "Escape") { close(); return; }
+            if (e.key !== "Tab") return;
+            const first = focusable[0], last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault(); last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault(); first.focus();
+            }
+        });
+
+        overlay.addEventListener("click", e => { if (e.target === overlay) close(); });
+        overlay.querySelector(".evs_close").addEventListener("click", close);
+
+        function close() {
+            overlay.remove();
+            document.body.classList.remove("evs_modal_open");
+        }
+
+        // form submit
+        const form    = overlay.querySelector(".evs_form");
+        const errEl   = overlay.querySelector(".evs_err");
+        const submitBtn = overlay.querySelector(".evs_submit");
+
+        form.addEventListener("submit", async e => {
+            e.preventDefault();
+            errEl.hidden = true;
+
+            const nickname = form.nickname.value.trim();
+            const realName = form.realName.value.trim();
+            if (!nickname) { showErr("닉네임을 입력해주세요."); return; }
+            if (!realName) { showErr("실명을 입력해주세요."); return; }
+
+            const metadata = {};
+            for (const f of extra) {
+                const val = (form.elements[f.name]?.value || "").trim();
+                if (f.required && !val) { showErr(`${f.label}을(를) 입력해주세요.`); return; }
+                if (val) metadata[f.name] = val;
+            }
+
+            setLoading(true);
+            try {
+                const result = await api({
+                    action: "signup",
+                    eventPath: event.path,
+                    nickname,
+                    realName,
+                    capacity: event["인원"] ?? null,
+                    metadata,
+                });
+                if (result.error) { showErr(result.error); setLoading(false); return; }
+
+                setSaved(event.path, {
+                    id: result.id,
+                    editToken: result.editToken,
+                    nickname,
+                    waitlisted: result.waitlisted,
+                });
+                close();
+                onSuccess(result);
+            } catch {
+                showErr("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+                setLoading(false);
+            }
+        });
+
+        function showErr(msg) { errEl.textContent = msg; errEl.hidden = false; }
+        function setLoading(on) {
+            submitBtn.disabled = on;
+            submitBtn.textContent = on ? "신청 중…" : "신청하기";
+        }
+    }
+
+    // ── apply-button state ───────────────────────────────────────────
+
+    // Called once a signup exists (on page load or just after submitting).
+    // `listEl` must already be in the DOM (appended to applyDiv).
+    function setSignedUpState(applyDiv, applyBtn, listEl, event, saved) {
+        // swap button to "신청 완료 ✓" — clone to drop all prior listeners
+        if (applyBtn) {
+            applyBtn.classList.remove("is-disabled");
+            applyBtn.classList.add("is-signed-up");
+            applyBtn.setAttribute("aria-disabled", "true");
+            applyBtn.setAttribute("tabindex", "-1");
+            applyBtn.textContent = "신청 완료 ✓";
+            const clone = applyBtn.cloneNode(true);
+            clone.addEventListener("click", e => e.preventDefault());
+            applyBtn.replaceWith(clone);
+        }
+
+        // cancel button — insert before the participant list
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.className = "evs_cancel_btn";
+        cancelBtn.textContent = "신청 취소";
+        applyDiv.insertBefore(cancelBtn, listEl);
+
+        cancelBtn.addEventListener("click", async () => {
+            if (!confirm(`${saved.nickname}님의 신청을 취소하시겠습니까?`)) return;
+            cancelBtn.disabled = true;
+            cancelBtn.textContent = "취소 중…";
+            try {
+                const result = await api({
+                    action: "cancelSignup",
+                    id: saved.id,
+                    editToken: saved.editToken,
+                });
+                if (result.error) {
+                    alert(result.error);
+                    cancelBtn.disabled = false;
+                    cancelBtn.textContent = "신청 취소";
+                    return;
+                }
+                clearSaved(event.path);
+                window.location.reload();
+            } catch {
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+                cancelBtn.disabled = false;
+                cancelBtn.textContent = "신청 취소";
+            }
+        });
+    }
+
+    function showToast(waitlisted, applyDiv) {
+        applyDiv.querySelectorAll(".evs_toast").forEach(el => el.remove());
+        const toast = document.createElement("p");
+        toast.className = "evs_toast" + (waitlisted ? " is-wait" : "");
+        toast.textContent = waitlisted
+            ? "신청 인원 초과로 대기 명단에 등록되었습니다. 취소자 발생 시 순서대로 안내드립니다."
+            : "신청이 완료되었습니다. 행사 당일에 뵙겠습니다! 🍵";
+        // insert at top of applyDiv so it appears above the button
+        applyDiv.insertBefore(toast, applyDiv.firstChild);
+    }
+
+    // ── init ─────────────────────────────────────────────────────────
+
+    function init() {
+        if (typeof teaClubEvents === "undefined") return;
+
+        const segments = window.location.pathname.split("/").filter(Boolean);
+        const here = segments.slice(-2).join("/");
+        const event = teaClubEvents.find(e => e.path === here);
+        if (!event) return;
+
+        // only run when sign-up is open
+        const status = typeof effectiveEventStatus === "function"
+            ? effectiveEventStatus(event)
+            : (event.status || "closed");
+        if (status !== "recruiting") return;
+
+        const applyDiv = document.querySelector(".event_apply");
+        const applyBtn = document.querySelector(".event_apply_btn");
+        if (!applyDiv) return;
+
+        // participant list — always appended last inside applyDiv
+        const listEl = document.createElement("div");
+        listEl.className = "evs_list";
+        applyDiv.appendChild(listEl);
+        renderList(event, listEl);
+
+        const saved = getSaved(event.path);
+        if (saved) {
+            setSignedUpState(applyDiv, applyBtn, listEl, event, saved);
+        } else if (applyBtn) {
+            applyBtn.addEventListener("click", e => {
+                e.preventDefault();
+                openModal(event, result => {
+                    const latest = getSaved(event.path);
+                    setSignedUpState(applyDiv, applyBtn, listEl, event, latest);
+                    showToast(result.waitlisted, applyDiv);
+                    renderList(event, listEl);
+                });
+            });
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+})();
