@@ -1,5 +1,10 @@
 /* subordinate (magazine/tea-lineup) pages only — requires common.css to be loaded first */
 
+/* center the logo now that the hamburger button has been removed */
+.header .header_inner {
+    justify-content: center;
+}
+
 /* -----------------------
 *  magazine lnb
 * -----------------------*/
