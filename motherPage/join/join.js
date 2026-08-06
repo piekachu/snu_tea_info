@@ -425,7 +425,7 @@
             if (datePart) lines.push("", `🗓 일시 : ${datePart}`);
             if (ev.location) lines.push("", `🚡 장소 : ${ev.location}`);
             if (ev.host) lines.push("", `🙋 주최 : ${ev.host}`);
-            lines.push("", url);
+            lines.push("", "✅️ 신청 방법 : 아래 링크를 통해 신청", "", url);
 
             const text = lines.join("\n");
             try {
