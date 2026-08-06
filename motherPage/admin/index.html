@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>신청 관리 — 설다연</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <script src="../events/events-data.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green:      #1c6655;
+            --green-pale: #e8f0ee;
+            --gray:       #666;
+            --border:     #ddd;
+            --radius:     4px;
+            --font:       "Pretendard Variable", sans-serif;
+        }
+
+        body {
+            font-family: var(--font);
+            font-size: 14px;
+            color: #222;
+            background: #f7f7f6;
+            min-height: 100vh;
+        }
+
+        /* ── header ── */
+        .adm-header {
+            background: var(--green);
+            color: #fff;
+            padding: 18px 32px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .adm-header h1 { font-size: 16px; font-weight: 600; }
+        .adm-header span { font-size: 12px; opacity: 0.7; }
+
+        /* ── layout ── */
+        .adm-wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+        /* ── query bar ── */
+        .adm-query {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .adm-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
+        .adm-field label { font-size: 12px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: .04em; }
+        .adm-select, .adm-pw {
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 14px;
+            color: #222;
+            background: #fff;
+            outline: none;
+        }
+        .adm-select:focus, .adm-pw:focus { border-color: var(--green); }
+        .adm-btn {
+            padding: 9px 22px;
+            background: var(--green);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .adm-btn:hover { opacity: .88; }
+        .adm-btn:disabled { opacity: .45; cursor: not-allowed; }
+        .adm-btn-sec {
+            padding: 9px 18px;
+            background: #fff;
+            color: var(--green);
+            border: 1px solid var(--green);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .adm-btn-sec:hover { background: var(--green-pale); }
+
+        /* ── status bar ── */
+        .adm-status {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 12px;
+            min-height: 20px;
+        }
+        .adm-status.err { color: #c0392b; }
+
+        /* ── summary chips ── */
+        .adm-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .adm-chip {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .adm-chip.confirmed { background: var(--green-pale); color: var(--green); }
+        .adm-chip.waiting   { background: #fef9e7; color: #7a6300; }
+
+        /* ── table ── */
+        .adm-table-wrap {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        thead th {
+            background: #f0f0ef;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--gray);
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border);
+        }
+        tbody tr { border-bottom: 1px solid #f0f0ef; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr.wait { background: #fffdf0; }
+        tbody tr:hover { background: #f9f9f8; }
+        tbody td {
+            padding: 10px 14px;
+            vertical-align: middle;
+            color: #333;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge.ok   { background: var(--green-pale); color: var(--green); }
+        .badge.wait { background: #fef9e7; color: #7a6300; }
+
+        .adm-empty {
+            text-align: center;
+            padding: 48px;
+            color: var(--gray);
+        }
+
+        /* ── toolbar above table ── */
+        .adm-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .adm-header { padding: 14px 16px; }
+            .adm-wrap   { padding: 20px 12px; }
+            .adm-query  { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="adm-header">
+    <h1>신청 관리</h1>
+    <span>설다연 행사</span>
+</header>
+
+<div class="adm-wrap">
+
+    <!-- query bar -->
+    <div class="adm-query">
+        <div class="adm-field">
+            <label for="adm-event-sel">행사 선택</label>
+            <select class="adm-select" id="adm-event-sel"></select>
+        </div>
+        <div class="adm-field" style="max-width:220px;">
+            <label for="adm-pw">관리자 비밀번호</label>
+            <input class="adm-pw" id="adm-pw" type="password" placeholder="비밀번호 입력" autocomplete="current-password">
+        </div>
+        <button class="adm-btn" id="adm-fetch-btn">조회</button>
+    </div>
+
+    <!-- status -->
+    <p class="adm-status" id="adm-status"></p>
+
+    <!-- summary chips -->
+    <div class="adm-chips" id="adm-chips" hidden></div>
+
+    <!-- export toolbar -->
+    <div class="adm-toolbar" id="adm-toolbar" hidden>
+        <button class="adm-btn-sec" id="adm-csv-btn">CSV 내보내기</button>
+    </div>
+
+    <!-- results table -->
+    <div class="adm-table-wrap" id="adm-table-wrap" hidden>
+        <table id="adm-table">
+            <thead id="adm-thead"></thead>
+            <tbody id="adm-tbody"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+(function () {
+    const API = "https://mzuxduxbzvaekuancotu.supabase.co/functions/v1/event-signup";
+
+    const sel      = document.getElementById("adm-event-sel");
+    const pwInput  = document.getElementById("adm-pw");
+    const fetchBtn = document.getElementById("adm-fetch-btn");
+    const statusEl = document.getElementById("adm-status");
+    const chipsEl  = document.getElementById("adm-chips");
+    const toolbar  = document.getElementById("adm-toolbar");
+    const tableWrap= document.getElementById("adm-table-wrap");
+    const thead    = document.getElementById("adm-thead");
+    const tbody    = document.getElementById("adm-tbody");
+    const csvBtn   = document.getElementById("adm-csv-btn");
+
+    // ── populate event dropdown ───────────────────────────────────────
+    function populateSel() {
+        if (typeof teaClubEvents === "undefined") {
+            sel.innerHTML = '<option>events-data.js 로드 실패</option>';
+            return;
+        }
+        const sorted = [...teaClubEvents].sort((a, b) => b.date.localeCompare(a.date));
+        sorted.forEach(ev => {
+            const opt = document.createElement("option");
+            opt.value = ev.path;
+            opt.textContent = `${ev.date}  ${ev.title}`;
+            sel.appendChild(opt);
+        });
+    }
+    populateSel();
+
+    // ── fetch ─────────────────────────────────────────────────────────
+    let lastSignups = [];
+    let lastExtraCols = [];
+
+    async function fetchSignups() {
+        const eventPath = sel.value;
+        const password  = pwInput.value;
+        if (!eventPath) { setStatus("행사를 선택해주세요.", true); return; }
+        if (!password)  { setStatus("비밀번호를 입력해주세요.", true); return; }
+
+        setStatus("조회 중…"); fetchBtn.disabled = true;
+        hide();
+
+        try {
+            const res = await fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "adminListSignups", eventPath, password }),
+            });
+            const data = await res.json();
+
+            if (data.error) { setStatus(data.error, true); return; }
+
+            lastSignups = data.signups || [];
+            renderTable(lastSignups);
+            setStatus(`총 ${lastSignups.length}명 조회됨`);
+        } catch {
+            setStatus("네트워크 오류가 발생했습니다.", true);
+        } finally {
+            fetchBtn.disabled = false;
+        }
+    }
+
+    fetchBtn.addEventListener("click", fetchSignups);
+    pwInput.addEventListener("keydown", e => { if (e.key === "Enter") fetchSignups(); });
+
+    // ── render ────────────────────────────────────────────────────────
+    function renderTable(signups) {
+        thead.innerHTML = "";
+        tbody.innerHTML = "";
+
+        // collect extra metadata keys across all rows
+        const metaKeys = [];
+        signups.forEach(s => {
+            Object.keys(s.metadata || {}).forEach(k => {
+                if (!metaKeys.includes(k)) metaKeys.push(k);
+            });
+        });
+        lastExtraCols = metaKeys;
+
+        // header
+        const hr = document.createElement("tr");
+        ["#", "닉네임", "실명", "상태", "신청 일시", ...metaKeys].forEach(h => {
+            const th = document.createElement("th");
+            th.textContent = h;
+            hr.appendChild(th);
+        });
+        thead.appendChild(hr);
+
+        // body
+        if (signups.length === 0) {
+            const tr = document.createElement("tr");
+            const td = document.createElement("td");
+            td.colSpan = 5 + metaKeys.length;
+            td.className = "adm-empty";
+            td.textContent = "신청자가 없습니다.";
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+        } else {
+            signups.forEach((s, i) => {
+                const tr = document.createElement("tr");
+                if (s.waitlisted) tr.classList.add("wait");
+
+                const cells = [
+                    i + 1,
+                    s.nickname,
+                    s.real_name,
+                    s.waitlisted ? "대기" : "확정",
+                    formatDate(s.created_at),
+                    ...metaKeys.map(k => (s.metadata || {})[k] ?? "—"),
+                ];
+                cells.forEach((val, ci) => {
+                    const td = document.createElement("td");
+                    if (ci === 3) {
+                        const badge = document.createElement("span");
+                        badge.className = "badge " + (s.waitlisted ? "wait" : "ok");
+                        badge.textContent = val;
+                        td.appendChild(badge);
+                    } else {
+                        td.textContent = val;
+                    }
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        // summary chips
+        const confirmed = signups.filter(s => !s.waitlisted).length;
+        const waiting   = signups.filter(s =>  s.waitlisted).length;
+        chipsEl.innerHTML = "";
+        addChip(`확정 ${confirmed}명`, "confirmed");
+        if (waiting) addChip(`대기 ${waiting}명`, "waiting");
+        chipsEl.hidden = false;
+
+        toolbar.hidden    = false;
+        tableWrap.hidden  = false;
+    }
+
+    // ── CSV export ────────────────────────────────────────────────────
+    csvBtn.addEventListener("click", () => {
+        if (!lastSignups.length) return;
+        const headers = ["번호", "닉네임", "실명", "상태", "신청 일시", ...lastExtraCols];
+        const rows = lastSignups.map((s, i) => [
+            i + 1,
+            s.nickname,
+            s.real_name,
+            s.waitlisted ? "대기" : "확정",
+            formatDate(s.created_at),
+            ...lastExtraCols.map(k => (s.metadata || {})[k] ?? ""),
+        ]);
+        const csv = [headers, ...rows]
+            .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
+            .join("\n");
+
+        const eventTitle = sel.options[sel.selectedIndex]?.textContent.trim() || "signups";
+        const a = document.createElement("a");
+        a.href = "data:text/csv;charset=utf-8,﻿" + encodeURIComponent(csv);
+        a.download = `신청명단_${eventTitle}.csv`;
+        a.click();
+    });
+
+    // ── helpers ───────────────────────────────────────────────────────
+    function setStatus(msg, isErr = false) {
+        statusEl.textContent = msg;
+        statusEl.className = "adm-status" + (isErr ? " err" : "");
+    }
+    function hide() {
+        chipsEl.hidden   = true;
+        toolbar.hidden   = true;
+        tableWrap.hidden = true;
+    }
+    function addChip(text, type) {
+        const chip = document.createElement("span");
+        chip.className = `adm-chip ${type}`;
+        chip.textContent = text;
+        chipsEl.appendChild(chip);
+    }
+    function formatDate(iso) {
+        if (!iso) return "—";
+        const d = new Date(iso);
+        const pad = n => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+})();
+</script>
+</body>
+</html>
