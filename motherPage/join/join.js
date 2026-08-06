@@ -611,10 +611,19 @@
         els.dayPanelDate.textContent = formatDateLabel(selectedDateKey);
         els.eventList.innerHTML = "";
 
+        // creating a 소모임 is only allowed on future dates (not today, not past)
+        const todayStr = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+        const canCreate = selectedDateKey > todayStr;
+        els.createBtn.disabled = !canCreate;
+        els.createBtn.title = canCreate ? "" : "내일 이후 날짜를 선택해야 소모임을 만들 수 있어요.";
+
         const dayEvents = events.filter((ev) => ev.date === selectedDateKey).sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
         if (dayEvents.length === 0) {
-            els.eventList.appendChild(el("p", "join_empty_state", "이 날짜에는 아직 소모임이 없어요. 첫 소모임을 만들어보세요!"));
+            const msg = canCreate
+                ? "이 날짜에는 아직 소모임이 없어요. 첫 소모임을 만들어보세요!"
+                : "이 날짜에는 소모임이 없어요.";
+            els.eventList.appendChild(el("p", "join_empty_state", msg));
             return;
         }
 
@@ -642,6 +651,11 @@
     let editingEvent = null;
 
     function openCreateModal() {
+        // guard: only allow future dates (belt-and-suspenders alongside the
+        // disabled button state set in renderDayPanel)
+        const todayStr = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+        if (selectedDateKey <= todayStr) return;
+
         editingEvent = null;
         populateTimeOptions();
         els.createForm.reset();
