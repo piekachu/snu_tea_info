@@ -97,6 +97,13 @@
         throw lastErr;
     }
 
+    function isPastEvent(event) {
+        const now = new Date();
+        // treat events without a time as ending at midnight (00:00 next day)
+        const eventEndTime = event.time ? new Date(`${event.date}T${event.time}:00`) : new Date(`${event.date}T23:59:59`);
+        return eventEndTime < now;
+    }
+
     function isFull(event, signupCount) {
         if (event.capacity === "" || event.capacity == null) return false;
         return signupCount >= Number(event.capacity);
@@ -115,10 +122,11 @@
         thumb.className = "carousel_thumb is-empty";
         // no thumbnail image for a user-created meetup — reuse the same
         // recruiting/closed badge look the curated events use instead
+        const past = isPastEvent(event);
         const full = isFull(event, signupCount);
         const badge = document.createElement("span");
-        badge.className = `carousel_status ${full ? "event_status_closed" : "event_status_recruiting"}`;
-        badge.textContent = full ? "마감" : capacityLabel(event, signupCount);
+        badge.className = `carousel_status ${past || full ? "event_status_closed" : "event_status_recruiting"}`;
+        badge.textContent = past || full ? "마감" : capacityLabel(event, signupCount);
         thumb.appendChild(badge);
         card.appendChild(thumb);
 

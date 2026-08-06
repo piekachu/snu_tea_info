@@ -473,6 +473,11 @@
         if (event.capacity === "" || event.capacity == null) return false;
         return signupsForEvent(event.id).length >= Number(event.capacity);
     }
+    function isPastEvent(event) {
+        const eventEnd = eventStartDate(event);
+        if (!eventEnd) return false;
+        return Date.now() > eventEnd.getTime();
+    }
 
     const SIGNUP_CLOSE_BEFORE_MS = 24 * 60 * 60 * 1000; // signups close 24h before the event starts
 
@@ -623,8 +628,8 @@
             main.appendChild(el("span", "join_event_card_meta", metaParts.join(" · ")));
             card.appendChild(main);
 
-            const badge = el("span", "join_event_card_badge", capacityLabel(ev));
-            if (isFull(ev)) badge.classList.add("is-full");
+            const badge = el("span", "join_event_card_badge", isPastEvent(ev) || isFull(ev) ? "마감" : capacityLabel(ev));
+            if (isFull(ev) || isPastEvent(ev)) badge.classList.add("is-full");
             card.appendChild(badge);
 
             card.addEventListener("click", () => openDetailModal(ev.id));
@@ -799,6 +804,11 @@
         // instead, in the host area below)
         if (getEventAuth(ev)) {
             area.appendChild(el("div", "join_signup_state", "✅ 주최자로 참여 중이에요."));
+            return;
+        }
+
+        if (isPastEvent(ev)) {
+            area.appendChild(el("div", "join_signup_state is-full", "행사가 종료되었어요."));
             return;
         }
 
