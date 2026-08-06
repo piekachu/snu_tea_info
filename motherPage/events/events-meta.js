@@ -26,18 +26,12 @@
 
         btn.addEventListener("click", async () => {
             const lines = [`[${event.title}]`];
-            // pull the page's own summary text — the first .article_txt paragraph
-            // is the event intro written per-page; subtitle is a shorter fallback
-            const summary = document.querySelector(".article_txt")?.innerText?.trim()
-                || event.subtitle
-                || null;
-            if (summary) lines.push("", summary);
             if (typeof formatEventDateTimeKo === "function") lines.push("", `🗓 일시 : ${formatEventDateTimeKo(event)}`);
             // omit location if it's a bare URL (map link) — raw URLs look noisy in text
             if (event.location && !/^https?:\/\//.test(event.location)) lines.push("", `🚡 장소 : ${event.location}`);
             if (event["인원"] != null) lines.push("", `🙋 인원 : ${event["인원"]}명`);
             if (event.fee) lines.push("", `💴 참가비 : ${event.fee}`);
-            lines.push("", "✅️ 신청 방법 : 아래 링크를 통해 신청", "", window.location.href);
+            lines.push("", window.location.href);
 
             const text = lines.join("\n");
             try {
