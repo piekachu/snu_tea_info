@@ -1,8 +1,37 @@
 /* subordinate (magazine/tea-lineup) pages only — requires common.css to be loaded first */
 
-/* center the logo now that the hamburger button has been removed */
+/* match home-page header height and logo size so the header doesn't
+   shrink when navigating from the main page to an event page */
+:root {
+    --header-height: 110px;
+    --logo-width: 190px;
+}
+@media all and (max-width: 1280px) {
+    :root {
+        --header-height: 84px;
+        --logo-width: 150px;
+    }
+}
+@media all and (max-width: 1024px) {
+    :root {
+        --header-height: 72px;
+        --logo-width: 130px;
+    }
+}
+
+/* center the logo now that the hamburger button has been removed;
+   also pin it dead-center (absolute) at wide viewports, matching
+   the home page's header_logo positioning */
 .header .header_inner {
     justify-content: center;
+}
+.header_logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    margin: 0;
+    padding: 0;
 }
 
 /* -----------------------
