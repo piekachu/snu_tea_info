@@ -97,6 +97,8 @@
         const allEvents = (typeof teaClubEvents !== "undefined" ? teaClubEvents : [])
             .slice()
             .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+        // most-recent-first pool for the 마감 filter
+        const allEventsDesc = allEvents.slice().reverse();
         const upcoming = allEvents
             .filter((event) => (typeof isPastEvent === "function" ? !isPastEvent(event) : true));
 
@@ -107,9 +109,9 @@
 
         function renderTrack(filterStatus) {
             track.innerHTML = "";
-            // 마감 filter draws from all events (including past ones, which are
-            // always closed) — other filters only show upcoming events
-            const pool = filterStatus === "closed" ? allEvents : upcoming;
+            // 마감 filter draws from all events (most recent first, including
+            // past ones) — other filters only show upcoming events
+            const pool = filterStatus === "closed" ? allEventsDesc : upcoming;
             const filtered = filterStatus === "all"
                 ? pool
                 : pool.filter((event) => (typeof effectiveEventStatus === "function" ? effectiveEventStatus(event) : event.status) === filterStatus);
