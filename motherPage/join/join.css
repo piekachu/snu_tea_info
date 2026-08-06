@@ -473,6 +473,23 @@ body.join-modal-open {
 }
 
 @media all and (max-width: 640px) {
+    /* .layout_max has no side padding, so give the content a gutter on
+       mobile instead of letting the calendar / day panel sit flush to the
+       screen edges */
+    #joinContent {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    .join_intro,
+    .join_loading,
+    .join_error {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    .join_demo_banner {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
     .join_daypanel {
         margin: 20px auto 40px;
         padding: 18px 16px;

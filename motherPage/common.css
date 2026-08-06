@@ -222,6 +222,14 @@ body {
 html, body {
     margin: 0;
     padding: 0;
+}
+/* Clip horizontal overflow on <html> only — its overflow propagates to the
+   viewport, so the page still can't scroll sideways. Deliberately NOT on
+   <body>: overflow-x on body turns body into its own nested scroll
+   container, which stops the mobile browser's toolbar from collapsing and
+   breaks 100dvh tracking — that's what leaves the footer floating off the
+   bottom on phones. */
+html {
     overflow-x: hidden;
 }
 body, a {
@@ -517,8 +525,13 @@ body.page-home {
     /* full-height flex column so the footer stays pinned to the bottom of the
        viewport on short pages instead of floating up under the content. The
        fixed .header/.home_nav are out of flow, so only #container + .footer
-       participate — #container grows to fill, footer sits below it. */
+       participate — #container grows to fill, footer sits below it.
+       100dvh (dynamic viewport height) tracks the actual visible area on
+       mobile — plain 100vh ignores the address bar there, leaving the footer
+       floating off the true bottom; the 100vh line is the fallback for old
+       browsers that don't support dvh. */
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
 }

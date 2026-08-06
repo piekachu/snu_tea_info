@@ -95,7 +95,8 @@
                 <div class="join_field_row">
                     <div class="join_field">
                         <label for="createTime">시간</label>
-                        <input type="time" id="createTime">
+                        <!-- step 1800s = 30-minute increments (:00 / :30) -->
+                        <input type="time" id="createTime" step="1800">
                     </div>
                     <div class="join_field">
                         <label for="createCapacity">정원 (본인 포함) *</label>
