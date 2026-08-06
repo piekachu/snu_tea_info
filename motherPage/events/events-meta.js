@@ -77,12 +77,13 @@
         const event = teaClubEvents.find((e) => e.path === here);
         if (!event) return;
 
+        const effectiveStatus = typeof effectiveEventStatus !== "undefined" ? effectiveEventStatus(event) : event.status;
+
         const metaEl = document.getElementById("eventMeta");
         if (metaEl) {
             const main = document.createElement("div");
             main.className = "event_meta_main";
 
-            const effectiveStatus = typeof effectiveEventStatus !== "undefined" ? effectiveEventStatus(event) : event.status;
             const status = typeof eventStatuses !== "undefined" ? eventStatuses[effectiveStatus] : null;
             const category = typeof eventCategories !== "undefined" ? eventCategories[event.category] : null;
 
