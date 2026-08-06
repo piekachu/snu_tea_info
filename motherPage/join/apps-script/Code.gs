@@ -104,7 +104,11 @@ const TEXT_COLUMNS_ = ["date", "time"];
 // any column the object doesn't mention is left blank. Returns the row number.
 function writeRowByHeader_(sheet, obj) {
   const hmap = headerMap_(sheet);
-  const width = sheet.getLastColumn();
+  // width must be at least as wide as the last header column, not just
+  // getLastColumn() (which only counts columns with existing data)
+  const headerCount = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].length;
+  const maxHeaderCol = Math.max(...Object.values(hmap));
+  const width = Math.max(headerCount, maxHeaderCol);
   const row = sheet.getLastRow() + 1;
   TEXT_COLUMNS_.forEach((h) => {
     if (hmap[h] && h in obj) sheet.getRange(row, hmap[h]).setNumberFormat("@");
