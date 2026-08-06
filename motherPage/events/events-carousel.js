@@ -94,22 +94,25 @@
 
         const pathPrefix = section.dataset.pathPrefix !== undefined ? section.dataset.pathPrefix : "../";
 
-        const allEvents = typeof teaClubEvents !== "undefined" ? teaClubEvents : [];
-        const upcoming = allEvents
-            .filter((event) => (typeof isPastEvent === "function" ? !isPastEvent(event) : true))
+        const allEvents = (typeof teaClubEvents !== "undefined" ? teaClubEvents : [])
             .slice()
             .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+        const upcoming = allEvents
+            .filter((event) => (typeof isPastEvent === "function" ? !isPastEvent(event) : true));
 
-        if (upcoming.length === 0) {
+        if (upcoming.length === 0 && allEvents.length === 0) {
             section.style.display = "none";
             return;
         }
 
         function renderTrack(filterStatus) {
             track.innerHTML = "";
+            // 마감 filter draws from all events (including past ones, which are
+            // always closed) — other filters only show upcoming events
+            const pool = filterStatus === "closed" ? allEvents : upcoming;
             const filtered = filterStatus === "all"
-                ? upcoming
-                : upcoming.filter((event) => (typeof effectiveEventStatus === "function" ? effectiveEventStatus(event) : event.status) === filterStatus);
+                ? pool
+                : pool.filter((event) => (typeof effectiveEventStatus === "function" ? effectiveEventStatus(event) : event.status) === filterStatus);
             filtered.forEach((event) => {
                 track.appendChild(renderCard(event, pathPrefix));
             });
