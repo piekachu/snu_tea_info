@@ -35,6 +35,30 @@
 | `인원` | 정원 | 20 | `30` |
 | `thumbnail` | 캐러셀 썸네일 이미지 경로 (`motherPage/` 기준) | — | `"2026septRegulars/hero.jpg"` |
 | `subtitle` | 캐러셀 카드에 표시되는 한 줄 설명 | — | `"가을을 여는 첫 정기다회"` |
+| `signupFields` | 신청 폼에 추가할 항목 배열 (아래 참고) | — | — |
+
+### signupFields — 신청 폼 추가 항목
+
+신청 폼에 닉네임·실명 외에 항목이 필요한 경우 `signupFields` 배열을 추가합니다.
+HTML 변경 없이 모달이 자동으로 항목을 렌더링하고, 입력값은 DB의 `metadata` 컬럼에 저장됩니다.
+
+```js
+signupFields: [
+  { name: "affiliation", label: "소속",     hint: "학과 또는 단체명", required: true  },
+  { name: "dietary",     label: "식이 제한",                          required: false },
+  { name: "experience",  label: "다도 경험", type: "text",            required: false,
+    placeholder: "없음 / 초보 / 경험 있음" }
+]
+```
+
+| 필드 키 | 필수 여부 | 설명 |
+|---|---|---|
+| `name` | ✅ | DB 저장 키 (영문, 고유해야 함) |
+| `label` | ✅ | 폼에 표시되는 라벨 |
+| `required` | ✅ | `true` / `false` |
+| `hint` | — | 라벨 아래 작은 안내 문구 |
+| `type` | — | input type (기본값 `"text"`) |
+| `placeholder` | — | 입력 필드 플레이스홀더 |
 
 ---
 
@@ -87,6 +111,8 @@ Fee: 참가비
 Capacity: 정원
 Hero image: 이미지 파일 경로 또는 첨부
 Subtitle: 한 줄 설명
+Extra signup fields: (추가 신청 항목이 있으면 각각 한 줄로 기재)
+  - name / label / required(y|n) / hint(선택)
 ```
 
 ### 예시
