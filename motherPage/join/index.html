@@ -126,6 +126,15 @@
                     <label for="createHost">주최자 이름 *</label>
                     <input type="text" id="createHost" maxlength="30" required placeholder="닉네임도 좋아요">
                 </div>
+                <!-- real name: only collected at creation (like the password field
+                     below) — it rides on the host's own signup row, which already
+                     exists by the time you'd edit, so there's nothing to re-enter.
+                     Never shown publicly; only the host/admin can see it (participant
+                     contacts view) so the admin can confirm attendees' identities. -->
+                <div class="join_field" id="createHostRealNameField">
+                    <label for="createHostRealName">주최자 실명 *</label>
+                    <input type="text" id="createHostRealName" maxlength="30" required placeholder="관리자 확인용, 공개되지 않아요">
+                </div>
                 <div class="join_field" id="createPasswordField">
                     <label for="createPassword">비밀번호 *</label>
                     <input type="password" id="createPassword" maxlength="60" required placeholder="나중에 수정/삭제할 때 필요해요">

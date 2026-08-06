@@ -7,7 +7,20 @@
  *
  * Data model: two sheet tabs.
  *   Events:  id | date | time | title | location | mapLink | capacity | host | description | password | hostSignupId | createdAt | editToken
- *   Signups: id | eventId | name | contact | createdAt | editToken
+ *   Signups: id | eventId | name | realName | contact | createdAt | editToken
+ *
+ * `realName` is a signup's legal/real name, collected so the club admin (and
+ * the event host) can confirm who's actually attending; it is NEVER included
+ * in the public `list` response — only nicknames (`name`) are public. It rides
+ * alongside `contact` in the ownership-gated eventParticipants response.
+ *
+ * All reads map columns by HEADER NAME (see sheetRows_), and — importantly —
+ * all writes now do too (see writeRowByHeader_/setRowFieldsByHeader_). Earlier
+ * versions wrote by fixed column position, so if a sheet's columns were ever
+ * reordered or a column added, writes landed in the wrong columns while reads
+ * (by name) read the right ones — surfacing as e.g. 주최자 showing the capacity
+ * or 소개 showing the host's nickname. Writing by name keeps the two in sync no
+ * matter the column order, and setup()/ensureSheet_ backfills any missing column.
  *
  * editToken is a random id handed back to whoever created a row (once, in
  * the response) so their browser can prove ownership later without
@@ -34,7 +47,7 @@ const EVENTS_SHEET = "Events";
 const SIGNUPS_SHEET = "Signups";
 
 const EVENTS_HEADERS = ["id", "date", "time", "title", "location", "mapLink", "capacity", "host", "description", "password", "hostSignupId", "createdAt", "editToken"];
-const SIGNUPS_HEADERS = ["id", "eventId", "name", "contact", "createdAt", "editToken"];
+const SIGNUPS_HEADERS = ["id", "eventId", "name", "realName", "contact", "createdAt", "editToken"];
 
 /** Run this once from the Apps Script editor (select "setup" > Run) before deploying. */
 function setup() {
@@ -54,8 +67,65 @@ function ensureSheet_(name, headers) {
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(headers);
     sheet.setFrozenRows(1);
+    return sheet;
+  }
+  // sheet already has a header row — backfill any header this version expects
+  // but that isn't present yet (e.g. a newly-added `realName`), appended at the
+  // end so existing columns/data are untouched. Because every read and write
+  // maps by header NAME, the appended-at-the-end position doesn't matter.
+  const existing = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
+  const missing = headers.filter((h) => existing.indexOf(h) === -1);
+  if (missing.length > 0) {
+    sheet.getRange(1, sheet.getLastColumn() + 1, 1, missing.length).setValues([missing]);
+    sheet.setFrozenRows(1);
   }
   return sheet;
+}
+
+// {headerName: 1-based column index} from a sheet's header row. First
+// occurrence wins if a name is somehow duplicated.
+function headerMap_(sheet) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const map = {};
+  headers.forEach((h, i) => {
+    const key = String(h);
+    if (key !== "" && !(key in map)) map[key] = i + 1;
+  });
+  return map;
+}
+
+// dates/times must stay plain text so Sheets doesn't reinterpret "2026-08-05"
+// or "18:30" as a Date/Time value (which then round-trips through a timezone
+// shift). These header names get their cell forced to "@" before writing.
+const TEXT_COLUMNS_ = ["date", "time"];
+
+// append a new row built from an object keyed by header name — each value
+// lands in its own named column regardless of the sheet's column order, and
+// any column the object doesn't mention is left blank. Returns the row number.
+function writeRowByHeader_(sheet, obj) {
+  const hmap = headerMap_(sheet);
+  const width = sheet.getLastColumn();
+  const row = sheet.getLastRow() + 1;
+  TEXT_COLUMNS_.forEach((h) => {
+    if (hmap[h] && h in obj) sheet.getRange(row, hmap[h]).setNumberFormat("@");
+  });
+  const arr = new Array(width).fill("");
+  Object.keys(obj).forEach((k) => {
+    if (hmap[k]) arr[hmap[k] - 1] = obj[k];
+  });
+  sheet.getRange(row, 1, 1, width).setValues([arr]);
+  return row;
+}
+
+// overwrite only the named fields of an existing row, each by its header
+// column — leaves every other column (id, password, editToken, …) untouched.
+function setRowFieldsByHeader_(sheet, rowNumber, obj) {
+  const hmap = headerMap_(sheet);
+  Object.keys(obj).forEach((k) => {
+    if (!hmap[k]) return;
+    if (TEXT_COLUMNS_.indexOf(k) !== -1) sheet.getRange(rowNumber, hmap[k]).setNumberFormat("@");
+    sheet.getRange(rowNumber, hmap[k]).setValue(obj[k]);
+  });
 }
 
 // Everything — reads AND writes — goes through doGet (query-string
@@ -209,24 +279,43 @@ function createEvent_(body) {
   if (fields.error) return { ok: false, error: fields.error };
   const { title, date, host, capacity, time, location, mapLink, description } = fields;
 
+  // the host is a participant too, so they give a real name like everyone else
+  const hostRealName = String(body.hostRealName || "").trim();
+  if (!hostRealName) return { ok: false, error: "주최자 실명을 입력해주세요." };
+
   const id = Utilities.getUuid();
   const editToken = Utilities.getUuid();
   const now = new Date().toISOString();
 
   // the creator counts toward their own capacity — auto-signup them so the
-  // headcount starts at 1/N instead of 0/N
+  // headcount starts at 1/N instead of 0/N (their real name rides on this row)
   const hostSignupId = Utilities.getUuid();
   const hostSignupToken = Utilities.getUuid();
-  ensureSheet_(SIGNUPS_SHEET, SIGNUPS_HEADERS).appendRow([hostSignupId, id, host, "", now, hostSignupToken]);
+  writeRowByHeader_(ensureSheet_(SIGNUPS_SHEET, SIGNUPS_HEADERS), {
+    id: hostSignupId,
+    eventId: id,
+    name: host,
+    realName: hostRealName,
+    contact: "",
+    createdAt: now,
+    editToken: hostSignupToken,
+  });
 
-  const sheet = ensureSheet_(EVENTS_SHEET, EVENTS_HEADERS);
-  // appendRow() alone isn't enough to keep "2026-08-05" as text — Sheets can
-  // still auto-convert it to a real Date (which then round-trips through a
-  // timezone shift, e.g. becomes "2026-08-04T15:00:00.000Z"). Forcing plain
-  // text on this exact row's date/time cells right before writing avoids that.
-  const row = sheet.getLastRow() + 1;
-  sheet.getRange(row, 2, 1, 2).setNumberFormat("@");
-  sheet.getRange(row, 1, 1, EVENTS_HEADERS.length).setValues([[id, date, time, title, location, mapLink, capacity, host, description, password, hostSignupId, now, editToken]]);
+  writeRowByHeader_(ensureSheet_(EVENTS_SHEET, EVENTS_HEADERS), {
+    id,
+    date,
+    time,
+    title,
+    location,
+    mapLink,
+    capacity,
+    host,
+    description,
+    password,
+    hostSignupId,
+    createdAt: now,
+    editToken,
+  });
 
   return {
     ok: true,
@@ -275,6 +364,7 @@ function eventParticipants_(body) {
     .map((s) => ({
       id: s.id,
       name: s.name,
+      realName: s.realName,
       contact: s.contact,
       isHost: s.id === target.hostSignupId,
       createdAt: s.createdAt,
@@ -297,16 +387,15 @@ function updateEvent_(body) {
   const { title, date, host, capacity, time, location, mapLink, description } = fields;
 
   const sheet = ensureSheet_(EVENTS_SHEET, EVENTS_HEADERS);
-  sheet.getRange(target._row, 2, 1, 2).setNumberFormat("@"); // keep date/time as text
-  // columns 2..9: date | time | title | location | mapLink | capacity | host | description
-  sheet.getRange(target._row, 2, 1, 8).setValues([[date, time, title, location, mapLink, capacity, host, description]]);
+  // write each field to its own named column (never a fixed position) so
+  // capacity/host/description can't cross even if the sheet's columns drifted
+  setRowFieldsByHeader_(sheet, target._row, { date, time, title, location, mapLink, capacity, host, description });
 
   // keep the host's own auto-signup's displayed name in sync if it changed
   if (target.hostSignupId && String(target.host) !== host) {
+    const signupSheet = ensureSheet_(SIGNUPS_SHEET, SIGNUPS_HEADERS);
     const hostSignup = sheetRows_(SIGNUPS_SHEET).find((s) => s.id === target.hostSignupId);
-    if (hostSignup) {
-      SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SIGNUPS_SHEET).getRange(hostSignup._row, 3).setValue(host);
-    }
+    if (hostSignup) setRowFieldsByHeader_(signupSheet, hostSignup._row, { name: host });
   }
 
   return {
@@ -370,6 +459,8 @@ function signUp_(body) {
   const eventId = String(body.eventId || "");
   const name = String(body.name || "").trim();
   if (!eventId || !name) return { ok: false, error: "이름을 입력해주세요." };
+  const realName = String(body.realName || "").trim();
+  if (!realName) return { ok: false, error: "실명을 입력해주세요." };
 
   const event = sheetRows_(EVENTS_SHEET).find((r) => r.id === eventId);
   if (!event) return { ok: false, error: "존재하지 않는 소모임이에요." };
@@ -389,7 +480,7 @@ function signUp_(body) {
   const now = new Date().toISOString();
   const contact = String(body.contact || "").trim();
 
-  ensureSheet_(SIGNUPS_SHEET, SIGNUPS_HEADERS).appendRow([id, eventId, name, contact, now, editToken]);
+  writeRowByHeader_(ensureSheet_(SIGNUPS_SHEET, SIGNUPS_HEADERS), { id, eventId, name, realName, contact, createdAt: now, editToken });
 
   return { ok: true, signup: { id, eventId, name, createdAt: now }, editToken };
 }

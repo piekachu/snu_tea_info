@@ -131,6 +131,10 @@
         const fields = validateDemoEventFields(body, null);
         if (fields.error) return { ok: false, error: fields.error };
 
+        // the host is a participant too, so they give a real name like everyone else
+        const hostRealName = String(body.hostRealName || "").trim();
+        if (!hostRealName) return { ok: false, error: "주최자 실명을 입력해주세요." };
+
         const d = loadDemo();
         const id = uid();
         const editToken = uid();
@@ -139,7 +143,7 @@
         // the creator counts toward their own capacity — auto-signup them so
         // the headcount starts at 1/N instead of 0/N (see Code.gs's createEvent_)
         const hostSignupId = uid();
-        d.signups.push({ id: hostSignupId, eventId: id, name: fields.host, contact: "", createdAt, editToken: uid() });
+        d.signups.push({ id: hostSignupId, eventId: id, name: fields.host, realName: hostRealName, contact: "", createdAt, editToken: uid() });
 
         const event = { id, date: fields.date, time: fields.time, title: fields.title, location: fields.location, mapLink: fields.mapLink, capacity: fields.capacity, host: fields.host, description: fields.description, password, hostSignupId, createdAt, editToken };
         d.events.push(event);
@@ -214,6 +218,8 @@
         if (signupsClosed(event)) return { ok: false, error: "신청이 마감되었어요. (행사 24시간 전 마감)" };
         const name = String(body.name || "").trim();
         if (!name) return { ok: false, error: "이름을 입력해주세요." };
+        const realName = String(body.realName || "").trim();
+        if (!realName) return { ok: false, error: "실명을 입력해주세요." };
         const existing = d.signups.filter((s) => s.eventId === body.eventId);
         if (event.capacity !== "" && existing.length >= Number(event.capacity)) {
             return { ok: false, error: "정원이 찼어요." };
@@ -224,7 +230,7 @@
         const id = uid();
         const editToken = uid();
         const createdAt = new Date().toISOString();
-        d.signups.push({ id, eventId: body.eventId, name, contact: String(body.contact || "").trim(), createdAt, editToken });
+        d.signups.push({ id, eventId: body.eventId, name, realName, contact: String(body.contact || "").trim(), createdAt, editToken });
         saveDemo(d);
         return { ok: true, signup: { id, eventId: body.eventId, name, createdAt }, editToken };
     }
@@ -248,7 +254,7 @@
         if (!isOwner && !isAdmin) return { ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." };
         const participants = d.signups
             .filter((s) => s.eventId === body.id)
-            .map((s) => ({ id: s.id, name: s.name, contact: s.contact || "", isHost: s.id === target.hostSignupId, createdAt: s.createdAt }));
+            .map((s) => ({ id: s.id, name: s.name, realName: s.realName || "", contact: s.contact || "", isHost: s.id === target.hostSignupId, createdAt: s.createdAt }));
         return { ok: true, participants };
     }
 
@@ -638,6 +644,8 @@
         els.createFormError.hidden = true;
         els.createModalTitle.textContent = "새 소모임 만들기";
         els.createSubmitBtn.textContent = "만들기";
+        els.createHostRealNameField.hidden = false;
+        els.createHostRealName.required = true;
         els.createPasswordField.hidden = false;
         els.createPassword.required = true;
         els.createModalDate.textContent = formatDateLabel(selectedDateKey);
@@ -653,7 +661,10 @@
         els.createModalTitle.textContent = "소모임 수정하기";
         els.createSubmitBtn.textContent = "수정하기";
         // editing never touches the password (there's no "change password"
-        // here) or the date (reschedule = delete + recreate, for now)
+        // here), the host's real name (already on file from creation), or the
+        // date (reschedule = delete + recreate, for now)
+        els.createHostRealNameField.hidden = true;
+        els.createHostRealName.required = false;
         els.createPasswordField.hidden = true;
         els.createPassword.required = false;
         els.createModalDate.textContent = formatDateLabel(ev.date);
@@ -690,7 +701,12 @@
                 const auth = getEventAuth(editingEvent);
                 result = await apiPost("updateEvent", { id: editingEvent.id, date: editingEvent.date, ...auth, ...fields });
             } else {
-                result = await apiPost("createEvent", { date: selectedDateKey, password: els.createPassword.value, ...fields });
+                result = await apiPost("createEvent", {
+                    date: selectedDateKey,
+                    password: els.createPassword.value,
+                    hostRealName: els.createHostRealName.value,
+                    ...fields,
+                });
             }
 
             if (!result.ok) {
@@ -811,6 +827,20 @@
         nameField.appendChild(nameLabel);
         nameField.appendChild(nameInput);
 
+        // never shown publicly — only the host/admin can see this (participant
+        // contacts view), so the admin can confirm who's actually attending
+        const realNameField = el("div", "join_field");
+        const realNameLabel = el("label", null, "실명 *");
+        realNameLabel.htmlFor = "signupRealName";
+        const realNameInput = document.createElement("input");
+        realNameInput.type = "text";
+        realNameInput.id = "signupRealName";
+        realNameInput.maxLength = 30;
+        realNameInput.required = true;
+        realNameInput.placeholder = "관리자 확인용, 공개되지 않아요";
+        realNameField.appendChild(realNameLabel);
+        realNameField.appendChild(realNameInput);
+
         const contactField = el("div", "join_field");
         const contactLabel = el("label", null, "연락처 (선택)");
         contactLabel.htmlFor = "signupContact";
@@ -830,6 +860,7 @@
         submitBtn.style.width = "100%";
 
         form.appendChild(nameField);
+        form.appendChild(realNameField);
         form.appendChild(contactField);
         form.appendChild(error);
         form.appendChild(submitBtn);
@@ -839,7 +870,7 @@
             error.hidden = true;
             submitBtn.disabled = true;
             try {
-                const result = await apiPost("signup", { eventId: ev.id, name: nameInput.value, contact: contactInput.value });
+                const result = await apiPost("signup", { eventId: ev.id, name: nameInput.value, realName: realNameInput.value, contact: contactInput.value });
                 if (!result.ok) {
                     error.textContent = result.error || "신청하지 못했어요. 다시 시도해주세요.";
                     error.hidden = false;
@@ -992,9 +1023,18 @@
         participants.forEach((p) => {
             const item = el("li", "join_host_contacts_item");
             item.appendChild(el("span", "join_host_contacts_name", p.isHost ? `${p.name} (주최자)` : p.name));
+
+            const meta = el("div", "join_host_contacts_meta");
+            // real name: host/admin-only (never on the public participant list),
+            // so the admin can confirm who's actually attending
+            const realName = el("span", "join_host_contacts_realname", p.realName ? `실명: ${p.realName}` : "실명 미입력");
+            if (!p.realName) realName.classList.add("is-empty");
+            meta.appendChild(realName);
             const contact = el("span", "join_host_contacts_contact", p.contact ? p.contact : "연락처 미입력");
             if (!p.contact) contact.classList.add("is-empty");
-            item.appendChild(contact);
+            meta.appendChild(contact);
+            item.appendChild(meta);
+
             list.appendChild(item);
         });
         container.appendChild(list);
@@ -1104,6 +1144,8 @@
             createPasswordField: document.getElementById("createPasswordField"),
             createPassword: document.getElementById("createPassword"),
             createHost: document.getElementById("createHost"),
+            createHostRealNameField: document.getElementById("createHostRealNameField"),
+            createHostRealName: document.getElementById("createHostRealName"),
             createDesc: document.getElementById("createDesc"),
             detailModalOverlay: document.getElementById("detailModalOverlay"),
             detailModalTitle: document.getElementById("detailModalTitle"),

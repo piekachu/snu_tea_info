@@ -452,20 +452,29 @@ body.join-modal-open {
 }
 .join_host_contacts_item {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
+    flex-direction: column;
+    gap: 2px;
     font-size: 13.5px;
 }
 .join_host_contacts_name {
     font-weight: var(--font-weight-semibold);
     color: var(--fontColor);
 }
+.join_host_contacts_meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+.join_host_contacts_realname,
 .join_host_contacts_contact {
-    color: var(--fontColor);
-    text-align: right;
+    color: var(--fontGray);
     word-break: break-all;
 }
+.join_host_contacts_contact {
+    text-align: right;
+}
+.join_host_contacts_realname.is-empty,
 .join_host_contacts_contact.is-empty {
     color: rgba(0, 0, 0, 0.3);
 }

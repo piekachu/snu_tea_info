@@ -206,10 +206,10 @@
     overflow: hidden;
 }
 
-/* "add" card — stands in for the whole card row (join/join-carousel.js)
-   when there's nothing upcoming yet, instead of a plain empty carousel or
-   hiding the section outright; same footprint as a real .carousel_card
-   (same flex-basis, same rounded corners) so it doesn't jump the layout */
+/* "add" card — the persistent create-소모임 tile that always leads the join
+   card row (join/join-carousel.js), and stands in for the whole row when
+   there's nothing upcoming yet; same footprint as a real .carousel_card
+   (same flex-basis, same rounded corners) so it sits flush beside them */
 .carousel_card_add {
     display: flex;
     flex-direction: column;

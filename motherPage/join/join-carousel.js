@@ -147,9 +147,9 @@
         return card;
     }
 
-    // shown in place of the card row when there's nothing upcoming yet —
-    // an invitation to go make the first one, rather than just an empty
-    // carousel or (as before) hiding the section outright
+    // persistent "create a 소모임" tile that always leads the card row (and
+    // stands in for the whole row when there's nothing upcoming yet) — links
+    // through to the join page, where the calendar + create modal live
     function renderAddCard() {
         const card = document.createElement("a");
         card.className = "carousel_card carousel_card_add";
@@ -187,9 +187,13 @@
                 .sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")));
 
             track.innerHTML = "";
+            // always lead the row with the add tile so there's a persistent
+            // entry point to create a 소모임 from the home page, pinned at the
+            // left of the card row regardless of how many are upcoming
+            track.appendChild(renderAddCard());
             if (upcoming.length === 0) {
+                // only the add tile in the row — no need for the prev/next nav
                 if (controls) controls.style.display = "none";
-                track.appendChild(renderAddCard());
                 return;
             }
             if (controls) controls.style.display = "";
@@ -216,9 +220,10 @@
             render(data.events, data.signups);
         } catch (err) {
             console.error("[join-carousel]", err);
-            // nothing to show at all (no cache + fetch failed) → hide the
-            // section rather than a misleadingly-empty "add" prompt
-            if (!cached) section.style.display = "none";
+            // preview data unavailable (no cache + fetch failed) → still paint
+            // the row with just the add tile, so the create-소모임 entry point
+            // stays present even when the upcoming list can't be loaded
+            if (!cached) render([], []);
         }
     }
 
