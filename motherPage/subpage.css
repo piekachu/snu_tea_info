@@ -1479,33 +1479,107 @@ body.evs_modal_open { overflow: hidden; }
 .evs_cancel_btn:hover { color: #c0392b; }
 .evs_cancel_btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* participant list — sits inside .event_apply, below the button */
-.evs_list {
-    margin: 28px auto 0;
-    max-width: 320px;
+/* ── signup status card ─────────────────────────────────────────────
+ * Always-visible block inside .event_apply (above the apply button).
+ * Shows confirmed/wait counts, deadline, and a collapsible name list.
+ * Style mirrors the 소모임 section (join.css / join_signup_state).
+ * ─────────────────────────────────────────────────────────────────── */
+.evs_status_card {
+    background: #f6fbf6;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 0 auto 18px;
+    max-width: 400px;
     text-align: left;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    padding-top: 16px;
 }
-.evs_list_hdr {
+
+/* header: "신청 현황" label + toggle button */
+.evs_status_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.evs_status_title {
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--fontGray);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.evs_names_toggle {
+    background: none;
+    border: none;
+    font-family: inherit;
     font-size: 12px;
     font-weight: var(--font-weight-semibold);
-    color: var(--fontColor);
-    letter-spacing: 0.02em;
-    margin: 0 0 8px;
+    color: var(--osullocGreen);
+    cursor: pointer;
+    padding: 2px 0;
+    line-height: 1;
 }
-.evs_list_wait_hdr {
+.evs_names_toggle:hover { text-decoration: underline; }
+
+/* chips row: confirmed, wait, deadline */
+.evs_status_chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+.evs_stat_chip {
+    padding: 4px 12px;
+    background: var(--osullocGreenS);
+    color: var(--osullocGreen);
+    font-size: 12.5px;
+    font-weight: var(--font-weight-semibold);
+    border-radius: 999px;
+    white-space: nowrap;
+}
+.evs_stat_wait {
+    background: rgba(122, 99, 0, 0.12);
+    color: #7a6300;
+}
+.evs_stat_deadline {
+    font-size: 12px;
     color: var(--fontGray);
-    margin-top: 16px;
 }
-.evs_list_names {
-    margin: 0 0 0 18px;
-    padding: 0;
-    font-size: 13px;
+
+/* collapsible names panel */
+.evs_names_panel {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.evs_names_section { margin-bottom: 10px; }
+.evs_names_section:last-child { margin-bottom: 0; }
+.evs_names_label {
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
     color: var(--fontGray);
-    line-height: 2;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 6px;
 }
-.evs_list_empty {
+.evs_names_label_wait { color: #7a6300; }
+.evs_names_chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.evs_name_chip {
+    padding: 4px 11px;
+    background: var(--osullocGreenS);
+    color: var(--osullocGreen);
+    font-size: 12.5px;
+    border-radius: 999px;
+}
+.evs_name_chip_wait {
+    background: rgba(122, 99, 0, 0.12);
+    color: #7a6300;
+}
+.evs_names_empty {
     font-size: 13px;
     color: var(--fontGray);
     margin: 0;

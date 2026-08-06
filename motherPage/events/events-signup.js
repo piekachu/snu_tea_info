@@ -1,4 +1,4 @@
-// Event sign-up system — injects a modal form and participant list for
+// Event sign-up system — injects a status card and modal form for
 // every event subpage whose effectiveEventStatus() is "recruiting".
 // Requires events-data.js to load first.
 //
@@ -44,60 +44,159 @@
         return res.json();
     }
 
-    // ── participant list ─────────────────────────────────────────────
+    // ── deadline countdown ───────────────────────────────────────────
 
-    async function renderList(event, listEl) {
+    function formatDeadline(event) {
+        if (typeof getSignupEnd !== "function") return null;
+        const endStr = getSignupEnd(event);
+        const deadline = new Date(`${endStr}T23:59:59`);
+        const now = new Date();
+        const diffMs = deadline - now;
+        if (diffMs <= 0) return null;
+        const diffDays  = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const diffMins  = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        if (diffDays >= 1) return `마감까지 ${diffDays}일 ${diffHours}시간`;
+        if (diffHours >= 1) return `마감까지 ${diffHours}시간 ${diffMins}분`;
+        return `마감까지 ${diffMins}분`;
+    }
+
+    // ── status card ──────────────────────────────────────────────────
+    // Always visible when recruiting. Shows confirmed/wait counts,
+    // deadline, and a collapsible participant name list.
+
+    function createStatusCard(event) {
+        const card = document.createElement("div");
+        card.className = "evs_status_card";
+
+        // ─ header row: title + toggle
+        const header = document.createElement("div");
+        header.className = "evs_status_header";
+
+        const title = document.createElement("span");
+        title.className = "evs_status_title";
+        title.textContent = "신청 현황";
+
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "evs_names_toggle";
+        toggle.textContent = "참가자 목록 ▾";
+        toggle.setAttribute("aria-expanded", "false");
+
+        header.appendChild(title);
+        header.appendChild(toggle);
+
+        // ─ chips row: confirmed + wait + deadline
+        const chipsRow = document.createElement("div");
+        chipsRow.className = "evs_status_chips";
+
+        const confirmedChip = document.createElement("span");
+        confirmedChip.className = "evs_stat_chip";
+        confirmedChip.textContent = "확정 —명";
+
+        const waitChip = document.createElement("span");
+        waitChip.className = "evs_stat_chip evs_stat_wait";
+        waitChip.hidden = true;
+
+        const deadlineEl = document.createElement("span");
+        deadlineEl.className = "evs_stat_deadline";
+        const dl = formatDeadline(event);
+        if (dl) deadlineEl.textContent = dl;
+
+        chipsRow.appendChild(confirmedChip);
+        chipsRow.appendChild(waitChip);
+        chipsRow.appendChild(deadlineEl);
+
+        // ─ names panel (hidden by default)
+        const namesPanel = document.createElement("div");
+        namesPanel.className = "evs_names_panel";
+        namesPanel.hidden = true;
+        namesPanel.setAttribute("aria-hidden", "true");
+
+        card.appendChild(header);
+        card.appendChild(chipsRow);
+        card.appendChild(namesPanel);
+
+        // toggle behavior
+        let namesOpen = false;
+        function setNamesOpen(open) {
+            namesOpen = open;
+            namesPanel.hidden = !open;
+            namesPanel.setAttribute("aria-hidden", String(!open));
+            toggle.setAttribute("aria-expanded", String(open));
+            toggle.textContent = open ? "참가자 목록 ▴" : "참가자 목록 ▾";
+        }
+        toggle.addEventListener("click", () => setNamesOpen(!namesOpen));
+
+        // ─ public methods
+
+        function updateStats(confirmed, waiting, cap) {
+            const capStr = cap != null ? `/${cap}명` : "명";
+            confirmedChip.textContent = `확정 ${confirmed.length}${capStr}`;
+            if (waiting.length > 0) {
+                waitChip.textContent = `대기 ${waiting.length}명`;
+                waitChip.hidden = false;
+            } else {
+                waitChip.hidden = true;
+            }
+            // refresh deadline text
+            const d = formatDeadline(event);
+            deadlineEl.textContent = d || "";
+        }
+
+        function updateNames(confirmed, waiting) {
+            namesPanel.innerHTML = "";
+
+            if (confirmed.length === 0 && waiting.length === 0) {
+                const emp = document.createElement("p");
+                emp.className = "evs_names_empty";
+                emp.textContent = "아직 신청자가 없습니다.";
+                namesPanel.appendChild(emp);
+                return;
+            }
+
+            function makeSection(label, list, chipClass) {
+                const sec = document.createElement("div");
+                sec.className = "evs_names_section";
+                const lbl = document.createElement("p");
+                lbl.className = "evs_names_label" + (chipClass === "evs_name_chip_wait" ? " evs_names_label_wait" : "");
+                lbl.textContent = label;
+                sec.appendChild(lbl);
+                const wrap = document.createElement("div");
+                wrap.className = "evs_names_chips";
+                list.forEach(s => {
+                    const chip = document.createElement("span");
+                    chip.className = "evs_name_chip " + chipClass;
+                    chip.textContent = s.nickname;
+                    wrap.appendChild(chip);
+                });
+                sec.appendChild(wrap);
+                namesPanel.appendChild(sec);
+            }
+
+            if (confirmed.length > 0) makeSection("확정", confirmed, "");
+            if (waiting.length  > 0) makeSection("대기", waiting,   "evs_name_chip_wait");
+        }
+
+        function openNames() {
+            if (!namesOpen) setNamesOpen(true);
+        }
+
+        return { card, updateStats, updateNames, openNames };
+    }
+
+    // ── load live signup data ────────────────────────────────────────
+
+    async function loadSignups(event, statusCard) {
         try {
             const result = await api({ action: "listSignups", eventPath: event.path });
             if (!result.signups) return;
-
             const confirmed = result.signups.filter(s => !s.waitlisted);
             const waiting   = result.signups.filter(s =>  s.waitlisted);
             const cap = event["인원"] ?? null;
-
-            listEl.innerHTML = "";
-
-            // header
-            const hdr = document.createElement("p");
-            hdr.className = "evs_list_hdr";
-            hdr.textContent = cap != null
-                ? `참가 신청 현황  ${confirmed.length} / ${cap}명`
-                : `참가 신청 현황  ${confirmed.length}명`;
-            listEl.appendChild(hdr);
-
-            // confirmed list
-            if (confirmed.length === 0) {
-                const emp = document.createElement("p");
-                emp.className = "evs_list_empty";
-                emp.textContent = "아직 신청자가 없습니다.";
-                listEl.appendChild(emp);
-            } else {
-                const ol = document.createElement("ol");
-                ol.className = "evs_list_names";
-                confirmed.forEach(s => {
-                    const li = document.createElement("li");
-                    li.textContent = s.nickname;
-                    ol.appendChild(li);
-                });
-                listEl.appendChild(ol);
-            }
-
-            // waitlist
-            if (waiting.length > 0) {
-                const whdr = document.createElement("p");
-                whdr.className = "evs_list_hdr evs_list_wait_hdr";
-                whdr.textContent = `대기  ${waiting.length}명`;
-                listEl.appendChild(whdr);
-                const wol = document.createElement("ol");
-                wol.className = "evs_list_names";
-                waiting.forEach(s => {
-                    const li = document.createElement("li");
-                    li.textContent = s.nickname;
-                    wol.appendChild(li);
-                });
-                listEl.appendChild(wol);
-            }
-        } catch { /* list is non-critical — fail silently */ }
+            statusCard.updateStats(confirmed, waiting, cap);
+            statusCard.updateNames(confirmed, waiting);
+        } catch { /* non-critical */ }
     }
 
     // ── modal ────────────────────────────────────────────────────────
@@ -166,8 +265,8 @@
         }
 
         // form submit
-        const form    = overlay.querySelector(".evs_form");
-        const errEl   = overlay.querySelector(".evs_err");
+        const form      = overlay.querySelector(".evs_form");
+        const errEl     = overlay.querySelector(".evs_err");
         const submitBtn = overlay.querySelector(".evs_submit");
 
         form.addEventListener("submit", async e => {
@@ -221,10 +320,8 @@
 
     // ── apply-button state ───────────────────────────────────────────
 
-    // Called once a signup exists (on page load or just after submitting).
-    // `listEl` must already be in the DOM (appended to applyDiv).
-    function setSignedUpState(applyDiv, applyBtn, listEl, event, saved) {
-        // swap button to "신청 완료 ✓" — clone to drop all prior listeners
+    function setSignedUpState(applyDiv, applyBtn, statusCard, event, saved) {
+        // swap button → "신청 완료 ✓" (clone to drop all prior listeners)
         if (applyBtn) {
             applyBtn.classList.remove("is-disabled");
             applyBtn.classList.add("is-signed-up");
@@ -234,39 +331,42 @@
             const clone = applyBtn.cloneNode(true);
             clone.addEventListener("click", e => e.preventDefault());
             applyBtn.replaceWith(clone);
-        }
 
-        // cancel button — insert before the participant list
-        const cancelBtn = document.createElement("button");
-        cancelBtn.type = "button";
-        cancelBtn.className = "evs_cancel_btn";
-        cancelBtn.textContent = "신청 취소";
-        applyDiv.insertBefore(cancelBtn, listEl);
+            // cancel button — right after the signed-up button
+            const cancelBtn = document.createElement("button");
+            cancelBtn.type = "button";
+            cancelBtn.className = "evs_cancel_btn";
+            cancelBtn.textContent = "신청 취소";
+            clone.insertAdjacentElement("afterend", cancelBtn);
 
-        cancelBtn.addEventListener("click", async () => {
-            if (!confirm(`${saved.nickname}님의 신청을 취소하시겠습니까?`)) return;
-            cancelBtn.disabled = true;
-            cancelBtn.textContent = "취소 중…";
-            try {
-                const result = await api({
-                    action: "cancelSignup",
-                    id: saved.id,
-                    editToken: saved.editToken,
-                });
-                if (result.error) {
-                    alert(result.error);
+            cancelBtn.addEventListener("click", async () => {
+                if (!confirm(`${saved.nickname}님의 신청을 취소하시겠습니까?`)) return;
+                cancelBtn.disabled = true;
+                cancelBtn.textContent = "취소 중…";
+                try {
+                    const result = await api({
+                        action: "cancelSignup",
+                        id: saved.id,
+                        editToken: saved.editToken,
+                    });
+                    if (result.error) {
+                        alert(result.error);
+                        cancelBtn.disabled = false;
+                        cancelBtn.textContent = "신청 취소";
+                        return;
+                    }
+                    clearSaved(event.path);
+                    window.location.reload();
+                } catch {
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
                     cancelBtn.disabled = false;
                     cancelBtn.textContent = "신청 취소";
-                    return;
                 }
-                clearSaved(event.path);
-                window.location.reload();
-            } catch {
-                alert("오류가 발생했습니다. 다시 시도해주세요.");
-                cancelBtn.disabled = false;
-                cancelBtn.textContent = "신청 취소";
-            }
-        });
+            });
+        }
+
+        // auto-expand names panel so user can see their name in the list
+        statusCard.openNames();
     }
 
     function showToast(waitlisted, applyDiv) {
@@ -276,7 +376,6 @@
         toast.textContent = waitlisted
             ? "신청 인원 초과로 대기 명단에 등록되었습니다. 취소자 발생 시 순서대로 안내드립니다."
             : "신청이 완료되었습니다. 행사 당일에 뵙겠습니다! 🍵";
-        // insert at top of applyDiv so it appears above the button
         applyDiv.insertBefore(toast, applyDiv.firstChild);
     }
 
@@ -300,23 +399,28 @@
         const applyBtn = document.querySelector(".event_apply_btn");
         if (!applyDiv) return;
 
-        // participant list — always appended last inside applyDiv
-        const listEl = document.createElement("div");
-        listEl.className = "evs_list";
-        applyDiv.appendChild(listEl);
-        renderList(event, listEl);
+        // build status card and insert before the apply button
+        const statusCard = createStatusCard(event);
+        if (applyBtn) {
+            applyDiv.insertBefore(statusCard.card, applyBtn);
+        } else {
+            applyDiv.appendChild(statusCard.card);
+        }
+
+        // load live counts + names
+        loadSignups(event, statusCard);
 
         const saved = getSaved(event.path);
         if (saved) {
-            setSignedUpState(applyDiv, applyBtn, listEl, event, saved);
+            setSignedUpState(applyDiv, applyBtn, statusCard, event, saved);
         } else if (applyBtn) {
             applyBtn.addEventListener("click", e => {
                 e.preventDefault();
                 openModal(event, result => {
                     const latest = getSaved(event.path);
-                    setSignedUpState(applyDiv, applyBtn, listEl, event, latest);
+                    setSignedUpState(applyDiv, applyBtn, statusCard, event, latest);
                     showToast(result.waitlisted, applyDiv);
-                    renderList(event, listEl);
+                    loadSignups(event, statusCard); // refresh counts + names
                 });
             });
         }
