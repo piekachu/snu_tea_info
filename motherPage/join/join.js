@@ -420,11 +420,11 @@
 
         btn.addEventListener("click", async () => {
             const url = `${window.location.origin}${window.location.pathname}?event=${encodeURIComponent(ev.id)}`;
-            const lines = [`[${ev.title}]`, ""];
+            const lines = [`[${ev.title}]`];
             const datePart = [formatDateLabel(ev.date), formatTime(ev.time)].filter(Boolean).join(" ");
-            if (datePart) lines.push(`🗓 일시 : ${datePart}`);
-            if (ev.location) lines.push(`🚡 장소 : ${ev.location}`);
-            if (ev.host) lines.push(`🙋 주최 : ${ev.host}`);
+            if (datePart) lines.push("", `🗓 일시 : ${datePart}`);
+            if (ev.location) lines.push("", `🚡 장소 : ${ev.location}`);
+            if (ev.host) lines.push("", `🙋 주최 : ${ev.host}`);
             lines.push("", url);
 
             const text = lines.join("\n");
