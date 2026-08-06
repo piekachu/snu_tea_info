@@ -1340,7 +1340,7 @@ body.nav-open .magazine_lnb {
 /* prevent body scroll while modal is open */
 body.evs_modal_open { overflow: hidden; }
 
-/* overlay */
+/* overlay — starts invisible, transitions to visible via .is-open */
 .evs_overlay {
     position: fixed;
     inset: 0;
@@ -1350,9 +1350,22 @@ body.evs_modal_open { overflow: hidden; }
     align-items: center;
     justify-content: center;
     padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+}
+.evs_overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+/* exit: faster fade, driven by .is-closing */
+.evs_overlay.is-closing {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.16s ease-in;
 }
 
-/* dialog card */
+/* dialog card — springs up and scales in on enter */
 .evs_dialog {
     position: relative;
     background: #fff;
@@ -1361,6 +1374,19 @@ body.evs_modal_open { overflow: hidden; }
     max-height: 90vh;
     overflow-y: auto;
     padding: 44px 40px 36px;
+    transform: translateY(18px) scale(0.96);
+    opacity: 0;
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity    0.22s ease;
+}
+.evs_overlay.is-open .evs_dialog {
+    transform: none;
+    opacity: 1;
+}
+.evs_overlay.is-closing .evs_dialog {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.16s ease-in, opacity 0.16s ease-in;
 }
 @media all and (max-width: 640px) {
     .evs_dialog { padding: 40px 20px 28px; }
@@ -1546,9 +1572,20 @@ body.evs_modal_open { overflow: hidden; }
     color: var(--fontGray);
 }
 
-/* collapsible names panel */
+/* collapsible names panel — animates height smoothly via max-height */
 .evs_names_panel {
-    margin-top: 12px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.34s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity    0.22s ease;
+}
+.evs_names_panel.is-open {
+    max-height: 600px;
+    opacity: 1;
+}
+/* inner wrapper carries the top border + spacing (clipped with panel) */
+.evs_names_inner {
     padding-top: 12px;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
 }

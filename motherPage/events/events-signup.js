@@ -110,18 +110,17 @@
         // ─ names panel (hidden by default)
         const namesPanel = document.createElement("div");
         namesPanel.className = "evs_names_panel";
-        namesPanel.hidden = true;
         namesPanel.setAttribute("aria-hidden", "true");
 
         card.appendChild(header);
         card.appendChild(chipsRow);
         card.appendChild(namesPanel);
 
-        // toggle behavior
+        // toggle behavior (class-based so CSS can animate smoothly)
         let namesOpen = false;
         function setNamesOpen(open) {
             namesOpen = open;
-            namesPanel.hidden = !open;
+            namesPanel.classList.toggle("is-open", open);
             namesPanel.setAttribute("aria-hidden", String(!open));
             toggle.setAttribute("aria-expanded", String(open));
             toggle.textContent = open ? "참가자 목록 ▴" : "참가자 목록 ▾";
@@ -147,35 +146,39 @@
         function updateNames(confirmed, waiting) {
             namesPanel.innerHTML = "";
 
+            // inner wrapper carries the top border (clipped with the panel's max-height)
+            const inner = document.createElement("div");
+            inner.className = "evs_names_inner";
+
             if (confirmed.length === 0 && waiting.length === 0) {
                 const emp = document.createElement("p");
                 emp.className = "evs_names_empty";
                 emp.textContent = "아직 신청자가 없습니다.";
-                namesPanel.appendChild(emp);
-                return;
+                inner.appendChild(emp);
+            } else {
+                function makeSection(label, list, chipClass) {
+                    const sec = document.createElement("div");
+                    sec.className = "evs_names_section";
+                    const lbl = document.createElement("p");
+                    lbl.className = "evs_names_label" + (chipClass === "evs_name_chip_wait" ? " evs_names_label_wait" : "");
+                    lbl.textContent = label;
+                    sec.appendChild(lbl);
+                    const wrap = document.createElement("div");
+                    wrap.className = "evs_names_chips";
+                    list.forEach(s => {
+                        const chip = document.createElement("span");
+                        chip.className = "evs_name_chip " + chipClass;
+                        chip.textContent = s.nickname;
+                        wrap.appendChild(chip);
+                    });
+                    sec.appendChild(wrap);
+                    inner.appendChild(sec);
+                }
+                if (confirmed.length > 0) makeSection("확정", confirmed, "");
+                if (waiting.length  > 0) makeSection("대기", waiting,   "evs_name_chip_wait");
             }
 
-            function makeSection(label, list, chipClass) {
-                const sec = document.createElement("div");
-                sec.className = "evs_names_section";
-                const lbl = document.createElement("p");
-                lbl.className = "evs_names_label" + (chipClass === "evs_name_chip_wait" ? " evs_names_label_wait" : "");
-                lbl.textContent = label;
-                sec.appendChild(lbl);
-                const wrap = document.createElement("div");
-                wrap.className = "evs_names_chips";
-                list.forEach(s => {
-                    const chip = document.createElement("span");
-                    chip.className = "evs_name_chip " + chipClass;
-                    chip.textContent = s.nickname;
-                    wrap.appendChild(chip);
-                });
-                sec.appendChild(wrap);
-                namesPanel.appendChild(sec);
-            }
-
-            if (confirmed.length > 0) makeSection("확정", confirmed, "");
-            if (waiting.length  > 0) makeSection("대기", waiting,   "evs_name_chip_wait");
+            namesPanel.appendChild(inner);
         }
 
         function openNames() {
@@ -240,11 +243,15 @@
 
         document.body.appendChild(overlay);
 
+        // trigger enter animation — setTimeout(0) flushes the paint of the
+        // initial opacity:0 state before we add is-open, so the transition fires
+        setTimeout(() => overlay.classList.add("is-open"), 16);
+
         // focus trap
         const focusable = Array.from(overlay.querySelectorAll(
             "button, input, select, textarea, [tabindex]:not([tabindex='-1'])"
         ));
-        setTimeout(() => focusable[0]?.focus(), 40);
+        setTimeout(() => focusable[0]?.focus(), 60);
         overlay.addEventListener("keydown", e => {
             if (e.key === "Escape") { close(); return; }
             if (e.key !== "Tab") return;
@@ -260,8 +267,13 @@
         overlay.querySelector(".evs_close").addEventListener("click", close);
 
         function close() {
-            overlay.remove();
-            document.body.classList.remove("evs_modal_open");
+            // exit animation: swap is-open → is-closing, then remove after transition
+            overlay.classList.remove("is-open");
+            overlay.classList.add("is-closing");
+            setTimeout(() => {
+                overlay.remove();
+                document.body.classList.remove("evs_modal_open");
+            }, 180);
         }
 
         // form submit
