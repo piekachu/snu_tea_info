@@ -202,13 +202,17 @@ const teaClubEvents = [
         status: "recruiting"
     },
     {
-        date: "2026-08-09",
-        title: "운영진 티클래스",
-        path: "2026augStaffTeaClass/index.html",
-        location: "[장소를 입력해주세요]",
-        fee: "[참가비를 입력해주세요]",
-        인원: 20,
-        category: "teaClass",
-        status: "upcoming"
+        date: "2026-09-01",
+        time: "18:00",
+        title: "test_event",
+        path: "test_event/index.html",
+        location: "https://naver.me/xwmq9Wk5",
+        lat: 37.478252,
+        lng: 126.953039,
+        mapLink: "https://naver.me/xwmq9Wk5",
+        fee: "10000원",
+        인원: 30,
+        category: "regulars",
+        status: "recruiting"
     }
 ];
