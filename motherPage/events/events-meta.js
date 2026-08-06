@@ -25,12 +25,12 @@
             + '</svg>';
 
         btn.addEventListener("click", async () => {
-            const lines = [event.title];
-            if (typeof formatEventDateTimeKo === "function") lines.push(formatEventDateTimeKo(event));
-            // omit location if it's a bare URL (map link) — the map link row
-            // in the info card already surfaces it; raw URLs look noisy in text
-            if (event.location && !/^https?:\/\//.test(event.location)) lines.push(`📍 ${event.location}`);
-            if (event.fee) lines.push(`💰 ${event.fee}`);
+            const lines = [`[${event.title}]`, ""];
+            if (typeof formatEventDateTimeKo === "function") lines.push(`🗓 일시 : ${formatEventDateTimeKo(event)}`);
+            // omit location if it's a bare URL (map link) — raw URLs look noisy in text
+            if (event.location && !/^https?:\/\//.test(event.location)) lines.push(`🚡 장소 : ${event.location}`);
+            if (event["인원"] != null) lines.push(`🙋 인원 : ${event["인원"]}명`);
+            if (event.fee) lines.push(`💴 참가비 : ${event.fee}`);
             lines.push("", window.location.href);
 
             const text = lines.join("\n");
