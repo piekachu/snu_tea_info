@@ -125,6 +125,21 @@
             }
         }
 
+        // disable the apply button when sign-up is not open
+        const applyBtn = document.querySelector(".event_apply_btn");
+        if (applyBtn) {
+            if (effectiveStatus !== "recruiting") {
+                applyBtn.classList.add("is-disabled");
+                applyBtn.setAttribute("aria-disabled", "true");
+                applyBtn.setAttribute("tabindex", "-1");
+                const statusLabel = (typeof eventStatuses !== "undefined" && eventStatuses[effectiveStatus])
+                    ? eventStatuses[effectiveStatus].label
+                    : "신청 불가";
+                applyBtn.textContent = statusLabel;
+                applyBtn.addEventListener("click", (e) => { e.preventDefault(); });
+            }
+        }
+
         const showsTeaInfo = typeof eventCategories !== "undefined" && !!eventCategories[event.category] && !!eventCategories[event.category].showsTeaInfo;
         const teaLineup = document.getElementById("teaLineup");
         const teaNav = document.getElementById("magazine_lnb");

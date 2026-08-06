@@ -1276,10 +1276,12 @@ body.nav-open .magazine_lnb {
 .event_apply_btn:hover:not(:disabled) {
     background: var(--osullocGreenV);
 }
-.event_apply_btn:disabled {
+.event_apply_btn:disabled,
+.event_apply_btn.is-disabled {
     background: rgba(0, 0, 0, 0.1);
     color: rgba(0, 0, 0, 0.35);
     cursor: not-allowed;
+    pointer-events: none;
 }
 @media all and (max-width: 640px) {
     .event_apply_btn {

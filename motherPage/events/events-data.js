@@ -24,10 +24,19 @@
 // as `path`) to an image for the upcoming-events carousel. Omit it and the
 // carousel shows a plain placeholder card instead of a broken image.
 //
-// `applicationDue` is optional — the last date on which signups are accepted
-// (YYYY-MM-DD). Defaults to 3 days before `date` if omitted. Events whose
-// applicationDue has passed are automatically shown as 마감 by
-// effectiveEventStatus(), even if `status` is still set to "recruiting".
+// `signupStart` is optional — the date on which sign-up opens (YYYY-MM-DD).
+// Defaults to the event page creation date (i.e. immediately open) if omitted.
+// Before this date the event shows as 모집예정.
+//
+// `signupEnd` is optional — the last date on which sign-up is accepted
+// (YYYY-MM-DD). Defaults to 3 days before `date` if omitted.
+// After this date the event shows as 마감.
+//
+// Status is computed automatically from signupStart/signupEnd — do NOT set
+// it manually. effectiveEventStatus() returns:
+//   recruiting — sign-up is open (between signupStart and signupEnd)
+//   upcoming   — sign-up has not opened yet (before signupStart)
+//   closed     — sign-up has ended, or the event date has passed
 //
 // `location` can be a plain address string, or a map link (e.g. a Naver Map
 // share URL) — events-meta.js auto-detects http(s) URLs and renders those
@@ -65,10 +74,8 @@ const eventCategories = {
     specialTea: { label: "특별다회", showsTeaInfo: true }
 };
 
-// `status` must be one of the keys in eventStatuses below:
-//   recruiting — 모집중 (참가 신청을 받고 있음)
-//   upcoming   — 모집예정 (아직 신청이 열리지 않음)
-//   closed     — 마감 (신청이 종료됨)
+// status labels — used by the carousel and meta card for display only;
+// the actual status value is always computed by effectiveEventStatus()
 const eventStatuses = {
     recruiting: { label: "모집중" },
     upcoming: { label: "모집예정" },
@@ -112,11 +119,29 @@ function isPastEvent(event, referenceDate) {
     return lastDay < now;
 }
 
-// an event whose date (or endDate, for multi-day events) has already
-// passed is always "closed", regardless of what status is set on it —
-// consumers should call this instead of reading event.status directly
+// returns the sign-up closing date; defaults to 3 days before event date
+function getSignupEnd(event) {
+    if (event.signupEnd) return event.signupEnd;
+    const [y, m, d] = event.date.split("-").map(Number);
+    const due = new Date(y, m - 1, d);
+    due.setDate(due.getDate() - 3);
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${due.getFullYear()}-${pad(due.getMonth() + 1)}-${pad(due.getDate())}`;
+}
+
+// computes status automatically from signupStart / signupEnd — never read
+// event.status directly; always call this instead
+//   closed     → event date has passed, OR signupEnd has passed
+//   upcoming   → today is before signupStart
+//   recruiting → sign-up is open
 function effectiveEventStatus(event, referenceDate) {
-    return isPastEvent(event, referenceDate) ? "closed" : event.status;
+    const now = referenceDate || new Date();
+    if (isPastEvent(event, now)) return "closed";
+    const end = getSignupEnd(event);
+    if (new Date(`${end}T23:59:59`) < now) return "closed";
+    const start = event.signupStart || null;
+    if (start && new Date(`${start}T00:00:00`) > now) return "upcoming";
+    return "recruiting";
 }
 
 const teaClubEvents = [
@@ -127,8 +152,7 @@ const teaClubEvents = [
         location: "https://naver.me/5pwsXu4f",
         fee: "[참가비를 입력해주세요]",
         인원: 20,
-        category: "regulars",
-        status: "closed"
+        category: "regulars"
     },
     {
         date: "2026-06-22",
@@ -137,8 +161,7 @@ const teaClubEvents = [
         location: "https://naver.me/xoH83gzf",
         fee: "[참가비를 입력해주세요]",
         인원: 20,
-        category: "regulars",
-        status: "closed"
+        category: "regulars"
     },
     {
         date: "2026-07-10",
@@ -147,8 +170,7 @@ const teaClubEvents = [
         location: "[장소를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         인원: 20,
-        category: "special",
-        status: "upcoming"
+        category: "special"
     },
     {
         date: "2026-07-17",
@@ -162,8 +184,7 @@ const teaClubEvents = [
         mapLink: "https://naver.me/GlRObS6h",
         fee: "1만5천원 / 1인",
         인원: 20,
-        category: "specialTea",
-        status: "closed"
+        category: "specialTea"
     },
     {
         date: "2026-07-25",
@@ -173,8 +194,7 @@ const teaClubEvents = [
         location: "[장소를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         인원: 20,
-        category: "fieldTrip",
-        status: "upcoming"
+        category: "fieldTrip"
     },
     {
         date: "2026-07-28",
@@ -183,8 +203,7 @@ const teaClubEvents = [
         location: "[장소를 입력해주세요]",
         fee: "[참가비를 입력해주세요]",
         인원: 20,
-        category: "special",
-        status: "upcoming"
+        category: "special"
     },
     {
         date: "2026-07-30",
@@ -198,8 +217,7 @@ const teaClubEvents = [
         mapLink: "https://map.naver.com/p/entry/place/1752983758?c=15.00,0,0,0,dh&isCorrectAnswer=true&placePath=%2Fhome%3Ffrom%3Dmap%26fromPanelNum%3D1%26additionalHeight%3D76%26timestamp%3D202607232140%26locale%3Dko%26svcName%3Dmap_pcv5",
         fee: "10000원",
         인원: 40,
-        category: "regulars",
-        status: "recruiting"
+        category: "regulars"
     },
     {
         date: "2026-09-01",
@@ -213,7 +231,6 @@ const teaClubEvents = [
         mapLink: "https://naver.me/xwmq9Wk5",
         fee: "10000원",
         인원: 30,
-        category: "regulars",
-        status: "recruiting"
+        category: "regulars"
     }
 ];
