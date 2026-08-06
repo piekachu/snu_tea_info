@@ -286,6 +286,7 @@ body.join-modal-open {
     color: var(--fontColor);
 }
 .join_field input,
+.join_field select,
 .join_field textarea {
     padding: 10px 12px;
     border: 1px solid rgba(0, 0, 0, 0.15);
@@ -294,7 +295,24 @@ body.join-modal-open {
     font-family: inherit;
     color: var(--fontColor);
 }
+.join_field select {
+    /* match the height of the sibling number input in the same row and use a
+       consistent look across browsers */
+    background: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+}
+/* hour + minute selects sit side by side and share the field width evenly */
+.join_time_selects {
+    display: flex;
+    gap: 8px;
+}
+.join_time_selects select {
+    flex: 1;
+    min-width: 0;
+}
 .join_field input:focus,
+.join_field select:focus,
 .join_field textarea:focus {
     outline: none;
     border-color: var(--osullocGreen);

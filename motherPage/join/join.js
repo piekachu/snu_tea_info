@@ -330,6 +330,42 @@
         return `${period} ${h12}:${pad2(m)}`;
     }
 
+    // (re)build the hour + minute <select>s. The minute list is only :00 / :30,
+    // which is what hard-enforces the 30-minute grid; splitting hour off keeps
+    // either list short. Called each time the modal opens so a legacy off-grid
+    // minute injected on a previous edit doesn't linger. Values are the stored
+    // zero-padded "HH" / "MM"; getTimeValue() joins them into "HH:MM".
+    function populateTimeOptions() {
+        if (!els.createHour) return;
+        const hours = ['<option value="">선택 안 함</option>'];
+        for (let h = 0; h < 24; h += 1) {
+            hours.push(`<option value="${pad2(h)}">${h}시</option>`);
+        }
+        els.createHour.innerHTML = hours.join("");
+        els.createMinute.innerHTML = ["00", "30"]
+            .map((m) => `<option value="${m}">${m}분</option>`)
+            .join("");
+    }
+
+    // "" when no hour is picked (time is optional); otherwise "HH:MM".
+    function getTimeValue() {
+        if (!els.createHour.value) return "";
+        return `${els.createHour.value}:${els.createMinute.value}`;
+    }
+
+    // select an existing event's time when editing. An off-grid legacy minute
+    // (e.g. 18:15, saved before the 30-min restriction) isn't in the :00 / :30
+    // list, so setting it would silently snap to another value — inject a
+    // one-off option for it first, marked "(기존)".
+    function setTimeValue(time) {
+        const [hh = "", mm = ""] = (time || "").split(":");
+        els.createHour.value = hh;
+        if (mm && !Array.from(els.createMinute.options).some((o) => o.value === mm)) {
+            els.createMinute.add(new Option(`${mm}분 (기존)`, mm));
+        }
+        els.createMinute.value = mm || "00";
+    }
+
     // falls back to a Naver Map search for the venue text when the creator
     // didn't paste an actual map link — there's no stored coordinate to
     // point at otherwise, since anyone can type any venue name here, unlike
@@ -596,6 +632,7 @@
 
     function openCreateModal() {
         editingEvent = null;
+        populateTimeOptions();
         els.createForm.reset();
         els.createCapacity.value = "1";
         els.createFormError.hidden = true;
@@ -610,6 +647,7 @@
 
     function openEditModal(ev) {
         editingEvent = ev;
+        populateTimeOptions();
         els.createForm.reset();
         els.createFormError.hidden = true;
         els.createModalTitle.textContent = "소모임 수정하기";
@@ -620,7 +658,7 @@
         els.createPassword.required = false;
         els.createModalDate.textContent = formatDateLabel(ev.date);
         els.createTitle.value = ev.title;
-        els.createTime.value = ev.time || "";
+        setTimeValue(ev.time);
         els.createCapacity.value = ev.capacity;
         els.createLocation.value = ev.location || "";
         els.createMapLink.value = ev.mapLink || "";
@@ -639,7 +677,7 @@
         try {
             const fields = {
                 title: els.createTitle.value,
-                time: els.createTime.value,
+                time: getTimeValue(),
                 capacity: els.createCapacity.value,
                 location: els.createLocation.value,
                 mapLink: els.createMapLink.value,
@@ -1058,7 +1096,8 @@
             createFormError: document.getElementById("createFormError"),
             createSubmitBtn: document.getElementById("createSubmitBtn"),
             createTitle: document.getElementById("createTitle"),
-            createTime: document.getElementById("createTime"),
+            createHour: document.getElementById("createHour"),
+            createMinute: document.getElementById("createMinute"),
             createCapacity: document.getElementById("createCapacity"),
             createLocation: document.getElementById("createLocation"),
             createMapLink: document.getElementById("createMapLink"),
