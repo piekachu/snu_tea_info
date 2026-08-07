@@ -33,22 +33,38 @@ Deno.serve(async (req: Request) => {
 
     // ── signup ────────────────────────────────────────────────────────
     if (action === "signup") {
-      const { eventPath, nickname, realName, capacity, metadata = {} } = body;
+      const { eventPath, nickname, realName, capacity, metadata = {},
+              venueField, venueValue, venueCapacity } = body;
 
       if (!eventPath || !nickname || !realName) {
         return json({ error: "필수 입력값이 누락되었습니다." }, 400);
       }
 
-      // count confirmed (non-waitlisted) signups for this event
-      const { count, error: countErr } = await supabase
-        .from("event_signups")
-        .select("*", { count: "exact", head: true })
-        .eq("event_path", eventPath)
-        .eq("waitlisted", false);
+      let waitlisted = false;
 
-      if (countErr) throw countErr;
+      if (venueField && venueValue != null && venueCapacity != null) {
+        // Per-venue capacity: count confirmed signups for this specific venue
+        const { count: venueCount, error: venueErr } = await supabase
+          .from("event_signups")
+          .select("*", { count: "exact", head: true })
+          .eq("event_path", eventPath)
+          .eq("waitlisted", false)
+          .contains("metadata", { [venueField]: venueValue });
 
-      const waitlisted = capacity != null && (count ?? 0) >= capacity;
+        if (venueErr) throw venueErr;
+        waitlisted = (venueCount ?? 0) >= venueCapacity;
+      } else if (capacity != null) {
+        // Total capacity fallback (events without per-venue fields)
+        const { count, error: countErr } = await supabase
+          .from("event_signups")
+          .select("*", { count: "exact", head: true })
+          .eq("event_path", eventPath)
+          .eq("waitlisted", false);
+
+        if (countErr) throw countErr;
+        waitlisted = (count ?? 0) >= capacity;
+      }
+
       const editToken = crypto.randomUUID();
 
       const { data, error } = await supabase
@@ -80,7 +96,7 @@ Deno.serve(async (req: Request) => {
         .delete()
         .eq("id", id)
         .eq("edit_token", editToken)
-        .select("id, event_path, waitlisted")
+        .select("id, event_path, waitlisted, metadata")
         .single();
 
       if (error || !data) {
@@ -89,14 +105,26 @@ Deno.serve(async (req: Request) => {
 
       // if a confirmed slot freed up, promote the first waitlisted person
       if (!data.waitlisted) {
-        const { data: next } = await supabase
+        // For per-venue events, promote from the same venue's waitlist;
+        // fall back to any waitlisted person for non-venue events.
+        const parsedMeta = (data.metadata && typeof data.metadata === "object")
+          ? data.metadata as Record<string, unknown>
+          : {};
+        const venueVal = typeof parsedMeta.venue === "string" ? parsedMeta.venue : null;
+
+        let nextQuery = supabase
           .from("event_signups")
           .select("id")
           .eq("event_path", data.event_path)
           .eq("waitlisted", true)
           .order("created_at", { ascending: true })
-          .limit(1)
-          .single();
+          .limit(1);
+
+        if (venueVal) {
+          nextQuery = nextQuery.contains("metadata", { venue: venueVal });
+        }
+
+        const { data: next } = await nextQuery.single();
 
         if (next) {
           await supabase

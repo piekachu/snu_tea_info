@@ -340,6 +340,7 @@
     function openModal(event, onSuccess) {
         document.body.classList.add("evs_modal_open");
         const extra = Array.isArray(event.signupFields) ? event.signupFields : [];
+        const groupField = getGroupField(event); // used for per-venue capacity enforcement
 
         const overlay = document.createElement("div");
         overlay.className = "evs_overlay";
@@ -457,12 +458,23 @@
 
             setLoading(true);
             try {
+                // If this event uses per-venue capacity, send venue-specific
+                // fields so the server checks the right slot count.
+                const venueParams = (groupField && metadata[groupField.name])
+                    ? {
+                        venueField: groupField.name,
+                        venueValue: metadata[groupField.name],
+                        venueCapacity: groupField.capacityPerOption,
+                      }
+                    : {};
+
                 const result = await api({
                     action: "signup",
                     eventPath: event.path,
                     nickname,
                     realName,
                     capacity: event["인원"] ?? null,
+                    ...venueParams,
                     metadata,
                 });
                 if (result.error) { showErr(result.error); setLoading(false); return; }
