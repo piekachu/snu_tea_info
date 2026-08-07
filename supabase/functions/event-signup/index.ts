@@ -109,14 +109,14 @@ Deno.serve(async (req: Request) => {
       return json({ success: true });
     }
 
-    // ── listSignups (public — nicknames only) ─────────────────────────
+    // ── listSignups (public — nicknames + metadata, no real_name) ────────
     if (action === "listSignups") {
       const { eventPath } = body;
       if (!eventPath) return json({ error: "eventPath가 필요합니다." }, 400);
 
       const { data, error } = await supabase
         .from("event_signups")
-        .select("id, nickname, waitlisted, created_at")
+        .select("id, nickname, waitlisted, created_at, metadata")
         .eq("event_path", eventPath)
         .order("created_at", { ascending: true });
 
