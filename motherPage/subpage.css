@@ -1665,6 +1665,7 @@ select.evs_select {
     justify-content: space-between;
     gap: 8px;
     padding: 5px 0;
+    width: 100%;
 }
 .evs_venue_row + .evs_venue_row {
     border-top: 1px solid rgba(0, 0, 0, 0.06);
