@@ -227,6 +227,21 @@
             const inner = document.createElement("div");
             inner.className = "evs_names_inner";
 
+            // Build a name chip. Waitlisted chips get a small inline "대기" tag
+            // so the status is self-evident even without reading the section label.
+            function makeChip(s, isWait) {
+                const chip = document.createElement("span");
+                chip.className = "evs_name_chip" + (isWait ? " evs_name_chip_wait" : "");
+                chip.textContent = s.nickname;
+                if (isWait) {
+                    const tag = document.createElement("span");
+                    tag.className = "evs_name_wait_tag";
+                    tag.textContent = "대기";
+                    chip.appendChild(tag);
+                }
+                return chip;
+            }
+
             if (confirmed.length === 0 && waiting.length === 0) {
                 const emp = document.createElement("p");
                 emp.className = "evs_names_empty";
@@ -256,12 +271,7 @@
                         emp.textContent = "신청자 없음";
                         wrap.appendChild(emp);
                     } else {
-                        venueList.forEach(s => {
-                            const chip = document.createElement("span");
-                            chip.className = "evs_name_chip";
-                            chip.textContent = s.nickname;
-                            wrap.appendChild(chip);
-                        });
+                        venueList.forEach(s => wrap.appendChild(makeChip(s, false)));
                     }
 
                     sec.appendChild(wrap);
@@ -278,37 +288,27 @@
                     sec.appendChild(lbl);
                     const wrap = document.createElement("div");
                     wrap.className = "evs_names_chips";
-                    waiting.forEach(s => {
-                        const chip = document.createElement("span");
-                        chip.className = "evs_name_chip evs_name_chip_wait";
-                        chip.textContent = s.nickname;
-                        wrap.appendChild(chip);
-                    });
+                    waiting.forEach(s => wrap.appendChild(makeChip(s, true)));
                     sec.appendChild(wrap);
                     inner.appendChild(sec);
                 }
             } else {
                 // Flat layout: confirmed section, then wait section
-                function makeSection(label, list, chipClass) {
+                function makeSection(label, list, isWait) {
                     const sec = document.createElement("div");
                     sec.className = "evs_names_section";
                     const lbl = document.createElement("p");
-                    lbl.className = "evs_names_label" + (chipClass === "evs_name_chip_wait" ? " evs_names_label_wait" : "");
+                    lbl.className = "evs_names_label" + (isWait ? " evs_names_label_wait" : "");
                     lbl.textContent = label;
                     sec.appendChild(lbl);
                     const wrap = document.createElement("div");
                     wrap.className = "evs_names_chips";
-                    list.forEach(s => {
-                        const chip = document.createElement("span");
-                        chip.className = "evs_name_chip " + chipClass;
-                        chip.textContent = s.nickname;
-                        wrap.appendChild(chip);
-                    });
+                    list.forEach(s => wrap.appendChild(makeChip(s, isWait)));
                     sec.appendChild(wrap);
                     inner.appendChild(sec);
                 }
-                if (confirmed.length > 0) makeSection("확정", confirmed, "");
-                if (waiting.length  > 0) makeSection("대기", waiting,   "evs_name_chip_wait");
+                if (confirmed.length > 0) makeSection("확정", confirmed, false);
+                if (waiting.length  > 0) makeSection("대기", waiting,   true);
             }
 
             namesPanel.appendChild(inner);

@@ -1634,6 +1634,18 @@ select.evs_select {
     background: rgba(122, 99, 0, 0.12);
     color: #7a6300;
 }
+/* small inline "대기" badge inside a waitlisted name chip */
+.evs_name_wait_tag {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 1px 5px;
+    background: rgba(122, 99, 0, 0.18);
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.03em;
+    vertical-align: middle;
+}
 .evs_names_empty {
     font-size: 13px;
     color: var(--fontGray);
