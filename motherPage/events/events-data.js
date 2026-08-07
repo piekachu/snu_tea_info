@@ -220,6 +220,19 @@ const teaClubEvents = [
         category: "regulars"
     },
     {
+        date: "2026-08-31",
+        title: "연합다회 test",
+        path: "2026augJointTea/index.html",
+        location: "라오상하이 / 반조 / 예평 (희망 찻집 선택)",
+        fee: "10000원",
+        인원: 9,
+        category: "special",
+        signupFields: [
+            { name: "venue", label: "희망 찻집", type: "text", required: true,
+              placeholder: "라오상하이 / 반조 / 예평" }
+        ]
+    },
+    {
         date: "2026-09-01",
         time: "18:00",
         title: "test_event",
