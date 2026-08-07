@@ -1448,6 +1448,17 @@ body.evs_modal_open { overflow: hidden; }
     border-radius: 2px;
 }
 .evs_input:focus { border-color: var(--osullocGreen); }
+/* select variant — reset browser defaults, keep padding-right for arrow */
+select.evs_select {
+    background: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+}
 
 /* inline error */
 .evs_err {
@@ -1620,4 +1631,44 @@ body.evs_modal_open { overflow: hidden; }
     font-size: 13px;
     color: var(--fontGray);
     margin: 0;
+}
+/* inline placeholder inside a venue chip row when that venue has no signups */
+.evs_names_empty_inline {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.3);
+    font-style: italic;
+}
+
+/* ─ per-venue counter rows (status card with capacityPerOption) ─────────── */
+.evs_venue_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 0;
+}
+.evs_venue_row + .evs_venue_row {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+.evs_venue_label {
+    font-size: 13px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--fontColor);
+}
+.evs_venue_count {
+    font-size: 12.5px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--osullocGreen);
+    background: var(--osullocGreenS);
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+/* full venue: count turns red-toned */
+.evs_venue_row.is-full .evs_venue_label {
+    color: var(--fontGray);
+}
+.evs_venue_row.is-full .evs_venue_count {
+    background: rgba(178, 59, 59, 0.1);
+    color: #b23b3b;
 }

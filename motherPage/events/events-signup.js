@@ -3,11 +3,21 @@
 // Requires events-data.js to load first.
 //
 // Extra fields per event (optional): add a `signupFields` array to the
-// event's entry in events-data.js, e.g.:
-//   signupFields: [
-//     { name: "affiliation", label: "소속", hint: "학과/단체", required: true },
-//     { name: "dietary",     label: "식이 제한",              required: false }
-//   ]
+// event's entry in events-data.js.
+//
+//   Text input:
+//     { name: "affiliation", label: "소속", hint: "학과/단체", required: true }
+//
+//   Select (dropdown):
+//     { name: "venue", label: "희망 찻집", type: "select", required: true,
+//       options: ["라오상하이", "반조", "예평"] }
+//
+//   Select with per-option capacity tracking in the status card:
+//     { name: "venue", label: "희망 찻집", type: "select", required: true,
+//       options: ["라오상하이", "반조", "예평"], capacityPerOption: 3 }
+//     When capacityPerOption is set, the status card shows individual
+//     confirmed-count rows per option instead of a single total chip.
+//
 // Values are stored in the `metadata` JSON column on the backend.
 (function () {
     "use strict";
@@ -44,6 +54,25 @@
         return res.json();
     }
 
+    // ── group-by field helper ────────────────────────────────────────
+    // Returns the first signupField with type "select" + capacityPerOption —
+    // this field drives the per-option counter rows in the status card.
+
+    function getGroupField(event) {
+        if (!Array.isArray(event.signupFields)) return null;
+        return event.signupFields.find(
+            f => f.type === "select" && Array.isArray(f.options) && f.capacityPerOption != null
+        ) || null;
+    }
+
+    // Parse signup metadata safely — the backend may return JSON already
+    // parsed (object) or as a raw string.
+    function parseMeta(s) {
+        if (!s.metadata) return {};
+        if (typeof s.metadata === "object") return s.metadata;
+        try { return JSON.parse(s.metadata); } catch { return {}; }
+    }
+
     // ── deadline countdown ───────────────────────────────────────────
 
     function formatDeadline(event) {
@@ -64,8 +93,13 @@
     // ── status card ──────────────────────────────────────────────────
     // Always visible when recruiting. Shows confirmed/wait counts,
     // deadline, and a collapsible participant name list.
+    //
+    // When the event has a signupField with type "select" + capacityPerOption,
+    // the chips row is replaced by per-option venue rows.
 
     function createStatusCard(event) {
+        const groupField = getGroupField(event);
+
         const card = document.createElement("div");
         card.className = "evs_status_card";
 
@@ -86,25 +120,52 @@
         header.appendChild(title);
         header.appendChild(toggle);
 
-        // ─ chips row: confirmed + wait + deadline
+        // ─ stats area
         const chipsRow = document.createElement("div");
         chipsRow.className = "evs_status_chips";
 
-        const confirmedChip = document.createElement("span");
-        confirmedChip.className = "evs_stat_chip";
-        confirmedChip.textContent = "확정 —명";
+        // venueEls: map from option string → { row, countEl } — only when grouped
+        let venueEls = null;
+        let confirmedChip = null;
 
+        if (groupField) {
+            // One row per option (venue)
+            venueEls = {};
+            groupField.options.forEach(option => {
+                const row = document.createElement("div");
+                row.className = "evs_venue_row";
+
+                const lbl = document.createElement("span");
+                lbl.className = "evs_venue_label";
+                lbl.textContent = option;
+
+                const cnt = document.createElement("span");
+                cnt.className = "evs_venue_count";
+                cnt.textContent = `0/${groupField.capacityPerOption}명`;
+
+                row.appendChild(lbl);
+                row.appendChild(cnt);
+                chipsRow.appendChild(row);
+                venueEls[option] = { row, countEl: cnt };
+            });
+        } else {
+            // Single "확정 N/M명" chip
+            confirmedChip = document.createElement("span");
+            confirmedChip.className = "evs_stat_chip";
+            confirmedChip.textContent = "확정 —명";
+            chipsRow.appendChild(confirmedChip);
+        }
+
+        // Wait chip is always present (hidden until there are waitlisted signups)
         const waitChip = document.createElement("span");
         waitChip.className = "evs_stat_chip evs_stat_wait";
         waitChip.hidden = true;
+        chipsRow.appendChild(waitChip);
 
         const deadlineEl = document.createElement("span");
         deadlineEl.className = "evs_stat_deadline";
         const dl = formatDeadline(event);
         if (dl) deadlineEl.textContent = dl;
-
-        chipsRow.appendChild(confirmedChip);
-        chipsRow.appendChild(waitChip);
         chipsRow.appendChild(deadlineEl);
 
         // ─ names panel (hidden by default)
@@ -130,14 +191,30 @@
         // ─ public methods
 
         function updateStats(confirmed, waiting, cap) {
-            const capStr = cap != null ? `/${cap}명` : "명";
-            confirmedChip.textContent = `확정 ${confirmed.length}${capStr}`;
+            if (groupField && venueEls) {
+                // Per-option counts from each signup's metadata
+                groupField.options.forEach(option => {
+                    const count = confirmed.filter(s =>
+                        parseMeta(s)[groupField.name] === option
+                    ).length;
+                    venueEls[option].countEl.textContent =
+                        `${count}/${groupField.capacityPerOption}명`;
+                    venueEls[option].row.classList.toggle(
+                        "is-full", count >= groupField.capacityPerOption
+                    );
+                });
+            } else {
+                const capStr = cap != null ? `/${cap}명` : "명";
+                confirmedChip.textContent = `확정 ${confirmed.length}${capStr}`;
+            }
+
             if (waiting.length > 0) {
                 waitChip.textContent = `대기 ${waiting.length}명`;
                 waitChip.hidden = false;
             } else {
                 waitChip.hidden = true;
             }
+
             // refresh deadline text
             const d = formatDeadline(event);
             deadlineEl.textContent = d || "";
@@ -155,7 +232,63 @@
                 emp.className = "evs_names_empty";
                 emp.textContent = "아직 신청자가 없습니다.";
                 inner.appendChild(emp);
+            } else if (groupField) {
+                // Grouped by option — one section per venue
+                groupField.options.forEach(option => {
+                    const venueList = confirmed.filter(s =>
+                        parseMeta(s)[groupField.name] === option
+                    );
+
+                    const sec = document.createElement("div");
+                    sec.className = "evs_names_section";
+
+                    const lbl = document.createElement("p");
+                    lbl.className = "evs_names_label";
+                    lbl.textContent = option;
+                    sec.appendChild(lbl);
+
+                    const wrap = document.createElement("div");
+                    wrap.className = "evs_names_chips";
+
+                    if (venueList.length === 0) {
+                        const emp = document.createElement("span");
+                        emp.className = "evs_names_empty_inline";
+                        emp.textContent = "신청자 없음";
+                        wrap.appendChild(emp);
+                    } else {
+                        venueList.forEach(s => {
+                            const chip = document.createElement("span");
+                            chip.className = "evs_name_chip";
+                            chip.textContent = s.nickname;
+                            wrap.appendChild(chip);
+                        });
+                    }
+
+                    sec.appendChild(wrap);
+                    inner.appendChild(sec);
+                });
+
+                // Waitlist as its own section (venue-agnostic)
+                if (waiting.length > 0) {
+                    const sec = document.createElement("div");
+                    sec.className = "evs_names_section";
+                    const lbl = document.createElement("p");
+                    lbl.className = "evs_names_label evs_names_label_wait";
+                    lbl.textContent = "대기";
+                    sec.appendChild(lbl);
+                    const wrap = document.createElement("div");
+                    wrap.className = "evs_names_chips";
+                    waiting.forEach(s => {
+                        const chip = document.createElement("span");
+                        chip.className = "evs_name_chip evs_name_chip_wait";
+                        chip.textContent = s.nickname;
+                        wrap.appendChild(chip);
+                    });
+                    sec.appendChild(wrap);
+                    inner.appendChild(sec);
+                }
             } else {
+                // Flat layout: confirmed section, then wait section
                 function makeSection(label, list, chipClass) {
                     const sec = document.createElement("div");
                     sec.className = "evs_names_section";
@@ -214,6 +347,30 @@
         overlay.setAttribute("aria-modal", "true");
         overlay.setAttribute("aria-labelledby", "evs_dlg_title");
 
+        // Build extra field HTML — text input or select depending on field type
+        const extraHTML = extra.map(f => {
+            const reqMark = f.required ? ' <span class="evs_req">*</span>' : "";
+            const hint    = f.hint ? `<span class="evs_hint">${f.hint}</span>` : "";
+            let control;
+            if (f.type === "select" && Array.isArray(f.options)) {
+                const opts = f.options.map(o =>
+                    `<option value="${o}">${o}</option>`
+                ).join("");
+                control = `<select class="evs_input evs_select" id="evs_x_${f.name}" name="${f.name}" ${f.required ? "required" : ""}>
+                    <option value="">— 선택해주세요 —</option>
+                    ${opts}
+                  </select>`;
+            } else {
+                control = `<input class="evs_input" id="evs_x_${f.name}" name="${f.name}" type="${f.type || "text"}" ${f.required ? "required" : ""} autocomplete="off" placeholder="${f.placeholder || ""}">`;
+            }
+            return `
+    <div class="evs_field">
+      <label class="evs_lbl" for="evs_x_${f.name}">${f.label}${reqMark}</label>
+      ${hint}
+      ${control}
+    </div>`;
+        }).join("");
+
         overlay.innerHTML = `
 <div class="evs_dialog">
   <button type="button" class="evs_close" aria-label="닫기">&times;</button>
@@ -230,12 +387,7 @@
       <span class="evs_hint">운영진에게만 공개됩니다.</span>
       <input class="evs_input" id="evs_real" name="realName" type="text" required autocomplete="name" placeholder="홍길동">
     </div>
-    ${extra.map(f => `
-    <div class="evs_field">
-      <label class="evs_lbl" for="evs_x_${f.name}">${f.label}${f.required ? ' <span class="evs_req">*</span>' : ""}</label>
-      ${f.hint ? `<span class="evs_hint">${f.hint}</span>` : ""}
-      <input class="evs_input" id="evs_x_${f.name}" name="${f.name}" type="${f.type || "text"}" ${f.required ? "required" : ""} autocomplete="off" placeholder="${f.placeholder || ""}">
-    </div>`).join("")}
+    ${extraHTML}
     <p class="evs_err" hidden></p>
     <button type="submit" class="evs_submit">신청하기</button>
   </form>
@@ -243,8 +395,9 @@
 
         document.body.appendChild(overlay);
 
-        // trigger enter animation — setTimeout(0) flushes the paint of the
-        // initial opacity:0 state before we add is-open, so the transition fires
+        // trigger enter animation — setTimeout flushes the initial opacity:0
+        // paint before adding is-open, so the transition fires correctly.
+        // (double-rAF is avoided: it doesn't fire in background/hidden tabs)
         setTimeout(() => overlay.classList.add("is-open"), 16);
 
         // focus trap
@@ -293,7 +446,12 @@
             const metadata = {};
             for (const f of extra) {
                 const val = (form.elements[f.name]?.value || "").trim();
-                if (f.required && !val) { showErr(`${f.label}을(를) 입력해주세요.`); return; }
+                if (f.required && !val) {
+                    // Use "선택" for selects, "입력" for text fields
+                    const verb = (f.type === "select") ? "선택" : "입력";
+                    showErr(`${f.label}을(를) ${verb}해주세요.`);
+                    return;
+                }
                 if (val) metadata[f.name] = val;
             }
 

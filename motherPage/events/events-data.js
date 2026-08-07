@@ -228,8 +228,9 @@ const teaClubEvents = [
         인원: 9,
         category: "special",
         signupFields: [
-            { name: "venue", label: "희망 찻집", type: "text", required: true,
-              placeholder: "라오상하이 / 반조 / 예평" }
+            { name: "venue", label: "희망 찻집", type: "select", required: true,
+              options: ["라오상하이", "반조", "예평"],
+              capacityPerOption: 3 }
         ]
     },
     {
