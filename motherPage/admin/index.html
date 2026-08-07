@@ -6,6 +6,7 @@
     <title>신청 관리 — 설다연</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
     <script src="../events/events-data.js"></script>
+    <script src="../join/join-config.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -55,17 +56,41 @@
             border-radius: 50%;
             background: #7dffcc;
             opacity: 0;
-            transition: opacity .3s;
         }
-        .adm-pulse.on { opacity: 1; animation: pulse 1.2s ease-out forwards; }
+        .adm-pulse.on { animation: pulse 1.2s ease-out forwards; }
         @keyframes pulse {
             0%   { opacity: 1; transform: scale(1); }
             70%  { opacity: .6; transform: scale(1.5); }
             100% { opacity: 0; transform: scale(1); }
         }
 
+        /* ── tabs ── */
+        .adm-tabs {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            padding: 0 32px;
+        }
+        .adm-tab {
+            padding: 13px 18px;
+            font-family: var(--font);
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--gray);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            margin-bottom: -1px;
+            transition: color .15s, border-color .15s;
+        }
+        .adm-tab:hover { color: #444; }
+        .adm-tab.is-active { color: var(--green); border-bottom-color: var(--green); }
+
         /* ── layout ── */
         .adm-wrap { max-width: 1120px; margin: 0 auto; padding: 28px 24px 60px; }
+        .adm-panel { display: none; }
+        .adm-panel.is-active { display: block; }
 
         /* ── query bar ── */
         .adm-query {
@@ -108,6 +133,21 @@
         }
         .adm-btn:hover { opacity: .88; }
         .adm-btn:disabled { opacity: .45; cursor: not-allowed; }
+        .adm-btn-sm {
+            padding: 6px 14px;
+            background: var(--green);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity .15s;
+        }
+        .adm-btn-sm:hover { opacity: .88; }
+        .adm-btn-sm:disabled { opacity: .45; cursor: not-allowed; }
 
         .adm-refresh-toggle {
             display: flex;
@@ -157,11 +197,7 @@
             margin-bottom: 16px;
         }
         .adm-cap-rows { display: flex; flex-direction: column; gap: 12px; }
-        .adm-cap-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .adm-cap-row { display: flex; align-items: center; gap: 12px; }
         .adm-cap-lbl {
             font-size: 13px;
             font-weight: 600;
@@ -209,7 +245,7 @@
         .adm-pill.full { background: var(--red-pale); color: var(--red); }
         .adm-pill.wait { background: var(--amber-pale); color: var(--amber); }
 
-        /* ── summary chips (totals row) ── */
+        /* ── summary chips ── */
         .adm-summary {
             display: flex;
             align-items: center;
@@ -255,11 +291,7 @@
             border-radius: var(--radius);
             overflow-x: auto;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
         thead th {
             background: #f2f2f0;
             padding: 9px 14px;
@@ -293,7 +325,6 @@
         }
         .badge.ok   { background: var(--green-pale); color: var(--green); }
         .badge.wait { background: var(--amber-pale); color: var(--amber); }
-
         .wait-pos {
             display: inline-block;
             font-size: 10.5px;
@@ -305,22 +336,257 @@
             margin-left: 3px;
             font-variant-numeric: tabular-nums;
         }
-
-        .adm-empty {
-            text-align: center;
-            padding: 56px;
-            color: var(--gray);
-            font-size: 14px;
-        }
-
+        .adm-empty { text-align: center; padding: 56px; color: var(--gray); font-size: 14px; }
         .adm-num { font-variant-numeric: tabular-nums; color: var(--gray); font-size: 12px; }
         .adm-ts  { font-variant-numeric: tabular-nums; color: var(--gray); font-size: 12px; }
 
+        /* ── 소모임 panel ── */
+        .sm-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .sm-toolbar-spacer { flex: 1; }
+        .sm-last-upd {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        .sm-filter-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--gray);
+            cursor: pointer;
+            user-select: none;
+        }
+        .sm-filter-toggle input { accent-color: var(--green); cursor: pointer; }
+
+        /* ── 소모임 cards ── */
+        .sm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .sm-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .sm-card-body { padding: 16px 18px 14px; }
+        .sm-card-date {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 4px;
+        }
+        .sm-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 3px;
+            line-height: 1.35;
+        }
+        .sm-card-host {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        /* cap row inside card */
+        .sm-cap-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .sm-cap-track {
+            flex: 1;
+            height: 6px;
+            background: #eee;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .sm-cap-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--green);
+        }
+        .sm-cap-fill.is-full { background: var(--red); }
+        .sm-cap-cnt {
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+        .sm-cap-cnt.is-full { color: var(--red); }
+        .sm-full-pill {
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--red-pale);
+            color: var(--red);
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        /* participant chips */
+        .sm-names {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 12px;
+            min-height: 24px;
+        }
+        .sm-name-chip {
+            display: inline-block;
+            padding: 3px 9px;
+            background: var(--green-pale);
+            color: var(--green);
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .sm-name-chip.is-host {
+            background: var(--green-mid);
+            color: var(--green);
+        }
+        .sm-host-mark {
+            font-size: 9.5px;
+            opacity: .7;
+            margin-left: 3px;
+        }
+        .sm-names-empty {
+            font-size: 12px;
+            color: #bbb;
+            font-style: italic;
+            line-height: 2;
+        }
+
+        /* detail panel (real names) */
+        .sm-detail-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            padding: 10px 18px;
+            background: #f8f8f6;
+            border: none;
+            border-top: 1px solid var(--border);
+            font-family: var(--font);
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            text-align: left;
+            transition: background .12s, color .12s;
+        }
+        .sm-detail-toggle:hover { background: var(--green-pale); color: var(--green); }
+        .sm-detail-toggle.is-open { color: var(--green); background: var(--green-pale); }
+        .sm-detail-toggle-arrow { margin-left: auto; font-size: 11px; transition: transform .2s; }
+        .sm-detail-toggle.is-open .sm-detail-toggle-arrow { transform: rotate(180deg); }
+
+        .sm-detail-panel {
+            display: none;
+            padding: 14px 18px;
+            border-top: 1px solid var(--border);
+            background: #fafaf8;
+        }
+        .sm-detail-panel.is-open { display: block; }
+
+        .sm-detail-pw-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .sm-detail-pw-row input {
+            flex: 1;
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 13px;
+            outline: none;
+            transition: border-color .15s;
+        }
+        .sm-detail-pw-row input:focus { border-color: var(--green); }
+        .sm-detail-err {
+            font-size: 12px;
+            color: var(--red);
+            margin-bottom: 8px;
+        }
+
+        /* real-name table inside detail */
+        .sm-detail-table-wrap { overflow-x: auto; }
+        .sm-detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+        .sm-detail-table th {
+            padding: 6px 10px;
+            background: #f0f0ee;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--gray);
+            text-align: left;
+            white-space: nowrap;
+        }
+        .sm-detail-table td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #f0f0ee;
+            color: #333;
+            vertical-align: middle;
+        }
+        .sm-detail-table tr:last-child td { border-bottom: none; }
+        .sm-detail-table .is-host-row td { background: rgba(28,102,85,.04); }
+        .sm-host-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            background: var(--green-pale);
+            color: var(--green);
+            padding: 1px 5px;
+            border-radius: 6px;
+            margin-left: 4px;
+        }
+
+        /* section heading for past events */
+        .sm-section-head {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+        .sm-past-toggle {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 13px;
+            color: var(--gray);
+            padding: 8px 18px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: background .12s;
+        }
+        .sm-past-toggle:hover { background: #eee; }
+
         @media (max-width: 640px) {
             .adm-header { padding: 14px 16px; }
+            .adm-tabs   { padding: 0 16px; }
             .adm-wrap   { padding: 16px 12px 40px; }
-            .adm-query  { padding: 14px 16px; }
-            .adm-cap-card { padding: 14px 16px; }
+            .adm-query, .adm-cap-card { padding: 14px 16px; }
+            .sm-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -336,54 +602,108 @@
     </div>
 </header>
 
+<nav class="adm-tabs">
+    <button class="adm-tab is-active" data-panel="tab-signups">행사 신청</button>
+    <button class="adm-tab"           data-panel="tab-somori">소모임</button>
+</nav>
+
 <div class="adm-wrap">
 
-    <!-- query bar -->
-    <div class="adm-query">
-        <div class="adm-field">
-            <label for="adm-event-sel">행사 선택</label>
-            <select class="adm-select" id="adm-event-sel"></select>
+    <!-- ══ 행사 신청 panel ══════════════════════════════════════════════ -->
+    <div class="adm-panel is-active" id="tab-signups">
+
+        <div class="adm-query">
+            <div class="adm-field">
+                <label for="adm-event-sel">행사 선택</label>
+                <select class="adm-select" id="adm-event-sel"></select>
+            </div>
+            <div class="adm-field" style="max-width:220px;">
+                <label for="adm-pw">관리자 비밀번호</label>
+                <input class="adm-pw" id="adm-pw" type="password" placeholder="비밀번호 입력" autocomplete="current-password">
+            </div>
+            <button class="adm-btn" id="adm-fetch-btn">조회</button>
+            <label class="adm-refresh-toggle">
+                <input type="checkbox" id="adm-auto-refresh">
+                자동 새로고침
+                <span class="adm-refresh-badge" id="adm-refresh-badge">30s</span>
+            </label>
         </div>
-        <div class="adm-field" style="max-width:220px;">
-            <label for="adm-pw">관리자 비밀번호</label>
-            <input class="adm-pw" id="adm-pw" type="password" placeholder="비밀번호 입력" autocomplete="current-password">
+
+        <p class="adm-status" id="adm-status"></p>
+
+        <div class="adm-cap-card" id="adm-cap-card" hidden>
+            <p class="adm-cap-title" id="adm-cap-title">찻집별 현황</p>
+            <div class="adm-cap-rows" id="adm-cap-rows"></div>
         </div>
-        <button class="adm-btn" id="adm-fetch-btn">조회</button>
-        <label class="adm-refresh-toggle">
-            <input type="checkbox" id="adm-auto-refresh">
-            자동 새로고침
-            <span class="adm-refresh-badge" id="adm-refresh-badge">30s</span>
-        </label>
-    </div>
 
-    <!-- status text -->
-    <p class="adm-status" id="adm-status"></p>
+        <div class="adm-summary" id="adm-summary" hidden></div>
 
-    <!-- per-venue capacity card -->
-    <div class="adm-cap-card" id="adm-cap-card" hidden>
-        <p class="adm-cap-title" id="adm-cap-title">찻집별 현황</p>
-        <div class="adm-cap-rows" id="adm-cap-rows"></div>
-    </div>
+        <div class="adm-toolbar" id="adm-toolbar" hidden>
+            <button class="adm-btn-sec" id="adm-csv-btn">CSV 내보내기</button>
+        </div>
 
-    <!-- summary totals -->
-    <div class="adm-summary" id="adm-summary" hidden></div>
+        <div class="adm-table-wrap" id="adm-table-wrap" hidden>
+            <table>
+                <thead id="adm-thead"></thead>
+                <tbody id="adm-tbody"></tbody>
+            </table>
+        </div>
 
-    <!-- export toolbar -->
-    <div class="adm-toolbar" id="adm-toolbar" hidden>
-        <button class="adm-btn-sec" id="adm-csv-btn">CSV 내보내기</button>
-    </div>
+    </div><!-- /tab-signups -->
 
-    <!-- results table -->
-    <div class="adm-table-wrap" id="adm-table-wrap" hidden>
-        <table id="adm-table">
-            <thead id="adm-thead"></thead>
-            <tbody id="adm-tbody"></tbody>
-        </table>
-    </div>
+    <!-- ══ 소모임 panel ═════════════════════════════════════════════════ -->
+    <div class="adm-panel" id="tab-somori">
 
-</div>
+        <div class="sm-toolbar">
+            <button class="adm-btn-sec" id="sm-refresh-btn">새로고침</button>
+            <label class="sm-filter-toggle">
+                <input type="checkbox" id="sm-show-past">
+                지난 소모임 포함
+            </label>
+            <div class="sm-toolbar-spacer"></div>
+            <span class="sm-last-upd" id="sm-last-upd"></span>
+        </div>
+
+        <p class="adm-status" id="sm-status"></p>
+
+        <!-- upcoming events -->
+        <div id="sm-upcoming-wrap">
+            <p class="sm-section-head" id="sm-upcoming-label" hidden>예정 소모임</p>
+            <div class="sm-grid" id="sm-upcoming-grid"></div>
+        </div>
+
+        <!-- past events (shown only when checkbox is checked) -->
+        <div id="sm-past-wrap" hidden>
+            <p class="sm-section-head">지난 소모임</p>
+            <div class="sm-grid" id="sm-past-grid"></div>
+        </div>
+
+    </div><!-- /tab-somori -->
+
+</div><!-- /adm-wrap -->
 
 <script>
+/* ══════════════════════════════════════════════════════════════════════
+   1. Tab switching
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+    const tabs   = document.querySelectorAll(".adm-tab");
+    const panels = document.querySelectorAll(".adm-panel");
+
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            const id = tab.dataset.panel;
+            tabs.forEach(t => t.classList.toggle("is-active", t === tab));
+            panels.forEach(p => p.classList.toggle("is-active", p.id === id));
+            if (id === "tab-somori") window.__smActivate?.();
+        });
+    });
+})();
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   2. 행사 신청 admin (existing logic)
+   ══════════════════════════════════════════════════════════════════════ */
 (function () {
     const API = "https://mzuxduxbzvaekuancotu.supabase.co/functions/v1/event-signup";
 
@@ -406,30 +726,25 @@
     const lastFetchTxt = document.getElementById("adm-last-fetch-text");
     const pulseEl      = document.getElementById("adm-pulse");
 
-    let lastSignups   = [];
-    let lastExtraCols = [];
-    let autoTimer     = null;
-    let lastPw        = "";      // kept in memory for auto-refresh
+    let lastSignups = [], lastExtraCols = [], autoTimer = null, lastPw = "";
 
-    // ── helpers ────────────────────────────────────────────────────────
     function getSelectedEvent() {
-        if (typeof teaClubEvents === "undefined") return null;
-        return teaClubEvents.find(e => e.path === sel.value) || null;
+        return (typeof teaClubEvents !== "undefined")
+            ? teaClubEvents.find(e => e.path === sel.value) || null : null;
     }
-    function getGroupField(event) {
-        if (!event || !Array.isArray(event.signupFields)) return null;
-        return event.signupFields.find(
+    function getGroupField(ev) {
+        if (!ev || !Array.isArray(ev.signupFields)) return null;
+        return ev.signupFields.find(
             f => f.type === "select" && Array.isArray(f.options) && f.capacityPerOption != null
         ) || null;
     }
     function formatDate(iso) {
         if (!iso) return "—";
-        const d = new Date(iso);
-        const p = n => String(n).padStart(2, "0");
+        const d = new Date(iso), p = n => String(n).padStart(2,"0");
         return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
     }
     function nowTime() {
-        const d = new Date(), p = n => String(n).padStart(2, "0");
+        const d = new Date(), p = n => String(n).padStart(2,"0");
         return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
     }
     function setStatus(msg, isErr = false) {
@@ -437,333 +752,465 @@
         statusEl.className = "adm-status" + (isErr ? " err" : "");
     }
     function hide() {
-        capCard.hidden   = true;
-        summaryEl.hidden = true;
-        toolbar.hidden   = true;
-        tableWrap.hidden = true;
+        capCard.hidden = summaryEl.hidden = toolbar.hidden = tableWrap.hidden = true;
     }
     function flashPulse() {
         pulseEl.classList.remove("on");
-        void pulseEl.offsetWidth; // reflow
+        void pulseEl.offsetWidth;
         pulseEl.classList.add("on");
     }
 
-    // ── populate event dropdown ────────────────────────────────────────
-    (function populateSel() {
-        if (typeof teaClubEvents === "undefined") {
-            sel.innerHTML = '<option>events-data.js 로드 실패</option>';
-            return;
-        }
-        const sorted = [...teaClubEvents].sort((a, b) => b.date.localeCompare(a.date));
-        sorted.forEach(ev => {
-            const opt = document.createElement("option");
-            opt.value = ev.path;
-            opt.textContent = `${ev.date}  ${ev.title}`;
-            sel.appendChild(opt);
+    // populate dropdown
+    if (typeof teaClubEvents !== "undefined") {
+        [...teaClubEvents].sort((a,b) => b.date.localeCompare(a.date)).forEach(ev => {
+            const o = document.createElement("option");
+            o.value = ev.path;
+            o.textContent = `${ev.date}  ${ev.title}`;
+            sel.appendChild(o);
         });
-    })();
+    } else {
+        sel.innerHTML = '<option>events-data.js 로드 실패</option>';
+    }
 
-    // ── fetch ──────────────────────────────────────────────────────────
     async function fetchSignups(isAuto = false) {
         const eventPath = sel.value;
         const password  = isAuto ? lastPw : pwInput.value;
         if (!eventPath) { setStatus("행사를 선택해주세요.", true); return; }
         if (!password)  { setStatus("비밀번호를 입력해주세요.", true); return; }
-
         if (!isAuto) { setStatus("조회 중…"); fetchBtn.disabled = true; hide(); }
-
         try {
-            const res = await fetch(API, {
+            const res  = await fetch(API, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ action: "adminListSignups", eventPath, password }),
             });
             const data = await res.json();
             if (data.error) { setStatus(data.error, true); return; }
-
             lastSignups = data.signups || [];
             lastPw = password;
-
-            const event = getSelectedEvent();
-            const groupField = getGroupField(event);
-
-            renderCapacityCard(lastSignups, groupField);
+            const ev = getSelectedEvent(), gf = getGroupField(ev);
+            renderCapacityCard(lastSignups, gf);
             renderSummary(lastSignups);
-            renderTable(lastSignups, groupField);
-
-            const n = lastSignups.length;
-            setStatus(`총 ${n}명 조회됨`);
-
-            // update header timestamp
+            renderTable(lastSignups, gf);
+            setStatus(`총 ${lastSignups.length}명 조회됨`);
             lastFetchTxt.textContent = `최종 조회 ${nowTime()}`;
             lastFetchEl.hidden = false;
             flashPulse();
-        } catch {
-            setStatus("네트워크 오류가 발생했습니다.", true);
-        } finally {
-            if (!isAuto) fetchBtn.disabled = false;
-        }
+        } catch { setStatus("네트워크 오류가 발생했습니다.", true); }
+        finally { if (!isAuto) fetchBtn.disabled = false; }
     }
 
     fetchBtn.addEventListener("click", () => fetchSignups(false));
     pwInput.addEventListener("keydown", e => { if (e.key === "Enter") fetchSignups(false); });
-
-    // ── auto-refresh ───────────────────────────────────────────────────
     autoRefCheck.addEventListener("change", () => {
         refreshBadge.classList.toggle("on", autoRefCheck.checked);
         clearInterval(autoTimer);
-        if (autoRefCheck.checked) {
-            autoTimer = setInterval(() => {
-                if (lastPw) fetchSignups(true);
-            }, 30_000);
-        }
+        if (autoRefCheck.checked)
+            autoTimer = setInterval(() => { if (lastPw) fetchSignups(true); }, 30_000);
     });
 
-    // ── capacity card ──────────────────────────────────────────────────
-    function renderCapacityCard(signups, groupField) {
-        if (!groupField) { capCard.hidden = true; return; }
-
-        capTitle.textContent = `${groupField.label}별 현황`;
+    function renderCapacityCard(signups, gf) {
+        if (!gf) { capCard.hidden = true; return; }
+        capTitle.textContent = `${gf.label}별 현황`;
         capRows.innerHTML = "";
-
-        groupField.options.forEach(option => {
-            const confirmed = signups.filter(
-                s => !s.waitlisted && (s.metadata || {})[groupField.name] === option
-            ).length;
-            const waiting = signups.filter(
-                s => s.waitlisted && (s.metadata || {})[groupField.name] === option
-            ).length;
-            const cap = groupField.capacityPerOption;
-            const full = confirmed >= cap;
-            const pct  = Math.min(100, (confirmed / cap) * 100);
-
-            const row = document.createElement("div");
+        gf.options.forEach(option => {
+            const conf = signups.filter(s => !s.waitlisted && (s.metadata||{})[gf.name] === option).length;
+            const wait = signups.filter(s =>  s.waitlisted && (s.metadata||{})[gf.name] === option).length;
+            const full = conf >= gf.capacityPerOption;
+            const pct  = Math.min(100, conf / gf.capacityPerOption * 100);
+            const row  = document.createElement("div");
             row.className = "adm-cap-row" + (full ? " is-full" : "");
-
-            const lbl = document.createElement("span");
-            lbl.className = "adm-cap-lbl";
-            lbl.textContent = option;
-
-            const track = document.createElement("div");
-            track.className = "adm-cap-track";
-            const fill = document.createElement("div");
-            fill.className = "adm-cap-fill";
-            fill.style.width = `${pct}%`;
-            track.appendChild(fill);
-
-            const cnt = document.createElement("span");
-            cnt.className = "adm-cap-cnt";
-            cnt.textContent = `${confirmed}/${cap}명`;
-
-            const pills = document.createElement("div");
-            pills.className = "adm-cap-pills";
-            if (full) {
-                const p = document.createElement("span");
-                p.className = "adm-pill full";
-                p.textContent = "마감";
-                pills.appendChild(p);
-            }
-            if (waiting > 0) {
-                const p = document.createElement("span");
-                p.className = "adm-pill wait";
-                p.textContent = `대기 ${waiting}명`;
-                pills.appendChild(p);
-            }
-
-            row.appendChild(lbl);
-            row.appendChild(track);
-            row.appendChild(cnt);
-            row.appendChild(pills);
+            const lbl = document.createElement("span"); lbl.className = "adm-cap-lbl"; lbl.textContent = option;
+            const trk = document.createElement("div");  trk.className = "adm-cap-track";
+            const fil = document.createElement("div");  fil.className = "adm-cap-fill"; fil.style.width = `${pct}%`;
+            trk.appendChild(fil);
+            const cnt = document.createElement("span"); cnt.className = "adm-cap-cnt"; cnt.textContent = `${conf}/${gf.capacityPerOption}명`;
+            const pills = document.createElement("div"); pills.className = "adm-cap-pills";
+            if (full) { const p = document.createElement("span"); p.className="adm-pill full"; p.textContent="마감"; pills.appendChild(p); }
+            if (wait) { const p = document.createElement("span"); p.className="adm-pill wait"; p.textContent=`대기 ${wait}명`; pills.appendChild(p); }
+            [lbl,trk,cnt,pills].forEach(el => row.appendChild(el));
             capRows.appendChild(row);
         });
-
         capCard.hidden = false;
     }
 
-    // ── summary totals ─────────────────────────────────────────────────
     function renderSummary(signups) {
         summaryEl.innerHTML = "";
         const confirmed = signups.filter(s => !s.waitlisted).length;
         const waiting   = signups.filter(s =>  s.waitlisted).length;
-        addChip(`전체 ${signups.length}명`, "total");
-        addChip(`확정 ${confirmed}명`, "confirmed");
-        if (waiting) addChip(`대기 ${waiting}명`, "waiting");
+        [["전체 " + signups.length + "명","total"],
+         ["확정 " + confirmed + "명","confirmed"],
+         ...(waiting ? [["대기 " + waiting + "명","waiting"]] : [])
+        ].forEach(([txt,cls]) => {
+            const c = document.createElement("span");
+            c.className = `adm-chip ${cls}`; c.textContent = txt;
+            summaryEl.appendChild(c);
+        });
         summaryEl.hidden = false;
     }
-    function addChip(text, cls) {
-        const c = document.createElement("span");
-        c.className = `adm-chip ${cls}`;
-        c.textContent = text;
-        summaryEl.appendChild(c);
-    }
 
-    // ── table ──────────────────────────────────────────────────────────
-    function renderTable(signups, groupField) {
-        thead.innerHTML = "";
-        tbody.innerHTML = "";
-
-        // collect metadata keys (excluding the group field — shown in its own column)
+    function renderTable(signups, gf) {
+        thead.innerHTML = tbody.innerHTML = "";
         const metaKeys = [];
-        signups.forEach(s => {
-            Object.keys(s.metadata || {}).forEach(k => {
-                if (!metaKeys.includes(k) && k !== groupField?.name) metaKeys.push(k);
-            });
-        });
-        lastExtraCols = groupField
-            ? [groupField.name, ...metaKeys]
-            : metaKeys;
+        signups.forEach(s => Object.keys(s.metadata||{}).forEach(k => {
+            if (!metaKeys.includes(k) && k !== gf?.name) metaKeys.push(k);
+        }));
+        lastExtraCols = gf ? [gf.name, ...metaKeys] : metaKeys;
 
-        // Build column header list
-        const cols = ["#", "닉네임", "실명", "상태", "신청 일시"];
-        if (groupField) cols.push(groupField.label);
+        const cols = ["#","닉네임","실명","상태","신청 일시"];
+        if (gf) cols.push(gf.label);
         metaKeys.forEach(k => cols.push(k));
 
-        // header row
         const hr = document.createElement("tr");
-        cols.forEach(h => {
-            const th = document.createElement("th");
-            th.textContent = h;
-            hr.appendChild(th);
-        });
+        cols.forEach(h => { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); });
         thead.appendChild(hr);
 
-        // compute waitlist positions per venue (or global)
         const waitPos = {};
-        if (groupField) {
-            groupField.options.forEach(option => {
-                const waiters = signups
-                    .filter(s => s.waitlisted && (s.metadata || {})[groupField.name] === option)
-                    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                waiters.forEach((s, i) => { waitPos[s.id] = i + 1; });
-            });
-        } else {
-            const waiters = signups
-                .filter(s => s.waitlisted)
-                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-            waiters.forEach((s, i) => { waitPos[s.id] = i + 1; });
-        }
+        const computePos = (list) => list
+            .sort((a,b) => new Date(a.created_at)-new Date(b.created_at))
+            .forEach((s,i) => { waitPos[s.id] = i+1; });
+        if (gf) { gf.options.forEach(opt => computePos(signups.filter(s => s.waitlisted && (s.metadata||{})[gf.name]===opt))); }
+        else    { computePos(signups.filter(s => s.waitlisted)); }
 
-        if (signups.length === 0) {
+        if (!signups.length) {
             const tr = document.createElement("tr");
             const td = document.createElement("td");
-            td.colSpan = cols.length;
-            td.className = "adm-empty";
-            td.textContent = "신청자가 없습니다.";
-            tr.appendChild(td);
-            tbody.appendChild(tr);
+            td.colSpan = cols.length; td.className = "adm-empty"; td.textContent = "신청자가 없습니다.";
+            tr.appendChild(td); tbody.appendChild(tr);
         } else {
             signups.forEach((s, i) => {
                 const tr = document.createElement("tr");
                 if (s.waitlisted) tr.classList.add("wait-row");
-
-                // # cell
-                const tdNum = document.createElement("td");
-                tdNum.className = "adm-num";
-                tdNum.textContent = i + 1;
-                tr.appendChild(tdNum);
-
-                // 닉네임
-                const tdNick = document.createElement("td");
-                tdNick.textContent = s.nickname;
-                tr.appendChild(tdNick);
-
-                // 실명
-                const tdReal = document.createElement("td");
-                tdReal.textContent = s.real_name;
-                tr.appendChild(tdReal);
-
-                // 상태 (badge + optional wait position)
-                const tdStatus = document.createElement("td");
+                const cells = [
+                    { txt: i+1, cls: "adm-num" },
+                    { txt: s.nickname },
+                    { txt: s.real_name },
+                ];
+                cells.forEach(({txt, cls}) => {
+                    const td = document.createElement("td");
+                    if (cls) td.className = cls;
+                    td.textContent = txt;
+                    tr.appendChild(td);
+                });
+                // status badge
+                const tdSt = document.createElement("td");
                 const badge = document.createElement("span");
                 badge.className = "badge " + (s.waitlisted ? "wait" : "ok");
                 badge.textContent = s.waitlisted ? "대기" : "확정";
-                if (s.waitlisted && waitPos[s.id] != null) {
-                    const pos = document.createElement("span");
-                    pos.className = "wait-pos";
-                    pos.textContent = `#${waitPos[s.id]}`;
-                    badge.appendChild(pos);
+                if (s.waitlisted && waitPos[s.id]) {
+                    const pos = document.createElement("span"); pos.className = "wait-pos";
+                    pos.textContent = `#${waitPos[s.id]}`; badge.appendChild(pos);
                 }
-                tdStatus.appendChild(badge);
-                tr.appendChild(tdStatus);
-
-                // 신청 일시
-                const tdTs = document.createElement("td");
-                tdTs.className = "adm-ts";
-                tdTs.textContent = formatDate(s.created_at);
-                tr.appendChild(tdTs);
-
-                // group field column
-                if (groupField) {
-                    const tdVenue = document.createElement("td");
-                    tdVenue.textContent = (s.metadata || {})[groupField.name] ?? "—";
-                    tr.appendChild(tdVenue);
-                }
-
-                // extra metadata
-                metaKeys.forEach(k => {
-                    const td = document.createElement("td");
-                    td.textContent = (s.metadata || {})[k] ?? "—";
-                    tr.appendChild(td);
-                });
-
+                tdSt.appendChild(badge); tr.appendChild(tdSt);
+                // timestamp
+                const tdTs = document.createElement("td"); tdTs.className = "adm-ts";
+                tdTs.textContent = formatDate(s.created_at); tr.appendChild(tdTs);
+                // group field
+                if (gf) { const td=document.createElement("td"); td.textContent=(s.metadata||{})[gf.name]??"—"; tr.appendChild(td); }
+                metaKeys.forEach(k => { const td=document.createElement("td"); td.textContent=(s.metadata||{})[k]??"—"; tr.appendChild(td); });
                 tbody.appendChild(tr);
             });
         }
-
-        toolbar.hidden   = false;
-        tableWrap.hidden = false;
+        toolbar.hidden = tableWrap.hidden = false;
     }
 
-    // ── CSV export ─────────────────────────────────────────────────────
     csvBtn.addEventListener("click", () => {
         if (!lastSignups.length) return;
-        const event = getSelectedEvent();
-        const groupField = getGroupField(event);
-
-        const headers = ["번호", "닉네임", "실명", "상태", "대기순위", "신청 일시"];
-        if (groupField) headers.push(groupField.label);
-        const plainMeta = lastExtraCols.filter(k => k !== groupField?.name);
+        const ev = getSelectedEvent(), gf = getGroupField(ev);
+        const headers = ["번호","닉네임","실명","상태","대기순위","신청 일시"];
+        if (gf) headers.push(gf.label);
+        const plainMeta = lastExtraCols.filter(k => k !== gf?.name);
         plainMeta.forEach(k => headers.push(k));
 
-        // recompute positions for CSV
         const waitPos = {};
-        if (groupField) {
-            groupField.options.forEach(option => {
-                const waiters = lastSignups
-                    .filter(s => s.waitlisted && (s.metadata || {})[groupField.name] === option)
-                    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                waiters.forEach((s, i) => { waitPos[s.id] = i + 1; });
-            });
-        } else {
-            const waiters = lastSignups.filter(s => s.waitlisted)
-                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-            waiters.forEach((s, i) => { waitPos[s.id] = i + 1; });
-        }
+        const computePos = (list) => list
+            .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
+            .forEach((s,i)=>{waitPos[s.id]=i+1;});
+        if (gf) gf.options.forEach(opt => computePos(lastSignups.filter(s=>s.waitlisted&&(s.metadata||{})[gf.name]===opt)));
+        else    computePos(lastSignups.filter(s=>s.waitlisted));
 
-        const rows = lastSignups.map((s, i) => {
-            const row = [
-                i + 1,
-                s.nickname,
-                s.real_name,
-                s.waitlisted ? "대기" : "확정",
-                s.waitlisted ? (waitPos[s.id] ?? "") : "",
-                formatDate(s.created_at),
-            ];
-            if (groupField) row.push((s.metadata || {})[groupField.name] ?? "");
-            plainMeta.forEach(k => row.push((s.metadata || {})[k] ?? ""));
-            return row;
+        const rows = lastSignups.map((s,i) => {
+            const r = [i+1,s.nickname,s.real_name,s.waitlisted?"대기":"확정",s.waitlisted?(waitPos[s.id]??""):"",formatDate(s.created_at)];
+            if (gf) r.push((s.metadata||{})[gf.name]??"");
+            plainMeta.forEach(k=>r.push((s.metadata||{})[k]??""));
+            return r;
         });
-
-        const csv = [headers, ...rows]
-            .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
-            .join("\n");
-
-        const eventTitle = sel.options[sel.selectedIndex]?.textContent.trim() || "signups";
+        const csv = [headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+        const title = sel.options[sel.selectedIndex]?.textContent.trim()||"signups";
         const a = document.createElement("a");
-        a.href = "data:text/csv;charset=utf-8,﻿" + encodeURIComponent(csv);
-        a.download = `신청명단_${eventTitle}.csv`;
+        a.href = "data:text/csv;charset=utf-8,﻿"+encodeURIComponent(csv);
+        a.download = `신청명단_${title}.csv`;
         a.click();
     });
+})();
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   3. 소모임 viewer
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+    const JOIN_API = (typeof window.JOIN_APPS_SCRIPT_URL === "string" && window.JOIN_APPS_SCRIPT_URL.trim())
+        ? window.JOIN_APPS_SCRIPT_URL.trim() : "";
+
+    const statusEl     = document.getElementById("sm-status");
+    const upcomingGrid = document.getElementById("sm-upcoming-grid");
+    const pastGrid     = document.getElementById("sm-past-grid");
+    const upcomingWrap = document.getElementById("sm-upcoming-wrap");
+    const pastWrap     = document.getElementById("sm-past-wrap");
+    const upcomingLbl  = document.getElementById("sm-upcoming-label");
+    const refreshBtn   = document.getElementById("sm-refresh-btn");
+    const showPastChk  = document.getElementById("sm-show-past");
+    const lastUpdEl    = document.getElementById("sm-last-upd");
+
+    const WEEKDAYS = ["일","월","화","수","목","금","토"];
+    const pad2 = n => String(n).padStart(2,"0");
+
+    function todayStr() {
+        const d = new Date();
+        return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    }
+    function formatEventDate(dateStr, timeStr) {
+        if (!dateStr) return "";
+        const [y,m,d] = dateStr.split("-").map(Number);
+        const wd = WEEKDAYS[new Date(y,m-1,d).getDay()];
+        let s = `${y}년 ${m}월 ${d}일 (${wd})`;
+        if (timeStr) {
+            const [h,min] = timeStr.split(":").map(Number);
+            s += ` ${h<12?"오전":"오후"} ${h%12||12}:${pad2(min)}`;
+        }
+        return s;
+    }
+    function setStatus(msg, isErr=false) {
+        statusEl.textContent = msg;
+        statusEl.className = "adm-status" + (isErr ? " err" : "");
+    }
+
+    // ── fetch ──────────────────────────────────────────────────────
+    let loaded = false;
+
+    async function loadAll() {
+        if (!JOIN_API) {
+            setStatus("소모임 API URL이 설정되지 않았습니다. (join-config.js 확인)", true);
+            return;
+        }
+        setStatus("소모임 목록 불러오는 중…");
+        refreshBtn.disabled = true;
+        try {
+            const url = new URL(JOIN_API);
+            url.searchParams.set("action", "list");
+            const res  = await fetch(url.toString(), { method: "GET", cache: "no-store" });
+            const data = await res.json();
+            if (!data.ok) { setStatus(data.error || "오류가 발생했습니다.", true); return; }
+
+            const events  = data.events  || [];
+            const signups = data.signups || [];
+            renderCards(events, signups);
+            loaded = true;
+            lastUpdEl.textContent = `최종 조회 ${new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}`;
+            setStatus(events.length ? `소모임 ${events.length}개 조회됨` : "등록된 소모임이 없습니다.");
+        } catch (e) {
+            setStatus("네트워크 오류가 발생했습니다.", true);
+        } finally {
+            refreshBtn.disabled = false;
+        }
+    }
+
+    // ── render cards ───────────────────────────────────────────────
+    function renderCards(events, signups) {
+        upcomingGrid.innerHTML = pastGrid.innerHTML = "";
+        const today = todayStr();
+        const sorted = [...events].sort((a,b) => (a.date||"").localeCompare(b.date||"") || (a.time||"").localeCompare(b.time||""));
+
+        const upcoming = sorted.filter(e => (e.date||"") >= today);
+        const past     = sorted.filter(e => (e.date||"") <  today).reverse();
+
+        // show/hide "예정 소모임" label only when there are also past ones
+        upcomingLbl.hidden = past.length === 0;
+
+        if (upcoming.length === 0 && past.length === 0) {
+            const el = document.createElement("p");
+            el.className = "adm-empty";
+            el.textContent = "등록된 소모임이 없습니다.";
+            upcomingGrid.appendChild(el);
+        }
+
+        upcoming.forEach(ev => upcomingGrid.appendChild(buildCard(ev, signups)));
+        past.forEach(ev => pastGrid.appendChild(buildCard(ev, signups, true)));
+
+        updatePastVisibility();
+    }
+
+    function updatePastVisibility() {
+        pastWrap.hidden = !showPastChk.checked;
+    }
+
+    showPastChk.addEventListener("change", updatePastVisibility);
+
+    // ── build one event card ───────────────────────────────────────
+    function buildCard(ev, allSignups, isPast = false) {
+        const eventSignups = allSignups.filter(s => s.eventId === ev.id);
+        const cap = Number(ev.capacity) || 0;
+        const cur = eventSignups.length;
+        const full = cap > 0 && cur >= cap;
+        const pct  = cap > 0 ? Math.min(100, cur / cap * 100) : 0;
+
+        const card = document.createElement("div");
+        card.className = "sm-card";
+        if (isPast) card.style.opacity = ".72";
+
+        // ── body ──
+        const body = document.createElement("div");
+        body.className = "sm-card-body";
+
+        // date / time
+        const dateEl = document.createElement("p");
+        dateEl.className = "sm-card-date";
+        dateEl.textContent = formatEventDate(ev.date, ev.time);
+        body.appendChild(dateEl);
+
+        // title
+        const titleEl = document.createElement("p");
+        titleEl.className = "sm-card-title";
+        titleEl.textContent = ev.title || "(제목 없음)";
+        body.appendChild(titleEl);
+
+        // host
+        const hostEl = document.createElement("p");
+        hostEl.className = "sm-card-host";
+        hostEl.textContent = `주최: ${ev.host || "—"}`;
+        body.appendChild(hostEl);
+
+        // capacity bar
+        const capRow = document.createElement("div");
+        capRow.className = "sm-cap-row";
+        const trk = document.createElement("div"); trk.className = "sm-cap-track";
+        const fil = document.createElement("div"); fil.className = "sm-cap-fill" + (full ? " is-full" : "");
+        fil.style.width = `${pct}%`;
+        trk.appendChild(fil);
+        const cnt = document.createElement("span");
+        cnt.className = "sm-cap-cnt" + (full ? " is-full" : "");
+        cnt.textContent = cap > 0 ? `${cur}/${cap}명` : `${cur}명`;
+        capRow.appendChild(trk);
+        capRow.appendChild(cnt);
+        if (full) {
+            const pill = document.createElement("span"); pill.className = "sm-full-pill"; pill.textContent = "마감";
+            capRow.appendChild(pill);
+        }
+        body.appendChild(capRow);
+
+        // participant name chips
+        const namesEl = document.createElement("div");
+        namesEl.className = "sm-names";
+        if (eventSignups.length === 0) {
+            const emp = document.createElement("span"); emp.className = "sm-names-empty"; emp.textContent = "참가자 없음";
+            namesEl.appendChild(emp);
+        } else {
+            eventSignups.forEach(s => {
+                const isHost = s.id === ev.hostSignupId;
+                const chip = document.createElement("span");
+                chip.className = "sm-name-chip" + (isHost ? " is-host" : "");
+                chip.textContent = s.name;
+                if (isHost) { const m = document.createElement("span"); m.className="sm-host-mark"; m.textContent="주최"; chip.appendChild(m); }
+                namesEl.appendChild(chip);
+            });
+        }
+        body.appendChild(namesEl);
+
+        card.appendChild(body);
+
+        // ── detail toggle (real names) ──
+        const toggleBtn = document.createElement("button");
+        toggleBtn.className = "sm-detail-toggle";
+        toggleBtn.innerHTML = `<span>실명 · 연락처 조회</span><span class="sm-detail-toggle-arrow">▾</span>`;
+
+        const detailPanel = document.createElement("div");
+        detailPanel.className = "sm-detail-panel";
+
+        // password row
+        const pwRow = document.createElement("div");
+        pwRow.className = "sm-detail-pw-row";
+        const pwInput = document.createElement("input");
+        pwInput.type = "password"; pwInput.placeholder = "관리자 비밀번호";
+        const lookupBtn = document.createElement("button");
+        lookupBtn.className = "adm-btn-sm"; lookupBtn.textContent = "조회";
+        pwRow.appendChild(pwInput); pwRow.appendChild(lookupBtn);
+
+        const errEl = document.createElement("p");
+        errEl.className = "sm-detail-err"; errEl.hidden = true;
+
+        const tableWrapEl = document.createElement("div");
+        tableWrapEl.className = "sm-detail-table-wrap";
+
+        detailPanel.appendChild(pwRow);
+        detailPanel.appendChild(errEl);
+        detailPanel.appendChild(tableWrapEl);
+
+        toggleBtn.addEventListener("click", () => {
+            const open = !detailPanel.classList.contains("is-open");
+            detailPanel.classList.toggle("is-open", open);
+            toggleBtn.classList.toggle("is-open", open);
+            if (open) setTimeout(() => pwInput.focus(), 50);
+        });
+
+        async function doLookup() {
+            const adminPassword = pwInput.value.trim();
+            if (!adminPassword) { errEl.textContent = "비밀번호를 입력해주세요."; errEl.hidden = false; return; }
+            lookupBtn.disabled = true; lookupBtn.textContent = "조회 중…";
+            errEl.hidden = true; tableWrapEl.innerHTML = "";
+            try {
+                const url = new URL(JOIN_API);
+                url.searchParams.set("action", "eventParticipants");
+                url.searchParams.set("id", ev.id);
+                url.searchParams.set("adminPassword", adminPassword);
+                const res  = await fetch(url.toString(), { method: "GET", cache: "no-store" });
+                const data = await res.json();
+                if (!data.ok) { errEl.textContent = data.error || "오류가 발생했습니다."; errEl.hidden = false; return; }
+                renderParticipantTable(tableWrapEl, data.participants || []);
+            } catch { errEl.textContent = "네트워크 오류가 발생했습니다."; errEl.hidden = false; }
+            finally { lookupBtn.disabled = false; lookupBtn.textContent = "조회"; }
+        }
+
+        lookupBtn.addEventListener("click", doLookup);
+        pwInput.addEventListener("keydown", e => { if (e.key === "Enter") doLookup(); });
+
+        card.appendChild(toggleBtn);
+        card.appendChild(detailPanel);
+        return card;
+    }
+
+    function renderParticipantTable(wrap, participants) {
+        if (!participants.length) {
+            wrap.innerHTML = '<p style="font-size:12px;color:#aaa;padding:6px 0">참가자가 없습니다.</p>';
+            return;
+        }
+        const tbl = document.createElement("table");
+        tbl.className = "sm-detail-table";
+        const hdr = document.createElement("tr");
+        ["#","닉네임","실명","연락처","신청 일시"].forEach(h => {
+            const th = document.createElement("th"); th.textContent = h; hdr.appendChild(th);
+        });
+        tbl.appendChild(hdr);
+        participants
+            .sort((a,b) => new Date(a.createdAt||0) - new Date(b.createdAt||0))
+            .forEach((p, i) => {
+                const tr = document.createElement("tr");
+                if (p.isHost) tr.className = "is-host-row";
+                const ts = p.createdAt ? new Date(p.createdAt).toLocaleDateString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "—";
+                [i+1, p.name + (p.isHost ? ' <span class="sm-host-badge">주최</span>' : ""), p.realName||"—", p.contact||"—", ts].forEach((v, vi) => {
+                    const td = document.createElement("td");
+                    if (vi === 1) td.innerHTML = v; else td.textContent = v;
+                    tr.appendChild(td);
+                });
+                tbl.appendChild(tr);
+            });
+        wrap.appendChild(tbl);
+    }
+
+    // ── trigger on tab open ────────────────────────────────────────
+    window.__smActivate = function () {
+        if (!loaded) loadAll();
+    };
+    refreshBtn.addEventListener("click", loadAll);
 })();
 </script>
 </body>
