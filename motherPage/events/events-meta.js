@@ -126,7 +126,7 @@
             }
         }
 
-        // disable the apply button when sign-up is not open
+        // enable or disable the apply button based on status
         const applyBtn = document.querySelector(".event_apply_btn");
         if (applyBtn) {
             if (effectiveStatus !== "recruiting") {
@@ -138,6 +138,11 @@
                     : "신청 불가";
                 applyBtn.textContent = statusLabel;
                 applyBtn.addEventListener("click", (e) => { e.preventDefault(); });
+            } else {
+                // Remove the `disabled` HTML attribute set in the page markup —
+                // a <button disabled> swallows all click events, so the signup
+                // modal listener in events-signup.js would never fire.
+                applyBtn.removeAttribute("disabled");
             }
         }
 
