@@ -491,13 +491,13 @@
     // ── apply-button state ───────────────────────────────────────────
 
     function setSignedUpState(applyDiv, applyBtn, statusCard, event, saved) {
-        // swap button → "신청 완료 ✓" (clone to drop all prior listeners)
+        // swap button → confirmed or waitlisted state (clone to drop all prior listeners)
         if (applyBtn) {
             applyBtn.classList.remove("is-disabled");
-            applyBtn.classList.add("is-signed-up");
+            applyBtn.classList.add(saved.waitlisted ? "is-waitlisted" : "is-signed-up");
             applyBtn.setAttribute("aria-disabled", "true");
             applyBtn.setAttribute("tabindex", "-1");
-            applyBtn.textContent = "신청 완료 ✓";
+            applyBtn.textContent = saved.waitlisted ? "대기 중 ✓" : "신청 완료 ✓";
             const clone = applyBtn.cloneNode(true);
             clone.addEventListener("click", e => e.preventDefault());
             applyBtn.replaceWith(clone);

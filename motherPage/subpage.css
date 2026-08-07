@@ -1332,6 +1332,13 @@ body.nav-open .magazine_lnb {
     cursor: default;
     pointer-events: none;
 }
+/* waitlisted state: amber — clearly different from confirmed green */
+.event_apply_btn.is-waitlisted {
+    background: rgba(122, 99, 0, 0.10);
+    color: #7a6300;
+    cursor: default;
+    pointer-events: none;
+}
 
 /* -----------------------
 *  event sign-up — modal, participant list, cancel + toast
