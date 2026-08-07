@@ -12,17 +12,22 @@
         :root {
             --green:      #1c6655;
             --green-pale: #e8f0ee;
+            --green-mid:  rgba(28,102,85,.15);
+            --amber:      #7a6300;
+            --amber-pale: #fef9e7;
+            --red:        #b23b3b;
+            --red-pale:   rgba(178,59,59,.09);
             --gray:       #666;
-            --border:     #ddd;
-            --radius:     4px;
-            --font:       "Pretendard Variable", sans-serif;
+            --border:     #e0e0dd;
+            --radius:     6px;
+            --font:       "Pretendard Variable", -apple-system, "Noto Sans KR", sans-serif;
         }
 
         body {
             font-family: var(--font);
             font-size: 14px;
             color: #222;
-            background: #f7f7f6;
+            background: #f5f5f3;
             min-height: 100vh;
         }
 
@@ -30,31 +35,52 @@
         .adm-header {
             background: var(--green);
             color: #fff;
-            padding: 18px 32px;
+            padding: 16px 32px;
             display: flex;
-            align-items: baseline;
+            align-items: center;
             gap: 12px;
         }
-        .adm-header h1 { font-size: 16px; font-weight: 600; }
-        .adm-header span { font-size: 12px; opacity: 0.7; }
+        .adm-header h1 { font-size: 16px; font-weight: 700; }
+        .adm-header-sub { font-size: 12px; opacity: .65; }
+        .adm-header-spacer { flex: 1; }
+        .adm-last-fetch {
+            font-size: 11.5px;
+            opacity: .75;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .adm-pulse {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #7dffcc;
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .adm-pulse.on { opacity: 1; animation: pulse 1.2s ease-out forwards; }
+        @keyframes pulse {
+            0%   { opacity: 1; transform: scale(1); }
+            70%  { opacity: .6; transform: scale(1.5); }
+            100% { opacity: 0; transform: scale(1); }
+        }
 
         /* ── layout ── */
-        .adm-wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+        .adm-wrap { max-width: 1120px; margin: 0 auto; padding: 28px 24px 60px; }
 
         /* ── query bar ── */
         .adm-query {
             background: #fff;
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 20px 24px;
+            padding: 18px 22px;
             display: flex;
             flex-wrap: wrap;
             align-items: flex-end;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 14px;
+            margin-bottom: 20px;
         }
-        .adm-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
-        .adm-field label { font-size: 12px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: .04em; }
+        .adm-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
+        .adm-field label { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .05em; }
         .adm-select, .adm-pw {
             padding: 8px 10px;
             border: 1px solid var(--border);
@@ -64,8 +90,9 @@
             color: #222;
             background: #fff;
             outline: none;
+            transition: border-color .15s;
         }
-        .adm-select:focus, .adm-pw:focus { border-color: var(--green); }
+        .adm-select:focus, .adm-pw:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(28,102,85,.1); }
         .adm-btn {
             padding: 9px 22px;
             background: var(--green);
@@ -77,11 +104,137 @@
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
+            transition: opacity .15s;
         }
         .adm-btn:hover { opacity: .88; }
         .adm-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+        .adm-refresh-toggle {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 13px;
+            color: var(--gray);
+            cursor: pointer;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .adm-refresh-toggle input { accent-color: var(--green); width: 15px; height: 15px; cursor: pointer; }
+        .adm-refresh-badge {
+            font-size: 11px;
+            background: var(--green-pale);
+            color: var(--green);
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+            display: none;
+        }
+        .adm-refresh-badge.on { display: inline-block; }
+
+        /* ── status text ── */
+        .adm-status {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 14px;
+            min-height: 18px;
+        }
+        .adm-status.err { color: var(--red); }
+
+        /* ── capacity card ── */
+        .adm-cap-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            margin-bottom: 16px;
+        }
+        .adm-cap-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 16px;
+        }
+        .adm-cap-rows { display: flex; flex-direction: column; gap: 12px; }
+        .adm-cap-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .adm-cap-lbl {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            width: 80px;
+            flex-shrink: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .adm-cap-row.is-full .adm-cap-lbl { color: var(--gray); }
+        .adm-cap-track {
+            flex: 1;
+            height: 7px;
+            background: #eee;
+            border-radius: 999px;
+            overflow: hidden;
+            min-width: 60px;
+        }
+        .adm-cap-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--green);
+            transition: width .4s cubic-bezier(.4,0,.2,1);
+        }
+        .adm-cap-row.is-full .adm-cap-fill { background: var(--red); }
+        .adm-cap-cnt {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #444;
+            width: 42px;
+            text-align: right;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .adm-cap-row.is-full .adm-cap-cnt { color: var(--red); }
+        .adm-cap-pills { display: flex; gap: 5px; flex-shrink: 0; }
+        .adm-pill {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+        .adm-pill.full { background: var(--red-pale); color: var(--red); }
+        .adm-pill.wait { background: var(--amber-pale); color: var(--amber); }
+
+        /* ── summary chips (totals row) ── */
+        .adm-summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .adm-chip {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .adm-chip.confirmed { background: var(--green-pale); color: var(--green); }
+        .adm-chip.waiting   { background: var(--amber-pale); color: var(--amber); }
+        .adm-chip.total     { background: #efefed; color: #555; }
+
+        /* ── toolbar ── */
+        .adm-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
         .adm-btn-sec {
-            padding: 9px 18px;
+            padding: 7px 16px;
             background: #fff;
             color: var(--green);
             border: 1px solid var(--green);
@@ -91,33 +244,9 @@
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
+            transition: background .15s;
         }
         .adm-btn-sec:hover { background: var(--green-pale); }
-
-        /* ── status bar ── */
-        .adm-status {
-            font-size: 13px;
-            color: var(--gray);
-            margin-bottom: 12px;
-            min-height: 20px;
-        }
-        .adm-status.err { color: #c0392b; }
-
-        /* ── summary chips ── */
-        .adm-chips {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-        .adm-chip {
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .adm-chip.confirmed { background: var(--green-pale); color: var(--green); }
-        .adm-chip.waiting   { background: #fef9e7; color: #7a6300; }
 
         /* ── table ── */
         .adm-table-wrap {
@@ -132,8 +261,8 @@
             font-size: 13px;
         }
         thead th {
-            background: #f0f0ef;
-            padding: 10px 14px;
+            background: #f2f2f0;
+            padding: 9px 14px;
             text-align: left;
             font-size: 11px;
             font-weight: 700;
@@ -142,43 +271,56 @@
             color: var(--gray);
             white-space: nowrap;
             border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
         }
-        tbody tr { border-bottom: 1px solid #f0f0ef; }
+        tbody tr { border-bottom: 1px solid #f0f0ee; }
         tbody tr:last-child { border-bottom: none; }
-        tbody tr.wait { background: #fffdf0; }
-        tbody tr:hover { background: #f9f9f8; }
-        tbody td {
-            padding: 10px 14px;
-            vertical-align: middle;
-            color: #333;
-        }
+        tbody tr.wait-row { background: #fffdf0; }
+        tbody tr:hover { background: #f8f8f6; }
+        tbody tr.wait-row:hover { background: #fffbde; }
+        tbody td { padding: 10px 14px; vertical-align: middle; color: #333; }
+
         .badge {
-            display: inline-block;
-            padding: 2px 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
             border-radius: 12px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
+            white-space: nowrap;
         }
         .badge.ok   { background: var(--green-pale); color: var(--green); }
-        .badge.wait { background: #fef9e7; color: #7a6300; }
+        .badge.wait { background: var(--amber-pale); color: var(--amber); }
+
+        .wait-pos {
+            display: inline-block;
+            font-size: 10.5px;
+            font-weight: 700;
+            background: rgba(122,99,0,.15);
+            color: var(--amber);
+            border-radius: 8px;
+            padding: 1px 5px;
+            margin-left: 3px;
+            font-variant-numeric: tabular-nums;
+        }
 
         .adm-empty {
             text-align: center;
-            padding: 48px;
+            padding: 56px;
             color: var(--gray);
+            font-size: 14px;
         }
 
-        /* ── toolbar above table ── */
-        .adm-toolbar {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 8px;
-        }
+        .adm-num { font-variant-numeric: tabular-nums; color: var(--gray); font-size: 12px; }
+        .adm-ts  { font-variant-numeric: tabular-nums; color: var(--gray); font-size: 12px; }
 
-        @media (max-width: 600px) {
+        @media (max-width: 640px) {
             .adm-header { padding: 14px 16px; }
-            .adm-wrap   { padding: 20px 12px; }
-            .adm-query  { padding: 16px; }
+            .adm-wrap   { padding: 16px 12px 40px; }
+            .adm-query  { padding: 14px 16px; }
+            .adm-cap-card { padding: 14px 16px; }
         }
     </style>
 </head>
@@ -186,7 +328,12 @@
 
 <header class="adm-header">
     <h1>신청 관리</h1>
-    <span>설다연 행사</span>
+    <span class="adm-header-sub">설다연 행사</span>
+    <div class="adm-header-spacer"></div>
+    <div class="adm-last-fetch" id="adm-last-fetch" hidden>
+        <span class="adm-pulse" id="adm-pulse"></span>
+        <span id="adm-last-fetch-text"></span>
+    </div>
 </header>
 
 <div class="adm-wrap">
@@ -202,13 +349,24 @@
             <input class="adm-pw" id="adm-pw" type="password" placeholder="비밀번호 입력" autocomplete="current-password">
         </div>
         <button class="adm-btn" id="adm-fetch-btn">조회</button>
+        <label class="adm-refresh-toggle">
+            <input type="checkbox" id="adm-auto-refresh">
+            자동 새로고침
+            <span class="adm-refresh-badge" id="adm-refresh-badge">30s</span>
+        </label>
     </div>
 
-    <!-- status -->
+    <!-- status text -->
     <p class="adm-status" id="adm-status"></p>
 
-    <!-- summary chips -->
-    <div class="adm-chips" id="adm-chips" hidden></div>
+    <!-- per-venue capacity card -->
+    <div class="adm-cap-card" id="adm-cap-card" hidden>
+        <p class="adm-cap-title" id="adm-cap-title">찻집별 현황</p>
+        <div class="adm-cap-rows" id="adm-cap-rows"></div>
+    </div>
+
+    <!-- summary totals -->
+    <div class="adm-summary" id="adm-summary" hidden></div>
 
     <!-- export toolbar -->
     <div class="adm-toolbar" id="adm-toolbar" hidden>
@@ -229,19 +387,69 @@
 (function () {
     const API = "https://mzuxduxbzvaekuancotu.supabase.co/functions/v1/event-signup";
 
-    const sel      = document.getElementById("adm-event-sel");
-    const pwInput  = document.getElementById("adm-pw");
-    const fetchBtn = document.getElementById("adm-fetch-btn");
-    const statusEl = document.getElementById("adm-status");
-    const chipsEl  = document.getElementById("adm-chips");
-    const toolbar  = document.getElementById("adm-toolbar");
-    const tableWrap= document.getElementById("adm-table-wrap");
-    const thead    = document.getElementById("adm-thead");
-    const tbody    = document.getElementById("adm-tbody");
-    const csvBtn   = document.getElementById("adm-csv-btn");
+    const sel          = document.getElementById("adm-event-sel");
+    const pwInput      = document.getElementById("adm-pw");
+    const fetchBtn     = document.getElementById("adm-fetch-btn");
+    const statusEl     = document.getElementById("adm-status");
+    const summaryEl    = document.getElementById("adm-summary");
+    const capCard      = document.getElementById("adm-cap-card");
+    const capTitle     = document.getElementById("adm-cap-title");
+    const capRows      = document.getElementById("adm-cap-rows");
+    const toolbar      = document.getElementById("adm-toolbar");
+    const tableWrap    = document.getElementById("adm-table-wrap");
+    const thead        = document.getElementById("adm-thead");
+    const tbody        = document.getElementById("adm-tbody");
+    const csvBtn       = document.getElementById("adm-csv-btn");
+    const autoRefCheck = document.getElementById("adm-auto-refresh");
+    const refreshBadge = document.getElementById("adm-refresh-badge");
+    const lastFetchEl  = document.getElementById("adm-last-fetch");
+    const lastFetchTxt = document.getElementById("adm-last-fetch-text");
+    const pulseEl      = document.getElementById("adm-pulse");
 
-    // ── populate event dropdown ───────────────────────────────────────
-    function populateSel() {
+    let lastSignups   = [];
+    let lastExtraCols = [];
+    let autoTimer     = null;
+    let lastPw        = "";      // kept in memory for auto-refresh
+
+    // ── helpers ────────────────────────────────────────────────────────
+    function getSelectedEvent() {
+        if (typeof teaClubEvents === "undefined") return null;
+        return teaClubEvents.find(e => e.path === sel.value) || null;
+    }
+    function getGroupField(event) {
+        if (!event || !Array.isArray(event.signupFields)) return null;
+        return event.signupFields.find(
+            f => f.type === "select" && Array.isArray(f.options) && f.capacityPerOption != null
+        ) || null;
+    }
+    function formatDate(iso) {
+        if (!iso) return "—";
+        const d = new Date(iso);
+        const p = n => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+    function nowTime() {
+        const d = new Date(), p = n => String(n).padStart(2, "0");
+        return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+    }
+    function setStatus(msg, isErr = false) {
+        statusEl.textContent = msg;
+        statusEl.className = "adm-status" + (isErr ? " err" : "");
+    }
+    function hide() {
+        capCard.hidden   = true;
+        summaryEl.hidden = true;
+        toolbar.hidden   = true;
+        tableWrap.hidden = true;
+    }
+    function flashPulse() {
+        pulseEl.classList.remove("on");
+        void pulseEl.offsetWidth; // reflow
+        pulseEl.classList.add("on");
+    }
+
+    // ── populate event dropdown ────────────────────────────────────────
+    (function populateSel() {
         if (typeof teaClubEvents === "undefined") {
             sel.innerHTML = '<option>events-data.js 로드 실패</option>';
             return;
@@ -253,21 +461,16 @@
             opt.textContent = `${ev.date}  ${ev.title}`;
             sel.appendChild(opt);
         });
-    }
-    populateSel();
+    })();
 
-    // ── fetch ─────────────────────────────────────────────────────────
-    let lastSignups = [];
-    let lastExtraCols = [];
-
-    async function fetchSignups() {
+    // ── fetch ──────────────────────────────────────────────────────────
+    async function fetchSignups(isAuto = false) {
         const eventPath = sel.value;
-        const password  = pwInput.value;
+        const password  = isAuto ? lastPw : pwInput.value;
         if (!eventPath) { setStatus("행사를 선택해주세요.", true); return; }
         if (!password)  { setStatus("비밀번호를 입력해주세요.", true); return; }
 
-        setStatus("조회 중…"); fetchBtn.disabled = true;
-        hide();
+        if (!isAuto) { setStatus("조회 중…"); fetchBtn.disabled = true; hide(); }
 
         try {
             const res = await fetch(API, {
@@ -276,50 +479,174 @@
                 body: JSON.stringify({ action: "adminListSignups", eventPath, password }),
             });
             const data = await res.json();
-
             if (data.error) { setStatus(data.error, true); return; }
 
             lastSignups = data.signups || [];
-            renderTable(lastSignups);
-            setStatus(`총 ${lastSignups.length}명 조회됨`);
+            lastPw = password;
+
+            const event = getSelectedEvent();
+            const groupField = getGroupField(event);
+
+            renderCapacityCard(lastSignups, groupField);
+            renderSummary(lastSignups);
+            renderTable(lastSignups, groupField);
+
+            const n = lastSignups.length;
+            setStatus(`총 ${n}명 조회됨`);
+
+            // update header timestamp
+            lastFetchTxt.textContent = `최종 조회 ${nowTime()}`;
+            lastFetchEl.hidden = false;
+            flashPulse();
         } catch {
             setStatus("네트워크 오류가 발생했습니다.", true);
         } finally {
-            fetchBtn.disabled = false;
+            if (!isAuto) fetchBtn.disabled = false;
         }
     }
 
-    fetchBtn.addEventListener("click", fetchSignups);
-    pwInput.addEventListener("keydown", e => { if (e.key === "Enter") fetchSignups(); });
+    fetchBtn.addEventListener("click", () => fetchSignups(false));
+    pwInput.addEventListener("keydown", e => { if (e.key === "Enter") fetchSignups(false); });
 
-    // ── render ────────────────────────────────────────────────────────
-    function renderTable(signups) {
+    // ── auto-refresh ───────────────────────────────────────────────────
+    autoRefCheck.addEventListener("change", () => {
+        refreshBadge.classList.toggle("on", autoRefCheck.checked);
+        clearInterval(autoTimer);
+        if (autoRefCheck.checked) {
+            autoTimer = setInterval(() => {
+                if (lastPw) fetchSignups(true);
+            }, 30_000);
+        }
+    });
+
+    // ── capacity card ──────────────────────────────────────────────────
+    function renderCapacityCard(signups, groupField) {
+        if (!groupField) { capCard.hidden = true; return; }
+
+        capTitle.textContent = `${groupField.label}별 현황`;
+        capRows.innerHTML = "";
+
+        groupField.options.forEach(option => {
+            const confirmed = signups.filter(
+                s => !s.waitlisted && (s.metadata || {})[groupField.name] === option
+            ).length;
+            const waiting = signups.filter(
+                s => s.waitlisted && (s.metadata || {})[groupField.name] === option
+            ).length;
+            const cap = groupField.capacityPerOption;
+            const full = confirmed >= cap;
+            const pct  = Math.min(100, (confirmed / cap) * 100);
+
+            const row = document.createElement("div");
+            row.className = "adm-cap-row" + (full ? " is-full" : "");
+
+            const lbl = document.createElement("span");
+            lbl.className = "adm-cap-lbl";
+            lbl.textContent = option;
+
+            const track = document.createElement("div");
+            track.className = "adm-cap-track";
+            const fill = document.createElement("div");
+            fill.className = "adm-cap-fill";
+            fill.style.width = `${pct}%`;
+            track.appendChild(fill);
+
+            const cnt = document.createElement("span");
+            cnt.className = "adm-cap-cnt";
+            cnt.textContent = `${confirmed}/${cap}명`;
+
+            const pills = document.createElement("div");
+            pills.className = "adm-cap-pills";
+            if (full) {
+                const p = document.createElement("span");
+                p.className = "adm-pill full";
+                p.textContent = "마감";
+                pills.appendChild(p);
+            }
+            if (waiting > 0) {
+                const p = document.createElement("span");
+                p.className = "adm-pill wait";
+                p.textContent = `대기 ${waiting}명`;
+                pills.appendChild(p);
+            }
+
+            row.appendChild(lbl);
+            row.appendChild(track);
+            row.appendChild(cnt);
+            row.appendChild(pills);
+            capRows.appendChild(row);
+        });
+
+        capCard.hidden = false;
+    }
+
+    // ── summary totals ─────────────────────────────────────────────────
+    function renderSummary(signups) {
+        summaryEl.innerHTML = "";
+        const confirmed = signups.filter(s => !s.waitlisted).length;
+        const waiting   = signups.filter(s =>  s.waitlisted).length;
+        addChip(`전체 ${signups.length}명`, "total");
+        addChip(`확정 ${confirmed}명`, "confirmed");
+        if (waiting) addChip(`대기 ${waiting}명`, "waiting");
+        summaryEl.hidden = false;
+    }
+    function addChip(text, cls) {
+        const c = document.createElement("span");
+        c.className = `adm-chip ${cls}`;
+        c.textContent = text;
+        summaryEl.appendChild(c);
+    }
+
+    // ── table ──────────────────────────────────────────────────────────
+    function renderTable(signups, groupField) {
         thead.innerHTML = "";
         tbody.innerHTML = "";
 
-        // collect extra metadata keys across all rows
+        // collect metadata keys (excluding the group field — shown in its own column)
         const metaKeys = [];
         signups.forEach(s => {
             Object.keys(s.metadata || {}).forEach(k => {
-                if (!metaKeys.includes(k)) metaKeys.push(k);
+                if (!metaKeys.includes(k) && k !== groupField?.name) metaKeys.push(k);
             });
         });
-        lastExtraCols = metaKeys;
+        lastExtraCols = groupField
+            ? [groupField.name, ...metaKeys]
+            : metaKeys;
 
-        // header
+        // Build column header list
+        const cols = ["#", "닉네임", "실명", "상태", "신청 일시"];
+        if (groupField) cols.push(groupField.label);
+        metaKeys.forEach(k => cols.push(k));
+
+        // header row
         const hr = document.createElement("tr");
-        ["#", "닉네임", "실명", "상태", "신청 일시", ...metaKeys].forEach(h => {
+        cols.forEach(h => {
             const th = document.createElement("th");
             th.textContent = h;
             hr.appendChild(th);
         });
         thead.appendChild(hr);
 
-        // body
+        // compute waitlist positions per venue (or global)
+        const waitPos = {};
+        if (groupField) {
+            groupField.options.forEach(option => {
+                const waiters = signups
+                    .filter(s => s.waitlisted && (s.metadata || {})[groupField.name] === option)
+                    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                waiters.forEach((s, i) => { waitPos[s.id] = i + 1; });
+            });
+        } else {
+            const waiters = signups
+                .filter(s => s.waitlisted)
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            waiters.forEach((s, i) => { waitPos[s.id] = i + 1; });
+        }
+
         if (signups.length === 0) {
             const tr = document.createElement("tr");
             const td = document.createElement("td");
-            td.colSpan = 5 + metaKeys.length;
+            td.colSpan = cols.length;
             td.className = "adm-empty";
             td.textContent = "신청자가 없습니다.";
             tr.appendChild(td);
@@ -327,56 +654,106 @@
         } else {
             signups.forEach((s, i) => {
                 const tr = document.createElement("tr");
-                if (s.waitlisted) tr.classList.add("wait");
+                if (s.waitlisted) tr.classList.add("wait-row");
 
-                const cells = [
-                    i + 1,
-                    s.nickname,
-                    s.real_name,
-                    s.waitlisted ? "대기" : "확정",
-                    formatDate(s.created_at),
-                    ...metaKeys.map(k => (s.metadata || {})[k] ?? "—"),
-                ];
-                cells.forEach((val, ci) => {
+                // # cell
+                const tdNum = document.createElement("td");
+                tdNum.className = "adm-num";
+                tdNum.textContent = i + 1;
+                tr.appendChild(tdNum);
+
+                // 닉네임
+                const tdNick = document.createElement("td");
+                tdNick.textContent = s.nickname;
+                tr.appendChild(tdNick);
+
+                // 실명
+                const tdReal = document.createElement("td");
+                tdReal.textContent = s.real_name;
+                tr.appendChild(tdReal);
+
+                // 상태 (badge + optional wait position)
+                const tdStatus = document.createElement("td");
+                const badge = document.createElement("span");
+                badge.className = "badge " + (s.waitlisted ? "wait" : "ok");
+                badge.textContent = s.waitlisted ? "대기" : "확정";
+                if (s.waitlisted && waitPos[s.id] != null) {
+                    const pos = document.createElement("span");
+                    pos.className = "wait-pos";
+                    pos.textContent = `#${waitPos[s.id]}`;
+                    badge.appendChild(pos);
+                }
+                tdStatus.appendChild(badge);
+                tr.appendChild(tdStatus);
+
+                // 신청 일시
+                const tdTs = document.createElement("td");
+                tdTs.className = "adm-ts";
+                tdTs.textContent = formatDate(s.created_at);
+                tr.appendChild(tdTs);
+
+                // group field column
+                if (groupField) {
+                    const tdVenue = document.createElement("td");
+                    tdVenue.textContent = (s.metadata || {})[groupField.name] ?? "—";
+                    tr.appendChild(tdVenue);
+                }
+
+                // extra metadata
+                metaKeys.forEach(k => {
                     const td = document.createElement("td");
-                    if (ci === 3) {
-                        const badge = document.createElement("span");
-                        badge.className = "badge " + (s.waitlisted ? "wait" : "ok");
-                        badge.textContent = val;
-                        td.appendChild(badge);
-                    } else {
-                        td.textContent = val;
-                    }
+                    td.textContent = (s.metadata || {})[k] ?? "—";
                     tr.appendChild(td);
                 });
+
                 tbody.appendChild(tr);
             });
         }
 
-        // summary chips
-        const confirmed = signups.filter(s => !s.waitlisted).length;
-        const waiting   = signups.filter(s =>  s.waitlisted).length;
-        chipsEl.innerHTML = "";
-        addChip(`확정 ${confirmed}명`, "confirmed");
-        if (waiting) addChip(`대기 ${waiting}명`, "waiting");
-        chipsEl.hidden = false;
-
-        toolbar.hidden    = false;
-        tableWrap.hidden  = false;
+        toolbar.hidden   = false;
+        tableWrap.hidden = false;
     }
 
-    // ── CSV export ────────────────────────────────────────────────────
+    // ── CSV export ─────────────────────────────────────────────────────
     csvBtn.addEventListener("click", () => {
         if (!lastSignups.length) return;
-        const headers = ["번호", "닉네임", "실명", "상태", "신청 일시", ...lastExtraCols];
-        const rows = lastSignups.map((s, i) => [
-            i + 1,
-            s.nickname,
-            s.real_name,
-            s.waitlisted ? "대기" : "확정",
-            formatDate(s.created_at),
-            ...lastExtraCols.map(k => (s.metadata || {})[k] ?? ""),
-        ]);
+        const event = getSelectedEvent();
+        const groupField = getGroupField(event);
+
+        const headers = ["번호", "닉네임", "실명", "상태", "대기순위", "신청 일시"];
+        if (groupField) headers.push(groupField.label);
+        const plainMeta = lastExtraCols.filter(k => k !== groupField?.name);
+        plainMeta.forEach(k => headers.push(k));
+
+        // recompute positions for CSV
+        const waitPos = {};
+        if (groupField) {
+            groupField.options.forEach(option => {
+                const waiters = lastSignups
+                    .filter(s => s.waitlisted && (s.metadata || {})[groupField.name] === option)
+                    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                waiters.forEach((s, i) => { waitPos[s.id] = i + 1; });
+            });
+        } else {
+            const waiters = lastSignups.filter(s => s.waitlisted)
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            waiters.forEach((s, i) => { waitPos[s.id] = i + 1; });
+        }
+
+        const rows = lastSignups.map((s, i) => {
+            const row = [
+                i + 1,
+                s.nickname,
+                s.real_name,
+                s.waitlisted ? "대기" : "확정",
+                s.waitlisted ? (waitPos[s.id] ?? "") : "",
+                formatDate(s.created_at),
+            ];
+            if (groupField) row.push((s.metadata || {})[groupField.name] ?? "");
+            plainMeta.forEach(k => row.push((s.metadata || {})[k] ?? ""));
+            return row;
+        });
+
         const csv = [headers, ...rows]
             .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
             .join("\n");
@@ -387,29 +764,6 @@
         a.download = `신청명단_${eventTitle}.csv`;
         a.click();
     });
-
-    // ── helpers ───────────────────────────────────────────────────────
-    function setStatus(msg, isErr = false) {
-        statusEl.textContent = msg;
-        statusEl.className = "adm-status" + (isErr ? " err" : "");
-    }
-    function hide() {
-        chipsEl.hidden   = true;
-        toolbar.hidden   = true;
-        tableWrap.hidden = true;
-    }
-    function addChip(text, type) {
-        const chip = document.createElement("span");
-        chip.className = `adm-chip ${type}`;
-        chip.textContent = text;
-        chipsEl.appendChild(chip);
-    }
-    function formatDate(iso) {
-        if (!iso) return "—";
-        const d = new Date(iso);
-        const pad = n => String(n).padStart(2, "0");
-        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    }
 })();
 </script>
 </body>
