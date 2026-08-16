@@ -53,6 +53,17 @@
 // link) shown as a "길찾기" button under the embedded map, for full
 // directions. Only meaningful alongside `lat`/`lng`.
 //
+// `venues` is optional — use it instead of top-level `lat`/`lng` when an
+// event has MULTIPLE possible locations (e.g. a joint event where
+// participants pick a venue). Each entry has:
+//   { label: "찻집 이름", lat: ..., lng: ..., mapLink: "https://..." }
+// events-map.js will drop one marker per entry, auto-fit the map to show
+// all of them, and render a per-venue "길찾기" button row below the map.
+// Clicking a marker shows a small label popup with a directions link.
+// Venues without lat/lng are silently skipped (so you can add a venue
+// before its coordinates are known). `venues` takes priority over `lat`/
+// `lng` — set one or the other, not both.
+//
 // `인원` is the event's capacity (number of participants), shown in the info
 // card right after 참가비. Defaults to 20 — update per event as needed.
 //
@@ -227,6 +238,12 @@ const teaClubEvents = [
         fee: "10000원",
         인원: 9,
         category: "special",
+        // venues: fill in lat/lng for each location (long-press in Naver Maps → "좌표 복사")
+        venues: [
+            { label: "라오상하이", lat: null, lng: null, mapLink: null },
+            { label: "반조", lat: 37.478222, lng: 126.953033, mapLink: "https://map.naver.com/p/entry/place/1752983758?c=15.00,0,0,0,dh&isCorrectAnswer=true" },
+            { label: "예평", lat: null, lng: null, mapLink: null }
+        ],
         signupFields: [
             { name: "venue", label: "희망 찻집", type: "select", required: true,
               options: ["라오상하이", "반조", "예평"],

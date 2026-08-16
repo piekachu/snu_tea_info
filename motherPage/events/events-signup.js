@@ -73,6 +73,24 @@
         try { return JSON.parse(s.metadata); } catch { return {}; }
     }
 
+    // ── withdrawal eligibility ───────────────────────────────────────
+    // Returns true if the signed-up user is still allowed to cancel.
+    // Withdrawal is blocked once we reach the start of (event_date - 2 days):
+    //   e.g. event on Aug 31 → last day to cancel is Aug 28; blocked from Aug 29.
+
+    function canWithdrawSignup(event) {
+        const [y, m, d] = event.date.split("-").map(Number);
+        // cutoff = midnight at the start of (event_date - 2 days)
+        const cutoff = new Date(y, m - 1, d);
+        cutoff.setDate(cutoff.getDate() - 2);
+        cutoff.setHours(0, 0, 0, 0);
+
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        return todayStart < cutoff; // true → still within withdrawal window
+    }
+
     // ── deadline countdown ───────────────────────────────────────────
 
     function formatDeadline(event) {
@@ -388,6 +406,11 @@
       <span class="evs_hint">운영진에게만 공개됩니다.</span>
       <input class="evs_input" id="evs_real" name="realName" type="text" required autocomplete="name" placeholder="홍길동">
     </div>
+    <div class="evs_field">
+      <label class="evs_lbl" for="evs_cpw">취소 비밀번호 <span class="evs_req">*</span></label>
+      <span class="evs_hint">다른 기기에서 신청을 취소할 때 사용합니다. 기억하기 쉬운 단어나 숫자를 입력해 주세요.</span>
+      <input class="evs_input" id="evs_cpw" name="cancelPassword" type="text" required autocomplete="off" placeholder="예: 1234">
+    </div>
     ${extraHTML}
     <p class="evs_err" hidden></p>
     <button type="submit" class="evs_submit">신청하기</button>
@@ -439,10 +462,12 @@
             e.preventDefault();
             errEl.hidden = true;
 
-            const nickname = form.nickname.value.trim();
-            const realName = form.realName.value.trim();
-            if (!nickname) { showErr("닉네임을 입력해주세요."); return; }
-            if (!realName) { showErr("실명을 입력해주세요."); return; }
+            const nickname       = form.nickname.value.trim();
+            const realName       = form.realName.value.trim();
+            const cancelPassword = form.cancelPassword.value.trim();
+            if (!nickname)       { showErr("닉네임을 입력해주세요."); return; }
+            if (!realName)       { showErr("실명을 입력해주세요."); return; }
+            if (!cancelPassword) { showErr("취소 비밀번호를 입력해주세요."); return; }
 
             const metadata = {};
             for (const f of extra) {
@@ -474,6 +499,7 @@
                     nickname,
                     realName,
                     capacity: event["인원"] ?? null,
+                    cancelPassword,
                     ...venueParams,
                     metadata,
                 });
@@ -500,6 +526,107 @@
         }
     }
 
+    // ── cancel from a different device ──────────────────────────────
+    // Opens a modal that accepts realName + cancelPassword and calls
+    // cancelSignupByPassword so the user can cancel without localStorage.
+
+    function openCancelByPasswordModal(event, onSuccess) {
+        document.body.classList.add("evs_modal_open");
+
+        const overlay = document.createElement("div");
+        overlay.className = "evs_overlay";
+        overlay.setAttribute("role", "dialog");
+        overlay.setAttribute("aria-modal", "true");
+        overlay.setAttribute("aria-labelledby", "evs_cpw_dlg_title");
+
+        overlay.innerHTML = `
+<div class="evs_dialog">
+  <button type="button" class="evs_close" aria-label="닫기">&times;</button>
+  <h2 class="evs_dlg_title" id="evs_cpw_dlg_title">신청 취소</h2>
+  <p class="evs_dlg_event">${event.title}</p>
+  <form class="evs_form" novalidate>
+    <div class="evs_field">
+      <label class="evs_lbl" for="evs_cpw_real">실명 <span class="evs_req">*</span></label>
+      <span class="evs_hint">신청 시 입력한 실명을 입력해주세요.</span>
+      <input class="evs_input" id="evs_cpw_real" name="realName" type="text" required autocomplete="name" placeholder="홍길동">
+    </div>
+    <div class="evs_field">
+      <label class="evs_lbl" for="evs_cpw_pw">취소 비밀번호 <span class="evs_req">*</span></label>
+      <span class="evs_hint">신청 시 설정한 취소 비밀번호를 입력해주세요.</span>
+      <input class="evs_input" id="evs_cpw_pw" name="cancelPassword" type="text" required autocomplete="off" placeholder="">
+    </div>
+    <p class="evs_err" hidden></p>
+    <button type="submit" class="evs_submit evs_submit_cancel">취소하기</button>
+  </form>
+</div>`;
+
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.classList.add("is-open"), 16);
+
+        const focusable = Array.from(overlay.querySelectorAll(
+            "button, input, select, textarea, [tabindex]:not([tabindex='-1'])"
+        ));
+        setTimeout(() => focusable[0]?.focus(), 60);
+        overlay.addEventListener("keydown", e => {
+            if (e.key === "Escape") { close(); return; }
+            if (e.key !== "Tab") return;
+            const first = focusable[0], last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault(); last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault(); first.focus();
+            }
+        });
+        overlay.addEventListener("click", e => { if (e.target === overlay) close(); });
+        overlay.querySelector(".evs_close").addEventListener("click", close);
+
+        function close() {
+            overlay.classList.remove("is-open");
+            overlay.classList.add("is-closing");
+            setTimeout(() => {
+                overlay.remove();
+                document.body.classList.remove("evs_modal_open");
+            }, 180);
+        }
+
+        const form      = overlay.querySelector(".evs_form");
+        const errEl     = overlay.querySelector(".evs_err");
+        const submitBtn = overlay.querySelector(".evs_submit");
+
+        form.addEventListener("submit", async e => {
+            e.preventDefault();
+            errEl.hidden = true;
+
+            const realName       = form.realName.value.trim();
+            const cancelPassword = form.cancelPassword.value.trim();
+            if (!realName)       { showErr("실명을 입력해주세요."); return; }
+            if (!cancelPassword) { showErr("취소 비밀번호를 입력해주세요."); return; }
+
+            setLoading(true);
+            try {
+                const result = await api({
+                    action: "cancelSignupByPassword",
+                    eventPath: event.path,
+                    realName,
+                    cancelPassword,
+                    eventDate: event.date,
+                });
+                if (result.error) { showErr(result.error); setLoading(false); return; }
+                close();
+                onSuccess();
+            } catch {
+                showErr("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+                setLoading(false);
+            }
+        });
+
+        function showErr(msg) { errEl.textContent = msg; errEl.hidden = false; }
+        function setLoading(on) {
+            submitBtn.disabled = on;
+            submitBtn.textContent = on ? "처리 중…" : "취소하기";
+        }
+    }
+
     // ── apply-button state ───────────────────────────────────────────
 
     function setSignedUpState(applyDiv, applyBtn, statusCard, event, saved) {
@@ -521,30 +648,40 @@
             cancelBtn.textContent = "신청 취소";
             clone.insertAdjacentElement("afterend", cancelBtn);
 
-            cancelBtn.addEventListener("click", async () => {
-                if (!confirm(`${saved.nickname}님의 신청을 취소하시겠습니까?`)) return;
+            if (!canWithdrawSignup(event)) {
+                // Past the withdrawal deadline — disable the button and show a notice
                 cancelBtn.disabled = true;
-                cancelBtn.textContent = "취소 중…";
-                try {
-                    const result = await api({
-                        action: "cancelSignup",
-                        id: saved.id,
-                        editToken: saved.editToken,
-                    });
-                    if (result.error) {
-                        alert(result.error);
+                const notice = document.createElement("p");
+                notice.className = "evs_cancel_notice";
+                notice.textContent = "행사 2일 전부터 신청 취소가 불가합니다.";
+                cancelBtn.insertAdjacentElement("afterend", notice);
+            } else {
+                cancelBtn.addEventListener("click", async () => {
+                    if (!confirm(`${saved.nickname}님의 신청을 취소하시겠습니까?`)) return;
+                    cancelBtn.disabled = true;
+                    cancelBtn.textContent = "취소 중…";
+                    try {
+                        const result = await api({
+                            action: "cancelSignup",
+                            id: saved.id,
+                            editToken: saved.editToken,
+                            eventDate: event.date,  // for server-side deadline check
+                        });
+                        if (result.error) {
+                            alert(result.error);
+                            cancelBtn.disabled = false;
+                            cancelBtn.textContent = "신청 취소";
+                            return;
+                        }
+                        clearSaved(event.path);
+                        window.location.reload();
+                    } catch {
+                        alert("오류가 발생했습니다. 다시 시도해주세요.");
                         cancelBtn.disabled = false;
                         cancelBtn.textContent = "신청 취소";
-                        return;
                     }
-                    clearSaved(event.path);
-                    window.location.reload();
-                } catch {
-                    alert("오류가 발생했습니다. 다시 시도해주세요.");
-                    cancelBtn.disabled = false;
-                    cancelBtn.textContent = "신청 취소";
-                }
-            });
+                });
+            }
         }
 
         // auto-expand names panel so user can see their name in the list
@@ -603,6 +740,27 @@
                     setSignedUpState(applyDiv, applyBtn, statusCard, event, latest);
                     showToast(result.waitlisted, applyDiv);
                     loadSignups(event, statusCard); // refresh counts + names
+                });
+            });
+
+            // "Already signed up on another device?" — password-based cancel flow.
+            // Only shown when there's no localStorage record on this device.
+            const otherDeviceBtn = document.createElement("button");
+            otherDeviceBtn.type = "button";
+            otherDeviceBtn.className = "evs_other_device_btn";
+            otherDeviceBtn.textContent = "이미 신청하셨나요? 취소하기";
+            applyDiv.appendChild(otherDeviceBtn);
+
+            otherDeviceBtn.addEventListener("click", () => {
+                openCancelByPasswordModal(event, () => {
+                    // On success: show a simple inline message and reload counts
+                    otherDeviceBtn.remove();
+                    const msg = document.createElement("p");
+                    msg.className = "evs_cancel_notice";
+                    msg.style.marginTop = "16px";
+                    msg.textContent = "신청이 취소되었습니다.";
+                    applyDiv.appendChild(msg);
+                    loadSignups(event, statusCard);
                 });
             });
         }

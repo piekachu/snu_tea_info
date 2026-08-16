@@ -1221,6 +1221,44 @@ body.nav-open .magazine_lnb {
     background: var(--osullocGreen);
     color: #fff;
 }
+
+/* multi-venue: row of per-venue "길찾기" buttons spaced with a gap */
+.event_map_directions_row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.event_map_directions_row .event_map_directions {
+    margin-top: 12px; /* uniform with single-venue button */
+}
+
+/* info window shown when a venue marker is clicked */
+.event_map_infowin {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    white-space: nowrap;
+    font-size: 13px;
+}
+.event_map_infowin_label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--primaryText);
+}
+.event_map_infowin_link {
+    color: var(--osullocGreen);
+    font-size: 12px;
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+}
+.event_map_infowin_link:hover {
+    text-decoration: underline;
+}
+
 @media all and (max-width: 640px) {
     .event_map_directions {
         padding: 6px 14px;
@@ -1521,7 +1559,39 @@ select.evs_select {
     padding: 4px;
 }
 .evs_cancel_btn:hover { color: #c0392b; }
-.evs_cancel_btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.evs_cancel_btn:disabled { opacity: 0.4; cursor: not-allowed; text-decoration: none; }
+
+/* notice shown below the disabled cancel button when past the withdrawal deadline */
+.evs_cancel_notice {
+    font-size: 11.5px;
+    color: var(--fontGray);
+    text-align: center;
+    margin: 4px auto 0;
+    line-height: 1.5;
+}
+
+/* "already signed up on another device?" link — sits below the apply button */
+.evs_other_device_btn {
+    display: block;
+    margin: 14px auto 0;
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--fontGray);
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+    padding: 4px;
+}
+.evs_other_device_btn:hover { color: #c0392b; }
+
+/* cancel modal submit button variant (red tint) */
+.evs_submit.evs_submit_cancel {
+    background: #b23b3b;
+}
+.evs_submit.evs_submit_cancel:hover:not(:disabled) {
+    background: #962e2e;
+}
 
 /* ── signup status card ─────────────────────────────────────────────
  * Always-visible block inside .event_apply (above the apply button).

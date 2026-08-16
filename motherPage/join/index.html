@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="../subpage.css">
     <link rel="stylesheet" href="../events/calendar.css">
     <link rel="stylesheet" href="join.css">
+    <link rel="stylesheet" href="../notice/notice.css">
 
     <title>소모임 신청</title>
 
@@ -47,35 +48,50 @@
                 누구나 자유롭게 만들고 신청할 수 있어요.
             </p>
 
-            <div id="joinDemoBanner" class="join_demo_banner" hidden>
-                데모 모드로 실행 중이에요 — 지금 만든 소모임과 신청은 <strong>이 브라우저에만</strong> 저장돼요.
-                모두에게 공유되려면 <code>apps-script/SETUP.md</code> 안내에 따라 배포를 완료해주세요.
+            <!-- tab bar -->
+            <div class="join_tabs" id="joinTabBar" role="tablist">
+                <button class="join_tab is-active" data-tab="calendar" role="tab" aria-selected="true" aria-controls="joinTabCalendar">소모임 신청</button>
+                <button class="join_tab" data-tab="info" role="tab" aria-selected="false" aria-controls="joinTabInfo">정보</button>
             </div>
 
-            <p id="joinLoading" class="join_loading">불러오는 중...</p>
-            <p id="joinError" class="join_error" hidden>정보를 불러오지 못했어요. 새로고침 해주세요.</p>
+            <!-- panel 1: calendar + day panel (existing content) -->
+            <div id="joinTabCalendar" role="tabpanel">
+                <div id="joinDemoBanner" class="join_demo_banner" hidden>
+                    데모 모드로 실행 중이에요 — 지금 만든 소모임과 신청은 <strong>이 브라우저에만</strong> 저장돼요.
+                    모두에게 공유되려면 <code>apps-script/SETUP.md</code> 안내에 따라 배포를 완료해주세요.
+                </div>
 
-            <div id="joinContent" hidden>
-                <section class="calendar" aria-label="소모임 일정">
-                    <div class="calendar_header">
-                        <button type="button" id="calPrev" class="calendar_nav" aria-label="이전 달">&#8249;</button>
-                        <div class="calendar_titlewrap">
-                            <h3 id="calLabel" class="calendar_label"></h3>
-                            <button type="button" id="calToday" class="calendar_today">오늘</button>
+                <p id="joinLoading" class="join_loading">불러오는 중...</p>
+                <p id="joinError" class="join_error" hidden>정보를 불러오지 못했어요. 새로고침 해주세요.</p>
+
+                <div id="joinContent" hidden>
+                    <section class="calendar" aria-label="소모임 일정">
+                        <div class="calendar_header">
+                            <button type="button" id="calPrev" class="calendar_nav" aria-label="이전 달">&#8249;</button>
+                            <div class="calendar_titlewrap">
+                                <h3 id="calLabel" class="calendar_label"></h3>
+                                <button type="button" id="calToday" class="calendar_today">오늘</button>
+                            </div>
+                            <button type="button" id="calNext" class="calendar_nav" aria-label="다음 달">&#8250;</button>
                         </div>
-                        <button type="button" id="calNext" class="calendar_nav" aria-label="다음 달">&#8250;</button>
-                    </div>
-                    <div class="calendar_weekdays" id="calWeekdays"></div>
-                    <div class="calendar_grid" id="calGrid"></div>
-                </section>
+                        <div class="calendar_weekdays" id="calWeekdays"></div>
+                        <div class="calendar_grid" id="calGrid"></div>
+                    </section>
 
-                <section class="join_daypanel" id="joinDayPanel" aria-label="선택한 날짜의 소모임">
-                    <div class="join_daypanel_header">
-                        <h3 class="join_daypanel_date" id="joinDayPanelDate"></h3>
-                        <button type="button" class="join_btn_primary join_btn_small" id="joinCreateBtn">+ 새 소모임 만들기</button>
-                    </div>
-                    <div class="join_event_list" id="joinEventList"></div>
-                </section>
+                    <section class="join_daypanel" id="joinDayPanel" aria-label="선택한 날짜의 소모임">
+                        <div class="join_daypanel_header">
+                            <h3 class="join_daypanel_date" id="joinDayPanelDate"></h3>
+                            <button type="button" class="join_btn_primary join_btn_small" id="joinCreateBtn">+ 새 소모임 만들기</button>
+                        </div>
+                        <div class="join_event_list" id="joinEventList"></div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- panel 2: 정보 (notice-style list) -->
+            <div id="joinTabInfo" role="tabpanel" hidden>
+                <p class="notice_intro">소모임 신청에 관한 안내와 규칙을 확인하세요.</p>
+                <ul class="notice_list" id="joinInfoList"></ul>
             </div>
 
         </div>
@@ -175,6 +191,88 @@
 
     <script src="join-config.js"></script>
     <script src="join.js"></script>
+    <script src="join-info-data.js"></script>
+    <script>
+    (function () {
+        "use strict";
+
+        // ── tab switching ──────────────────────────────────────────────
+        var tabBar    = document.getElementById("joinTabBar");
+        var calPanel  = document.getElementById("joinTabCalendar");
+        var infoPanel = document.getElementById("joinTabInfo");
+
+        tabBar.addEventListener("click", function (e) {
+            var btn = e.target.closest(".join_tab");
+            if (!btn) return;
+            var tab = btn.dataset.tab;
+            tabBar.querySelectorAll(".join_tab").forEach(function (b) {
+                var active = b === btn;
+                b.classList.toggle("is-active", active);
+                b.setAttribute("aria-selected", active ? "true" : "false");
+            });
+            calPanel.hidden  = tab !== "calendar";
+            infoPanel.hidden = tab !== "info";
+        });
+
+        // ── 정보 list renderer ─────────────────────────────────────────
+        var listEl = document.getElementById("joinInfoList");
+        if (!listEl || typeof teaJoinInfo === "undefined") return;
+
+        var ARROW_SVG =
+            '<svg class="notice_item_arrow" viewBox="0 0 8 12" fill="none"' +
+            ' xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+            '<path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5"' +
+            ' stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+        function formatDate(iso) {
+            var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+            return m ? (Number(m[1]) + "년 " + Number(m[2]) + "월 " + Number(m[3]) + "일") : String(iso || "");
+        }
+
+        function el(tag, cls, text) {
+            var node = document.createElement(tag);
+            if (cls)  node.className   = cls;
+            if (text != null) node.textContent = text;
+            return node;
+        }
+
+        // pinned items first; otherwise keep authored order
+        var items = teaJoinInfo.slice().sort(function (a, b) {
+            return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+        });
+
+        items.forEach(function (n, idx) {
+            var li = el("li", "notice_item" + (n.pinned ? " is-pinned" : ""));
+
+            if (n.path) {
+                // linked row — identical markup to notice/notices.js renderList()
+                var a = el("a", "notice_item_link");
+                a.href = "../" + n.path;
+                if (n.pinned) a.appendChild(el("span", "notice_item_badge", "고정"));
+                a.appendChild(el("span", "notice_item_title", n.title));
+                a.appendChild(el("span", "notice_item_date", formatDate(n.date)));
+                var arrowHolder = document.createElement("span");
+                arrowHolder.innerHTML = ARROW_SVG;
+                a.appendChild(arrowHolder.firstChild);
+                li.appendChild(a);
+            } else {
+                // non-linked row (page not yet created)
+                var div = el("div", "notice_item_link notice_item_nolink");
+                if (n.pinned) div.appendChild(el("span", "notice_item_badge", "고정"));
+                div.appendChild(el("span", "notice_item_title", n.title));
+                div.appendChild(el("span", "notice_item_date", formatDate(n.date)));
+                li.appendChild(div);
+            }
+
+            listEl.appendChild(li);
+        });
+
+        if (items.length === 0) {
+            var p = el("p", "join_empty_state", "등록된 정보가 없어요.");
+            listEl.parentNode.insertBefore(p, listEl);
+        }
+    })();
+    </script>
 
     <!-- footer -->
     <footer class="footer">

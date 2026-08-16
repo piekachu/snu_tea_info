@@ -1,7 +1,16 @@
-// Renders an embedded Naver Map (with a "길찾기" directions button) into
-// "#eventMap" on an event subpage, when that event has `lat`/`lng` set in
-// events-data.js. Loads the Naver Maps JS SDK lazily, only on pages that
-// actually need it, so pages without coordinates pay no extra cost.
+// Renders an embedded Naver Map into "#eventMap" on an event subpage.
+// Supports two modes depending on the event's data in events-data.js:
+//
+//   Single venue  — event has `lat`/`lng` (+ optional `mapLink`).
+//                   Drops one marker and shows a "길찾기" button below.
+//
+//   Multiple venues — event has `venues: [{lat, lng, label, mapLink}, …]`.
+//                   Drops one marker per venue, auto-fits the map to show
+//                   all of them, and shows a "길찾기" button per venue below
+//                   the map. Clicking a marker opens a small label popup;
+//                   clicking another venue's marker closes the previous one.
+//
+// Loads the Naver Maps JS SDK lazily — pages without coordinates pay no cost.
 // Reads teaClubEvents from events-data.js — must load after it.
 (function () {
     "use strict";
@@ -36,7 +45,8 @@
         document.head.appendChild(script);
     }
 
-    function renderMap(mapEl, event) {
+    // ── Single-venue map ─────────────────────────────────────────────────────
+    function renderSingleVenueMap(mapEl, event) {
         var point = new naver.maps.LatLng(event.lat, event.lng);
         var canvas = document.createElement("div");
         canvas.className = "event_map_canvas";
@@ -56,6 +66,88 @@
         }
     }
 
+    // ── Multi-venue map ──────────────────────────────────────────────────────
+    function renderMultiVenueMap(mapEl, venues) {
+        // filter out any venue that is missing coordinates
+        var validVenues = venues.filter(function (v) {
+            return typeof v.lat === "number" && typeof v.lng === "number";
+        });
+        if (!validVenues.length) return;
+
+        var canvas = document.createElement("div");
+        canvas.className = "event_map_canvas";
+        mapEl.appendChild(canvas);
+
+        // initialise the map centred on the first venue; fitBounds will adjust
+        var firstPoint = new naver.maps.LatLng(validVenues[0].lat, validVenues[0].lng);
+        var map = new naver.maps.Map(canvas, { center: firstPoint, zoom: 15 });
+
+        // keep track of the currently open info window so we can close it when
+        // the user clicks a different marker
+        var openInfoWindow = null;
+
+        validVenues.forEach(function (venue) {
+            var point = new naver.maps.LatLng(venue.lat, venue.lng);
+            var marker = new naver.maps.Marker({ position: point, map: map });
+
+            if (venue.label) {
+                var directionsHtml = venue.mapLink
+                    ? '<a href="' + venue.mapLink + '" target="_blank" rel="noopener noreferrer" class="event_map_infowin_link">길찾기</a>'
+                    : "";
+                var infoWindow = new naver.maps.InfoWindow({
+                    content: '<div class="event_map_infowin">'
+                        + '<span class="event_map_infowin_label">' + venue.label + '</span>'
+                        + directionsHtml
+                        + '</div>',
+                    borderWidth: 0,
+                    disableAnchor: false,
+                    backgroundColor: "transparent",
+                    pixelOffset: new naver.maps.Point(0, -8)
+                });
+
+                naver.maps.Event.addListener(marker, "click", function () {
+                    if (openInfoWindow) {
+                        openInfoWindow.close();
+                        // if clicking the same marker again, just close and return
+                        if (openInfoWindow === infoWindow) {
+                            openInfoWindow = null;
+                            return;
+                        }
+                    }
+                    infoWindow.open(map, marker);
+                    openInfoWindow = infoWindow;
+                });
+            }
+        });
+
+        // auto-fit the viewport to contain all markers (with padding)
+        if (validVenues.length > 1) {
+            var bounds = new naver.maps.LatLngBounds();
+            validVenues.forEach(function (v) {
+                bounds.extend(new naver.maps.LatLng(v.lat, v.lng));
+            });
+            map.fitBounds(bounds, { top: 48, right: 48, bottom: 48, left: 48 });
+        }
+
+        // directions row — one button per venue that has a mapLink
+        var linksWithUrl = validVenues.filter(function (v) { return v.mapLink; });
+        if (linksWithUrl.length) {
+            var row = document.createElement("div");
+            row.className = "event_map_directions_row";
+            linksWithUrl.forEach(function (venue) {
+                var link = document.createElement("a");
+                link.href = venue.mapLink;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.className = "event_map_directions";
+                link.textContent = venue.label ? venue.label + " 길찾기" : "길찾기";
+                row.appendChild(link);
+            });
+            mapEl.appendChild(row);
+        }
+    }
+
+    // ── Entry point ──────────────────────────────────────────────────────────
     function init() {
         if (typeof teaClubEvents === "undefined") return;
 
@@ -64,14 +156,24 @@
 
         var here = currentRelPath();
         var event = teaClubEvents.find(function (e) { return e.path === here; });
+        if (!event) { mapEl.style.display = "none"; return; }
 
-        if (!event || typeof event.lat !== "number" || typeof event.lng !== "number") {
+        // multi-venue path: event.venues array takes priority
+        var hasVenues = Array.isArray(event.venues) && event.venues.length > 0;
+        // single-venue path: top-level lat/lng
+        var hasSingleVenue = typeof event.lat === "number" && typeof event.lng === "number";
+
+        if (!hasVenues && !hasSingleVenue) {
             mapEl.style.display = "none";
             return;
         }
 
         loadNaverMapsSdk(function () {
-            renderMap(mapEl, event);
+            if (hasVenues) {
+                renderMultiVenueMap(mapEl, event.venues);
+            } else {
+                renderSingleVenueMap(mapEl, event);
+            }
         });
     }
 

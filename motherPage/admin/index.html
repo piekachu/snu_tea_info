@@ -340,6 +340,35 @@
         .adm-num { font-variant-numeric: tabular-nums; color: var(--gray); font-size: 12px; }
         .adm-ts  { font-variant-numeric: tabular-nums; color: var(--gray); font-size: 12px; }
 
+        /* ── view toggle (신청 중 / 취소 / 전체) ── */
+        .adm-view-toggle {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .adm-view-btn {
+            padding: 5px 16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-family: var(--font);
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--gray);
+            background: #fff;
+            cursor: pointer;
+            transition: background .12s, color .12s, border-color .12s;
+        }
+        .adm-view-btn:hover { background: #f0f0ee; }
+        .adm-view-btn.is-active { background: var(--green); color: #fff; border-color: var(--green); }
+        .adm-view-btn.is-active.canceled { background: var(--red); border-color: var(--red); }
+
+        /* canceled rows */
+        tbody tr.canceled-row { background: #fdf5f5; }
+        tbody tr.canceled-row:hover { background: #faeaea; }
+        tbody tr.canceled-row td { color: #999; }
+        tbody tr.canceled-row td.adm-name-cell { text-decoration: line-through; }
+        .badge.canceled { background: rgba(178,59,59,.10); color: var(--red); }
+
         /* ── 소모임 panel ── */
         .sm-toolbar {
             display: flex;
@@ -631,6 +660,13 @@
 
         <p class="adm-status" id="adm-status"></p>
 
+        <!-- view filter: active / canceled / all -->
+        <div class="adm-view-toggle" id="adm-view-toggle" hidden>
+            <button class="adm-view-btn is-active" data-view="active">신청 중</button>
+            <button class="adm-view-btn canceled"  data-view="canceled">취소</button>
+            <button class="adm-view-btn"            data-view="all">전체</button>
+        </div>
+
         <div class="adm-cap-card" id="adm-cap-card" hidden>
             <p class="adm-cap-title" id="adm-cap-title">찻집별 현황</p>
             <div class="adm-cap-rows" id="adm-cap-rows"></div>
@@ -702,31 +738,45 @@
 
 
 /* ══════════════════════════════════════════════════════════════════════
-   2. 행사 신청 admin (existing logic)
+   2. 행사 신청 admin
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
     const API = "https://mzuxduxbzvaekuancotu.supabase.co/functions/v1/event-signup";
 
-    const sel          = document.getElementById("adm-event-sel");
-    const pwInput      = document.getElementById("adm-pw");
-    const fetchBtn     = document.getElementById("adm-fetch-btn");
-    const statusEl     = document.getElementById("adm-status");
-    const summaryEl    = document.getElementById("adm-summary");
-    const capCard      = document.getElementById("adm-cap-card");
-    const capTitle     = document.getElementById("adm-cap-title");
-    const capRows      = document.getElementById("adm-cap-rows");
-    const toolbar      = document.getElementById("adm-toolbar");
-    const tableWrap    = document.getElementById("adm-table-wrap");
-    const thead        = document.getElementById("adm-thead");
-    const tbody        = document.getElementById("adm-tbody");
-    const csvBtn       = document.getElementById("adm-csv-btn");
-    const autoRefCheck = document.getElementById("adm-auto-refresh");
-    const refreshBadge = document.getElementById("adm-refresh-badge");
-    const lastFetchEl  = document.getElementById("adm-last-fetch");
-    const lastFetchTxt = document.getElementById("adm-last-fetch-text");
-    const pulseEl      = document.getElementById("adm-pulse");
+    const sel           = document.getElementById("adm-event-sel");
+    const pwInput       = document.getElementById("adm-pw");
+    const fetchBtn      = document.getElementById("adm-fetch-btn");
+    const statusEl      = document.getElementById("adm-status");
+    const summaryEl     = document.getElementById("adm-summary");
+    const capCard       = document.getElementById("adm-cap-card");
+    const capTitle      = document.getElementById("adm-cap-title");
+    const capRows       = document.getElementById("adm-cap-rows");
+    const toolbar       = document.getElementById("adm-toolbar");
+    const tableWrap     = document.getElementById("adm-table-wrap");
+    const thead         = document.getElementById("adm-thead");
+    const tbody         = document.getElementById("adm-tbody");
+    const csvBtn        = document.getElementById("adm-csv-btn");
+    const autoRefCheck  = document.getElementById("adm-auto-refresh");
+    const refreshBadge  = document.getElementById("adm-refresh-badge");
+    const lastFetchEl   = document.getElementById("adm-last-fetch");
+    const lastFetchTxt  = document.getElementById("adm-last-fetch-text");
+    const pulseEl       = document.getElementById("adm-pulse");
+    const viewToggleWrap= document.getElementById("adm-view-toggle");
+    const viewBtns      = viewToggleWrap.querySelectorAll(".adm-view-btn");
 
+    // "active" | "canceled" | "all"
+    let currentView = "active";
     let lastSignups = [], lastExtraCols = [], autoTimer = null, lastPw = "";
+
+    // ── helpers ─────────────────────────────────────────────────────
+    function isActive(s)   { return !s.canceled_at; }
+    function isCanceled(s) { return !!s.canceled_at; }
+
+    function viewFilter(signups) {
+        if (currentView === "active")   return signups.filter(isActive);
+        if (currentView === "canceled") return signups.filter(isCanceled);
+        return signups;
+    }
 
     function getSelectedEvent() {
         return (typeof teaClubEvents !== "undefined")
@@ -753,6 +803,7 @@
     }
     function hide() {
         capCard.hidden = summaryEl.hidden = toolbar.hidden = tableWrap.hidden = true;
+        viewToggleWrap.hidden = true;
     }
     function flashPulse() {
         pulseEl.classList.remove("on");
@@ -760,7 +811,19 @@
         pulseEl.classList.add("on");
     }
 
-    // populate dropdown
+    // ── view toggle ──────────────────────────────────────────────────
+    viewBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            currentView = btn.dataset.view;
+            viewBtns.forEach(b => b.classList.toggle("is-active", b === btn));
+            if (lastSignups.length) {
+                const ev = getSelectedEvent(), gf = getGroupField(ev);
+                renderTable(lastSignups, gf);
+            }
+        });
+    });
+
+    // ── dropdown ─────────────────────────────────────────────────────
     if (typeof teaClubEvents !== "undefined") {
         [...teaClubEvents].sort((a,b) => b.date.localeCompare(a.date)).forEach(ev => {
             const o = document.createElement("option");
@@ -772,6 +835,7 @@
         sel.innerHTML = '<option>events-data.js 로드 실패</option>';
     }
 
+    // ── fetch ────────────────────────────────────────────────────────
     async function fetchSignups(isAuto = false) {
         const eventPath = sel.value;
         const password  = isAuto ? lastPw : pwInput.value;
@@ -789,10 +853,14 @@
             lastSignups = data.signups || [];
             lastPw = password;
             const ev = getSelectedEvent(), gf = getGroupField(ev);
-            renderCapacityCard(lastSignups, gf);
+            // capacity card and summary always reflect active signups only
+            renderCapacityCard(lastSignups.filter(isActive), gf);
             renderSummary(lastSignups);
             renderTable(lastSignups, gf);
-            setStatus(`총 ${lastSignups.length}명 조회됨`);
+            viewToggleWrap.hidden = false;
+            const activeN   = lastSignups.filter(isActive).length;
+            const canceledN = lastSignups.filter(isCanceled).length;
+            setStatus(`신청 중 ${activeN}명 · 취소 ${canceledN}명`);
             lastFetchTxt.textContent = `최종 조회 ${nowTime()}`;
             lastFetchEl.hidden = false;
             flashPulse();
@@ -809,13 +877,14 @@
             autoTimer = setInterval(() => { if (lastPw) fetchSignups(true); }, 30_000);
     });
 
-    function renderCapacityCard(signups, gf) {
+    // ── capacity card (active signups only) ──────────────────────────
+    function renderCapacityCard(activeSignups, gf) {
         if (!gf) { capCard.hidden = true; return; }
         capTitle.textContent = `${gf.label}별 현황`;
         capRows.innerHTML = "";
         gf.options.forEach(option => {
-            const conf = signups.filter(s => !s.waitlisted && (s.metadata||{})[gf.name] === option).length;
-            const wait = signups.filter(s =>  s.waitlisted && (s.metadata||{})[gf.name] === option).length;
+            const conf = activeSignups.filter(s => !s.waitlisted && (s.metadata||{})[gf.name] === option).length;
+            const wait = activeSignups.filter(s =>  s.waitlisted && (s.metadata||{})[gf.name] === option).length;
             const full = conf >= gf.capacityPerOption;
             const pct  = Math.min(100, conf / gf.capacityPerOption * 100);
             const row  = document.createElement("div");
@@ -834,14 +903,20 @@
         capCard.hidden = false;
     }
 
+    // ── summary chips (all signups, split by status) ─────────────────
     function renderSummary(signups) {
         summaryEl.innerHTML = "";
-        const confirmed = signups.filter(s => !s.waitlisted).length;
-        const waiting   = signups.filter(s =>  s.waitlisted).length;
-        [["전체 " + signups.length + "명","total"],
-         ["확정 " + confirmed + "명","confirmed"],
-         ...(waiting ? [["대기 " + waiting + "명","waiting"]] : [])
-        ].forEach(([txt,cls]) => {
+        const active    = signups.filter(isActive);
+        const canceled  = signups.filter(isCanceled);
+        const confirmed = active.filter(s => !s.waitlisted).length;
+        const waiting   = active.filter(s =>  s.waitlisted).length;
+
+        const chips = [
+            [`신청 중 ${active.length}명`, "confirmed"],
+            ...(waiting   ? [[`대기 ${waiting}명`, "waiting"]]  : []),
+            ...(canceled.length ? [[`취소 ${canceled.length}명`, "total"]] : []),
+        ];
+        chips.forEach(([txt, cls]) => {
             const c = document.createElement("span");
             c.className = `adm-chip ${cls}`; c.textContent = txt;
             summaryEl.appendChild(c);
@@ -849,15 +924,20 @@
         summaryEl.hidden = false;
     }
 
+    // ── table ────────────────────────────────────────────────────────
     function renderTable(signups, gf) {
         thead.innerHTML = tbody.innerHTML = "";
+
+        const visible = viewFilter(signups);
+
+        // collect extra metadata column keys from active rows only (consistent columns)
         const metaKeys = [];
-        signups.forEach(s => Object.keys(s.metadata||{}).forEach(k => {
+        signups.filter(isActive).forEach(s => Object.keys(s.metadata||{}).forEach(k => {
             if (!metaKeys.includes(k) && k !== gf?.name) metaKeys.push(k);
         }));
         lastExtraCols = gf ? [gf.name, ...metaKeys] : metaKeys;
 
-        const cols = ["#","닉네임","실명","상태","신청 일시"];
+        const cols = ["#", "닉네임", "실명", "상태", "신청 일시"];
         if (gf) cols.push(gf.label);
         metaKeys.forEach(k => cols.push(k));
 
@@ -865,81 +945,118 @@
         cols.forEach(h => { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); });
         thead.appendChild(hr);
 
+        // waitlist positions — only among active waitlisted
         const waitPos = {};
         const computePos = (list) => list
-            .sort((a,b) => new Date(a.created_at)-new Date(b.created_at))
-            .forEach((s,i) => { waitPos[s.id] = i+1; });
-        if (gf) { gf.options.forEach(opt => computePos(signups.filter(s => s.waitlisted && (s.metadata||{})[gf.name]===opt))); }
-        else    { computePos(signups.filter(s => s.waitlisted)); }
+            .sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
+            .forEach((s, i) => { waitPos[s.id] = i + 1; });
+        const activeWait = signups.filter(s => isActive(s) && s.waitlisted);
+        if (gf) {
+            gf.options.forEach(opt =>
+                computePos(activeWait.filter(s => (s.metadata||{})[gf.name] === opt))
+            );
+        } else {
+            computePos(activeWait);
+        }
 
-        if (!signups.length) {
+        if (!visible.length) {
             const tr = document.createElement("tr");
             const td = document.createElement("td");
-            td.colSpan = cols.length; td.className = "adm-empty"; td.textContent = "신청자가 없습니다.";
+            td.colSpan = cols.length;
+            td.className = "adm-empty";
+            td.textContent = currentView === "canceled" ? "취소 내역이 없습니다." : "신청자가 없습니다.";
             tr.appendChild(td); tbody.appendChild(tr);
         } else {
-            signups.forEach((s, i) => {
+            visible.forEach((s, i) => {
+                const canceled = isCanceled(s);
                 const tr = document.createElement("tr");
-                if (s.waitlisted) tr.classList.add("wait-row");
-                const cells = [
-                    { txt: i+1, cls: "adm-num" },
-                    { txt: s.nickname },
-                    { txt: s.real_name },
-                ];
-                cells.forEach(({txt, cls}) => {
-                    const td = document.createElement("td");
-                    if (cls) td.className = cls;
-                    td.textContent = txt;
-                    tr.appendChild(td);
-                });
+                if (canceled)   tr.classList.add("canceled-row");
+                else if (s.waitlisted) tr.classList.add("wait-row");
+
+                // # / 닉네임 / 실명
+                const tdNum  = document.createElement("td"); tdNum.className = "adm-num"; tdNum.textContent = i + 1;
+                const tdNick = document.createElement("td"); tdNick.className = "adm-name-cell"; tdNick.textContent = s.nickname;
+                const tdReal = document.createElement("td"); tdReal.textContent = s.real_name;
+                tr.appendChild(tdNum);
+                tr.appendChild(tdNick);
+                tr.appendChild(tdReal);
+
                 // status badge
                 const tdSt = document.createElement("td");
                 const badge = document.createElement("span");
-                badge.className = "badge " + (s.waitlisted ? "wait" : "ok");
-                badge.textContent = s.waitlisted ? "대기" : "확정";
-                if (s.waitlisted && waitPos[s.id]) {
-                    const pos = document.createElement("span"); pos.className = "wait-pos";
-                    pos.textContent = `#${waitPos[s.id]}`; badge.appendChild(pos);
+                if (canceled) {
+                    badge.className = "badge canceled";
+                    badge.textContent = "취소";
+                } else if (s.waitlisted) {
+                    badge.className = "badge wait";
+                    badge.textContent = "대기";
+                    if (waitPos[s.id]) {
+                        const pos = document.createElement("span"); pos.className = "wait-pos";
+                        pos.textContent = `#${waitPos[s.id]}`; badge.appendChild(pos);
+                    }
+                } else {
+                    badge.className = "badge ok";
+                    badge.textContent = "확정";
                 }
                 tdSt.appendChild(badge); tr.appendChild(tdSt);
-                // timestamp
+
+                // timestamp — show canceled_at when canceled, otherwise created_at
                 const tdTs = document.createElement("td"); tdTs.className = "adm-ts";
-                tdTs.textContent = formatDate(s.created_at); tr.appendChild(tdTs);
+                if (canceled) {
+                    tdTs.innerHTML = `${formatDate(s.created_at)}<br><span style="color:var(--red);font-size:11px;">취소 ${formatDate(s.canceled_at)}</span>`;
+                } else {
+                    tdTs.textContent = formatDate(s.created_at);
+                }
+                tr.appendChild(tdTs);
+
                 // group field
-                if (gf) { const td=document.createElement("td"); td.textContent=(s.metadata||{})[gf.name]??"—"; tr.appendChild(td); }
-                metaKeys.forEach(k => { const td=document.createElement("td"); td.textContent=(s.metadata||{})[k]??"—"; tr.appendChild(td); });
+                if (gf) { const td = document.createElement("td"); td.textContent = (s.metadata||{})[gf.name] ?? "—"; tr.appendChild(td); }
+                metaKeys.forEach(k => { const td = document.createElement("td"); td.textContent = (s.metadata||{})[k] ?? "—"; tr.appendChild(td); });
+
                 tbody.appendChild(tr);
             });
         }
         toolbar.hidden = tableWrap.hidden = false;
     }
 
+    // ── CSV export (respects current view) ───────────────────────────
     csvBtn.addEventListener("click", () => {
         if (!lastSignups.length) return;
         const ev = getSelectedEvent(), gf = getGroupField(ev);
-        const headers = ["번호","닉네임","실명","상태","대기순위","신청 일시"];
+        const visible = viewFilter(lastSignups);
+
+        const headers = ["번호", "닉네임", "실명", "상태", "대기순위", "신청 일시", "취소 일시"];
         if (gf) headers.push(gf.label);
         const plainMeta = lastExtraCols.filter(k => k !== gf?.name);
         plainMeta.forEach(k => headers.push(k));
 
         const waitPos = {};
         const computePos = (list) => list
-            .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
-            .forEach((s,i)=>{waitPos[s.id]=i+1;});
-        if (gf) gf.options.forEach(opt => computePos(lastSignups.filter(s=>s.waitlisted&&(s.metadata||{})[gf.name]===opt)));
-        else    computePos(lastSignups.filter(s=>s.waitlisted));
+            .sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
+            .forEach((s, i) => { waitPos[s.id] = i + 1; });
+        const activeWait = lastSignups.filter(s => isActive(s) && s.waitlisted);
+        if (gf) gf.options.forEach(opt => computePos(activeWait.filter(s => (s.metadata||{})[gf.name] === opt)));
+        else    computePos(activeWait);
 
-        const rows = lastSignups.map((s,i) => {
-            const r = [i+1,s.nickname,s.real_name,s.waitlisted?"대기":"확정",s.waitlisted?(waitPos[s.id]??""):"",formatDate(s.created_at)];
-            if (gf) r.push((s.metadata||{})[gf.name]??"");
-            plainMeta.forEach(k=>r.push((s.metadata||{})[k]??""));
+        const rows = visible.map((s, i) => {
+            const canceled  = isCanceled(s);
+            const statusStr = canceled ? "취소" : (s.waitlisted ? "대기" : "확정");
+            const waitRank  = (!canceled && s.waitlisted && waitPos[s.id]) ? waitPos[s.id] : "";
+            const r = [i+1, s.nickname, s.real_name, statusStr, waitRank,
+                       formatDate(s.created_at), canceled ? formatDate(s.canceled_at) : ""];
+            if (gf) r.push((s.metadata||{})[gf.name] ?? "");
+            plainMeta.forEach(k => r.push((s.metadata||{})[k] ?? ""));
             return r;
         });
-        const csv = [headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
-        const title = sel.options[sel.selectedIndex]?.textContent.trim()||"signups";
+
+        const csv = [headers, ...rows]
+            .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
+            .join("\n");
+        const viewLabel = currentView === "canceled" ? "_취소" : currentView === "all" ? "_전체" : "";
+        const title = sel.options[sel.selectedIndex]?.textContent.trim() || "signups";
         const a = document.createElement("a");
-        a.href = "data:text/csv;charset=utf-8,﻿"+encodeURIComponent(csv);
-        a.download = `신청명단_${title}.csv`;
+        a.href = "data:text/csv;charset=utf-8,﻿" + encodeURIComponent(csv);
+        a.download = `신청명단${viewLabel}_${title}.csv`;
         a.click();
     });
 })();
