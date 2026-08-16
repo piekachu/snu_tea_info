@@ -90,6 +90,28 @@
                     </div>
                 </section>
 
+                <section id="info" class="home_band" aria-label="정보">
+                    <div class="home_band_inner">
+                        <div class="home_card_header">
+                            <h3 class="home_card_title">정보</h3>
+                            <a class="home_card_more" href="info/index.html">더 알아보기</a>
+                        </div>
+                        <section class="home_band_intro">
+                            <p>설다연에 관한 다양한 정보와 글을 만나보세요. 차 문화, 찻집 안내, 동아리 활동 이야기 등 유익한 내용을 공유합니다.</p>
+                        </section>
+                        <section class="event_carousel" id="infoCarousel" data-info-prefix="" aria-label="최근 정보">
+                            <div class="carousel_header">
+                                <h3 class="carousel_title">최근 정보</h3>
+                                <div class="carousel_controls">
+                                    <button type="button" id="infoCarouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
+                                    <button type="button" id="infoCarouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
+                                </div>
+                            </div>
+                            <div class="carousel_track" id="infoCarouselTrack"></div>
+                        </section>
+                    </div>
+                </section>
+
                 <section id="notice" class="home_band" aria-label="공지사항/Q&A">
                     <div class="home_band_inner">
                         <div class="home_card_header">
@@ -120,6 +142,8 @@
     <script src="events/events-carousel.js"></script>
     <script src="join/join-config.js"></script>
     <script src="join/join-carousel.js"></script>
+    <script src="info/info-data.js"></script>
+    <script src="info/info.js"></script>
     <script src="notice/notices-data.js"></script>
     <script src="notice/notices.js"></script>
 
