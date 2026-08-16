@@ -1,6 +1,6 @@
 // Supabase Edge Function — 소모임 신청 backend
 // Replaces the old Google Apps Script / Code.gs backend.
-// Actions: list | createEvent | updateEvent | deleteEvent | signup | cancelSignup | eventParticipants
+// Actions: list | createEvent | updateEvent | deleteEvent | signup | cancelSignup | eventParticipants | cancelSignupByPassword | adminListAll
 //
 // Required env vars (set in Supabase dashboard → Settings → Edge Functions):
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_PASSWORD
@@ -497,12 +497,14 @@ Deno.serve(async (req: Request) => {
       if (!tokenOk && !pwOk && !isAdmin)
         return json({ ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." });
 
-      // Return ALL signups (including canceled) so the host can see who withdrew
-      const { data: sigs, error: sigErr } = await supabase
+      // Admin sees all signups including canceled; host/owner sees active participants only
+      let sigQuery = supabase
         .from("join_signups")
         .select("id, name, real_name, contact, created_at, canceled_at")
         .eq("event_id", id)
         .order("created_at");
+      if (!isAdmin) sigQuery = sigQuery.is("canceled_at", null);
+      const { data: sigs, error: sigErr } = await sigQuery;
       if (sigErr) throw sigErr;
 
       const participants = (sigs ?? []).map((s) => ({
@@ -512,10 +514,55 @@ Deno.serve(async (req: Request) => {
         contact: s.contact ?? "",
         isHost: s.id === ev.host_signup_id,
         createdAt: s.created_at,
-        canceledAt: s.canceled_at ?? null,
+        canceledAt: isAdmin ? (s.canceled_at ?? null) : null,
       }));
 
       return json({ ok: true, participants });
+    }
+
+    // ── adminListAll (admin-only: all events + all signups for history) ─
+    if (action === "adminListAll") {
+      const { adminPassword } = body;
+      const isAdmin = ADMIN_PASSWORD !== "" && adminPassword === ADMIN_PASSWORD;
+      if (!isAdmin)
+        return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." });
+
+      const [{ data: evs, error: evErr }, { data: sigs, error: sigErr }] = await Promise.all([
+        supabase
+          .from("join_events")
+          .select("id, date, time, title, location, capacity, host, host_signup_id, created_at")
+          .order("date"),
+        supabase
+          .from("join_signups")
+          .select("id, event_id, name, real_name, contact, created_at, canceled_at")
+          .order("created_at"),
+      ]);
+      if (evErr) throw evErr;
+      if (sigErr) throw sigErr;
+
+      const events = (evs ?? []).map((e) => ({
+        id: e.id,
+        date: e.date,
+        time: e.time ?? "",
+        title: e.title,
+        location: e.location ?? "",
+        capacity: e.capacity ?? null,
+        host: e.host,
+        hostSignupId: e.host_signup_id,
+        createdAt: e.created_at,
+      }));
+
+      const signups = (sigs ?? []).map((s) => ({
+        id: s.id,
+        eventId: s.event_id,
+        name: s.name,
+        realName: s.real_name,
+        contact: s.contact ?? "",
+        createdAt: s.created_at,
+        canceledAt: s.canceled_at ?? null,
+      }));
+
+      return json({ ok: true, events, signups });
     }
 
     return json({ ok: false, error: "unknown action" }, 400);

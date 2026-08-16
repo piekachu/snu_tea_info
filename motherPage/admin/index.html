@@ -642,12 +642,112 @@
         }
         .sm-past-toggle:hover { background: #eee; }
 
+        /* ── 소모임 이력 ── */
+        .hist-auth {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .hist-event-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .hist-card-head {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+        .hist-card-date {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 3px;
+        }
+        .hist-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        .hist-card-host {
+            font-size: 12.5px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+        .hist-card-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .hist-chip {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 100px;
+            background: var(--green-pale);
+            color: var(--green);
+        }
+        .hist-chip.canceled {
+            background: var(--red-pale);
+            color: var(--red);
+        }
+        .hist-table-wrap { overflow-x: auto; }
+        .hist-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .hist-table th,
+        .hist-table td {
+            padding: 8px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .hist-table th {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--gray);
+            background: #fafaf9;
+        }
+        .hist-row-host { background: var(--green-pale); }
+        .hist-row-canceled { opacity: .6; }
+        .hist-row-canceled td { text-decoration: line-through; }
+        .hist-badge-host {
+            background: var(--green); color: #fff;
+            font-size: 10px; font-weight: 700;
+            padding: 1px 6px; border-radius: 100px;
+            margin-left: 4px; text-decoration: none; display: inline-block;
+        }
+        .hist-badge-canceled {
+            background: var(--red); color: #fff;
+            font-size: 10px; font-weight: 700;
+            padding: 1px 6px; border-radius: 100px;
+            margin-left: 4px; text-decoration: none; display: inline-block;
+        }
+        .hist-empty-card {
+            font-size: 12px; color: #aaa;
+            padding: 12px 18px;
+        }
+        .hist-no-events {
+            text-align: center;
+            padding: 48px;
+            color: var(--gray);
+            font-size: 13px;
+        }
+
         @media (max-width: 640px) {
             .adm-header { padding: 14px 16px; }
             .adm-tabs   { padding: 0 16px; }
             .adm-wrap   { padding: 16px 12px 40px; }
             .adm-query, .adm-cap-card { padding: 14px 16px; }
             .sm-grid { grid-template-columns: 1fr; }
+            .hist-auth { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
@@ -666,6 +766,7 @@
 <nav class="adm-tabs">
     <button class="adm-tab is-active" data-panel="tab-signups">행사 신청</button>
     <button class="adm-tab"           data-panel="tab-somori">소모임</button>
+    <button class="adm-tab"           data-panel="tab-history">소모임 이력</button>
 </nav>
 
 <div class="adm-wrap">
@@ -747,6 +848,22 @@
         </div>
 
     </div><!-- /tab-somori -->
+
+    <!-- ══ 소모임 이력 panel ══════════════════════════════════════════════ -->
+    <div class="adm-panel" id="tab-history">
+
+        <div class="hist-auth">
+            <div class="adm-field" style="max-width:220px;">
+                <label for="hist-pw">관리자 비밀번호</label>
+                <input class="adm-pw" id="hist-pw" type="password" placeholder="비밀번호 입력" autocomplete="current-password">
+            </div>
+            <button class="adm-btn" id="hist-fetch-btn">조회</button>
+        </div>
+
+        <p class="adm-status" id="hist-status"></p>
+        <div id="hist-list"></div>
+
+    </div><!-- /tab-history -->
 
 </div><!-- /adm-wrap -->
 
@@ -1406,6 +1523,181 @@
         if (!loaded) loadAll();
     };
     refreshBtn.addEventListener("click", loadAll);
+})();
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   4. 소모임 이력 (past events + full cancellation history, admin-only)
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+    const JOIN_API = (typeof window.JOIN_APPS_SCRIPT_URL === "string" && window.JOIN_APPS_SCRIPT_URL.trim())
+        ? window.JOIN_APPS_SCRIPT_URL.trim() : "";
+
+    const pwInput  = document.getElementById("hist-pw");
+    const fetchBtn = document.getElementById("hist-fetch-btn");
+    const statusEl = document.getElementById("hist-status");
+    const listEl   = document.getElementById("hist-list");
+
+    const WEEKDAYS = ["일","월","화","수","목","금","토"];
+    const pad2 = n => String(n).padStart(2,"0");
+
+    function todayStr() {
+        const d = new Date();
+        return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    }
+    function formatEventDate(dateStr, timeStr) {
+        if (!dateStr) return "";
+        const [y,m,d] = dateStr.split("-").map(Number);
+        const wd = WEEKDAYS[new Date(y,m-1,d).getDay()];
+        let s = `${y}년 ${m}월 ${d}일 (${wd})`;
+        if (timeStr) {
+            const [h,min] = timeStr.split(":").map(Number);
+            s += ` ${h<12?"오전":"오후"} ${h%12||12}:${pad2(min)}`;
+        }
+        return s;
+    }
+    function fmtTs(iso) {
+        if (!iso) return "—";
+        const d = new Date(iso);
+        return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    }
+    function setStatus(msg, isErr=false) {
+        statusEl.textContent = msg;
+        statusEl.className = "adm-status" + (isErr ? " err" : "");
+    }
+
+    async function loadHistory() {
+        const adminPassword = pwInput.value.trim();
+        if (!adminPassword) { setStatus("관리자 비밀번호를 입력해주세요.", true); return; }
+        if (!JOIN_API) { setStatus("소모임 API URL이 설정되지 않았습니다. (join-config.js 확인)", true); return; }
+
+        fetchBtn.disabled = true;
+        listEl.innerHTML = "";
+        setStatus("불러오는 중…");
+        try {
+            const res  = await fetch(JOIN_API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "adminListAll", adminPassword }),
+                cache: "no-store",
+            });
+            const data = await res.json();
+            if (!data.ok) { setStatus(data.error || "오류가 발생했습니다.", true); return; }
+
+            const today = todayStr();
+            const pastEvents = (data.events || [])
+                .filter(e => (e.date || "") < today)
+                .sort((a, b) => b.date.localeCompare(a.date) || (b.time||"").localeCompare(a.time||""));
+            const allSignups = data.signups || [];
+
+            if (pastEvents.length === 0) {
+                const p = document.createElement("p");
+                p.className = "hist-no-events";
+                p.textContent = "지난 소모임이 없습니다.";
+                listEl.appendChild(p);
+                setStatus("지난 소모임이 없습니다.");
+                return;
+            }
+
+            setStatus(`지난 소모임 ${pastEvents.length}개`);
+            pastEvents.forEach(ev => {
+                const evSignups = allSignups.filter(s => s.eventId === ev.id);
+                listEl.appendChild(buildHistCard(ev, evSignups));
+            });
+        } catch { setStatus("네트워크 오류가 발생했습니다.", true); }
+        finally { fetchBtn.disabled = false; }
+    }
+
+    function buildHistCard(ev, signups) {
+        const activeCount   = signups.filter(s => !s.canceledAt).length;
+        const canceledCount = signups.filter(s =>  s.canceledAt).length;
+
+        const card = document.createElement("div");
+        card.className = "hist-event-card";
+
+        // ── header ──
+        const head = document.createElement("div");
+        head.className = "hist-card-head";
+
+        const dateEl = document.createElement("p");
+        dateEl.className = "hist-card-date";
+        dateEl.textContent = formatEventDate(ev.date, ev.time);
+        head.appendChild(dateEl);
+
+        const titleEl = document.createElement("p");
+        titleEl.className = "hist-card-title";
+        titleEl.textContent = ev.title || "(제목 없음)";
+        head.appendChild(titleEl);
+
+        const hostEl = document.createElement("p");
+        hostEl.className = "hist-card-host";
+        hostEl.textContent = `주최: ${ev.host || "—"}`;
+        head.appendChild(hostEl);
+
+        const chips = document.createElement("div");
+        chips.className = "hist-card-chips";
+        const activeChip = document.createElement("span");
+        activeChip.className = "hist-chip";
+        activeChip.textContent = `신청 ${activeCount}명`;
+        chips.appendChild(activeChip);
+        if (canceledCount > 0) {
+            const cancelChip = document.createElement("span");
+            cancelChip.className = "hist-chip canceled";
+            cancelChip.textContent = `취소 ${canceledCount}명`;
+            chips.appendChild(cancelChip);
+        }
+        head.appendChild(chips);
+        card.appendChild(head);
+
+        // ── participant table ──
+        if (signups.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "hist-empty-card";
+            empty.textContent = "신청자가 없습니다.";
+            card.appendChild(empty);
+            return card;
+        }
+
+        const tableWrap = document.createElement("div");
+        tableWrap.className = "hist-table-wrap";
+        const tbl = document.createElement("table");
+        tbl.className = "hist-table";
+        const hdr = document.createElement("tr");
+        ["#","닉네임","실명","연락처","신청 일시","취소 일시"].forEach(h => {
+            const th = document.createElement("th"); th.textContent = h; hdr.appendChild(th);
+        });
+        tbl.appendChild(hdr);
+
+        signups
+            .slice()
+            .sort((a, b) => new Date(a.createdAt||0) - new Date(b.createdAt||0))
+            .forEach((s, i) => {
+                const canceled = !!s.canceledAt;
+                const isHost   = s.id === ev.hostSignupId;
+                const tr = document.createElement("tr");
+                if (canceled) tr.classList.add("hist-row-canceled");
+                else if (isHost) tr.classList.add("hist-row-host");
+
+                let nameHtml = s.name || "—";
+                if (isHost)   nameHtml += ' <span class="hist-badge-host">주최</span>';
+                if (canceled) nameHtml += ' <span class="hist-badge-canceled">취소</span>';
+
+                [i+1, nameHtml, s.realName||"—", s.contact||"—",
+                 fmtTs(s.createdAt), fmtTs(s.canceledAt)].forEach((v, vi) => {
+                    const td = document.createElement("td");
+                    if (vi === 1) td.innerHTML = v; else td.textContent = v;
+                    tr.appendChild(td);
+                });
+                tbl.appendChild(tr);
+            });
+
+        tableWrap.appendChild(tbl);
+        card.appendChild(tableWrap);
+        return card;
+    }
+
+    fetchBtn.addEventListener("click", loadHistory);
+    pwInput.addEventListener("keydown", e => { if (e.key === "Enter") loadHistory(); });
 })();
 </script>
 </body>

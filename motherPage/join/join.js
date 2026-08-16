@@ -288,10 +288,10 @@
         const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
         if (!isOwner && !isAdmin) return { ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." };
-        // host/admin sees ALL signups including canceled, so they can track
-        // who originally signed up and then withdrew
+        // Admin sees all signups (active + canceled); host only sees active participants.
+        // Cancellation history is admin-only — hosts see the current roster.
         const participants = d.signups
-            .filter((s) => s.eventId === body.id)
+            .filter((s) => s.eventId === body.id && (isAdmin || !s.canceledAt))
             .map((s) => ({
                 id: s.id,
                 name: s.name,
@@ -299,9 +299,36 @@
                 contact: s.contact || "",
                 isHost: s.id === target.hostSignupId,
                 createdAt: s.createdAt,
-                canceledAt: s.canceledAt || null,
+                canceledAt: isAdmin ? (s.canceledAt || null) : null,
             }));
         return { ok: true, participants };
+    }
+
+    function demoAdminListAll(body) {
+        const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
+        if (!isAdmin) return { ok: false, error: "관리자 비밀번호가 올바르지 않습니다." };
+        const d = loadDemo();
+        const events = d.events.map((e) => ({
+            id: e.id,
+            date: e.date,
+            time: e.time || "",
+            title: e.title,
+            location: e.location || "",
+            capacity: e.capacity || null,
+            host: e.host,
+            hostSignupId: e.hostSignupId || null,
+            createdAt: e.createdAt,
+        }));
+        const signups = d.signups.map((s) => ({
+            id: s.id,
+            eventId: s.eventId,
+            name: s.name,
+            realName: s.realName || "",
+            contact: s.contact || "",
+            createdAt: s.createdAt,
+            canceledAt: s.canceledAt || null,
+        }));
+        return { ok: true, events, signups };
     }
 
     // ---------- API layer ----------
@@ -352,6 +379,8 @@
                     return demoCancelSignupByPassword(payload);
                 case "eventParticipants":
                     return demoEventParticipants(payload);
+                case "adminListAll":
+                    return demoAdminListAll(payload);
                 default:
                     return { ok: false, error: "unknown action" };
             }
