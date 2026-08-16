@@ -285,15 +285,19 @@
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    // Apps Script Web Apps occasionally answer a fresh request with a
-    // transient error (a bare 404, or an HTML error page where JSON was
-    // expected) that clears up immediately on retry — not something our own
-    // requests cause, just infra flakiness on Google's end. One quiet retry
-    // covers it without the user ever seeing "failed to load".
-    async function fetchJson(url) {
+    // Supabase Edge Functions are called with a normal POST + JSON body (no
+    // redirect issues, unlike the old Apps Script GET-param workaround).
+    // One quiet retry covers transient cold-start latency on the first request
+    // to a function that hasn't been invoked recently.
+    async function fetchPost(payload) {
         for (let attempt = 0; attempt < 2; attempt++) {
             try {
-                const res = await fetch(url, { method: "GET", cache: "no-store" });
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                    cache: "no-store",
+                });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 return await res.json();
             } catch (err) {
@@ -305,7 +309,7 @@
 
     async function apiList() {
         if (DEMO_MODE) return demoList();
-        return fetchJson(`${API_URL}?action=list`);
+        return fetchPost({ action: "list" });
     }
     async function apiPost(action, payload) {
         if (DEMO_MODE) {
@@ -326,16 +330,7 @@
                     return { ok: false, error: "unknown action" };
             }
         }
-        // Deliberately a GET, not a POST: a fetch() POST to an Apps Script Web
-        // App gets redirected cross-origin, and the browser blocks reading
-        // the redirected response as a CORS failure before our code ever
-        // sees it. GET doesn't hit that redirect, so writes go over the
-        // query string instead of a request body (see Code.gs's doGet).
-        const params = new URLSearchParams({ action });
-        Object.entries(payload || {}).forEach(([key, value]) => {
-            if (value != null) params.set(key, String(value));
-        });
-        return fetchJson(`${API_URL}?${params.toString()}`);
+        return fetchPost({ action, ...payload });
     }
 
     // ---------- date helpers ----------

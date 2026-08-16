@@ -18,9 +18,8 @@
     const API_URL = (window.JOIN_APPS_SCRIPT_URL || "").trim();
     const DEMO_MODE = !API_URL;
     const DEMO_KEY = "joinDemoData_v1";
-    // shared stale-while-revalidate cache with join.js (same key) — the Apps
-    // Script call is ~3-8s, so paint this preview from cache instantly and
-    // refresh in the background
+    // shared stale-while-revalidate cache with join.js (same key) — paint
+    // the preview from cache instantly and refresh in the background
     const LIST_CACHE_KEY = "joinListCache_v1";
 
     function loadListCache() {
@@ -76,14 +75,17 @@
                 return { events: [], signups: [] };
             }
         }
-        // Apps Script Web Apps occasionally answer a fresh request with a
-        // transient error (a bare 404, or an HTML error page where JSON was
-        // expected) that clears up immediately on retry — see the identical
-        // fetchJson in join.js, where this was first hit.
+        // Supabase Edge Function — POST + JSON (no redirect/CORS issue like
+        // the old Apps Script GET workaround). One retry for cold-start latency.
         let lastErr;
         for (let attempt = 0; attempt < 2; attempt++) {
             try {
-                const res = await fetch(`${API_URL}?action=list`, { method: "GET", cache: "no-store" });
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "list" }),
+                    cache: "no-store",
+                });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
                 const out = { events: data.events || [], signups: data.signups || [] };
