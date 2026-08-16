@@ -93,7 +93,10 @@
             hostSignupId: e.hostSignupId,
             createdAt: e.createdAt,
         }));
-        const signups = d.signups.map((s) => ({ id: s.id, eventId: s.eventId, name: s.name, createdAt: s.createdAt }));
+        // canceled signups are excluded from the public list (soft-delete)
+        const signups = d.signups
+            .filter((s) => !s.canceledAt)
+            .map((s) => ({ id: s.id, eventId: s.eventId, name: s.name, createdAt: s.createdAt }));
         return { ok: true, events, signups };
     }
 
@@ -161,7 +164,7 @@
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
         if (!isOwner && !isAdmin) return { ok: false, error: "수정 권한이 없어요. 비밀번호를 확인해주세요." };
 
-        const currentSignupCount = d.signups.filter((s) => s.eventId === body.id).length;
+        const currentSignupCount = d.signups.filter((s) => s.eventId === body.id && !s.canceledAt).length;
         const fields = validateDemoEventFields(body, currentSignupCount);
         if (fields.error) return { ok: false, error: fields.error };
 
@@ -200,7 +203,8 @@
         if (!isOwner && !isAdmin) return { ok: false, error: "삭제 권한이 없어요. 비밀번호를 확인해주세요." };
 
         const allSignups = d.signups.filter((s) => s.eventId === body.id);
-        const otherSignups = allSignups.filter((s) => s.id !== target.hostSignupId);
+        // only active (non-canceled) signups block the host from deleting the event
+        const otherSignups = allSignups.filter((s) => s.id !== target.hostSignupId && !s.canceledAt);
         if (otherSignups.length > 0 && !isAdmin) return { ok: false, error: "다른 참가자가 있어 삭제할 수 없어요." };
 
         // safe to clear every signup tied to this event now — either it's
@@ -220,7 +224,8 @@
         if (!name) return { ok: false, error: "이름을 입력해주세요." };
         const realName = String(body.realName || "").trim();
         if (!realName) return { ok: false, error: "실명을 입력해주세요." };
-        const existing = d.signups.filter((s) => s.eventId === body.eventId);
+        // only count active (non-canceled) signups against capacity and name-uniqueness
+        const existing = d.signups.filter((s) => s.eventId === body.eventId && !s.canceledAt);
         if (event.capacity !== "" && existing.length >= Number(event.capacity)) {
             return { ok: false, error: "정원이 찼어요." };
         }
@@ -240,7 +245,14 @@
         const idx = d.signups.findIndex((s) => s.id === body.id);
         if (idx === -1) return { ok: false, error: "존재하지 않는 신청이에요." };
         if (d.signups[idx].editToken !== body.editToken) return { ok: false, error: "취소 권한이 없어요." };
-        d.signups.splice(idx, 1);
+        if (d.signups[idx].canceledAt) return { ok: false, error: "이미 취소된 신청이에요." };
+        // enforce the 2-day withdrawal deadline
+        const event = d.events.find((e) => e.id === d.signups[idx].eventId);
+        if (event && !canWithdrawSignup(event)) {
+            return { ok: false, error: "행사 2일 전부터는 신청을 취소할 수 없어요." };
+        }
+        // soft-delete: stamp canceledAt so the cancellation is tracked
+        d.signups[idx].canceledAt = new Date().toISOString();
         saveDemo(d);
         return { ok: true };
     }
@@ -252,9 +264,19 @@
         const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
         if (!isOwner && !isAdmin) return { ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." };
+        // host/admin sees ALL signups including canceled, so they can track
+        // who originally signed up and then withdrew
         const participants = d.signups
             .filter((s) => s.eventId === body.id)
-            .map((s) => ({ id: s.id, name: s.name, realName: s.realName || "", contact: s.contact || "", isHost: s.id === target.hostSignupId, createdAt: s.createdAt }));
+            .map((s) => ({
+                id: s.id,
+                name: s.name,
+                realName: s.realName || "",
+                contact: s.contact || "",
+                isHost: s.id === target.hostSignupId,
+                createdAt: s.createdAt,
+                canceledAt: s.canceledAt || null,
+            }));
         return { ok: true, participants };
     }
 
@@ -475,6 +497,7 @@
     }
 
     const SIGNUP_CLOSE_BEFORE_MS = 24 * 60 * 60 * 1000; // signups close 24h before the event starts
+    const CANCEL_DEADLINE_BEFORE_MS = 2 * 24 * 60 * 60 * 1000; // can't withdraw within 2 days of event
 
     // the event's start as a Date in the viewer's local time — the whole app
     // treats these stored date/time strings as Korea wall-clock (the club's
@@ -490,6 +513,14 @@
         const start = eventStartDate(event);
         if (!start) return false;
         return Date.now() >= start.getTime() - SIGNUP_CLOSE_BEFORE_MS;
+    }
+    // returns true if the user can still withdraw their signup (i.e. still
+    // more than 2 days before the event). Unknown/unparseable dates return true
+    // so a bad row never permanently locks someone in.
+    function canWithdrawSignup(event) {
+        const start = eventStartDate(event);
+        if (!start) return true;
+        return Date.now() < start.getTime() - CANCEL_DEADLINE_BEFORE_MS;
     }
 
     // ---------- DOM refs (filled in on init) ----------
@@ -800,11 +831,15 @@
         if (mySignupId) {
             const mine = participants.find((s) => s.id === mySignupId);
             const state = el("div", "join_signup_state", `✅ ${mine ? mine.name : ""}님으로 신청 완료했어요.`);
-            const cancelBtn = el("button", "join_cancel_link", "신청 취소하기");
-            cancelBtn.type = "button";
-            cancelBtn.addEventListener("click", () => handleCancelSignup(mySignupId));
             area.appendChild(state);
-            area.appendChild(cancelBtn);
+            if (canWithdrawSignup(ev)) {
+                const cancelBtn = el("button", "join_cancel_link", "신청 취소하기");
+                cancelBtn.type = "button";
+                cancelBtn.addEventListener("click", () => handleCancelSignup(mySignupId));
+                area.appendChild(cancelBtn);
+            } else {
+                area.appendChild(el("p", "join_signup_state is-closed", "행사 2일 전이라 신청 취소가 불가능해요."));
+            }
             return;
         }
 
@@ -1040,8 +1075,13 @@
         container.appendChild(el("p", "join_host_contacts_title", "참가자 연락처 (주최자 전용)"));
         const list = el("ul", "join_host_contacts_list");
         participants.forEach((p) => {
-            const item = el("li", "join_host_contacts_item");
-            item.appendChild(el("span", "join_host_contacts_name", p.isHost ? `${p.name} (주최자)` : p.name));
+            const isCanceled = !!p.canceledAt;
+            const item = el("li", "join_host_contacts_item" + (isCanceled ? " is-canceled" : ""));
+
+            // show name with role/status badge
+            let nameText = p.isHost ? `${p.name} (주최자)` : p.name;
+            if (isCanceled) nameText += " (취소)";
+            item.appendChild(el("span", "join_host_contacts_name", nameText));
 
             const meta = el("div", "join_host_contacts_meta");
             // real name: host/admin-only (never on the public participant list),

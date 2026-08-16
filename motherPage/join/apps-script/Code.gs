@@ -47,7 +47,7 @@ const EVENTS_SHEET = "Events";
 const SIGNUPS_SHEET = "Signups";
 
 const EVENTS_HEADERS = ["id", "date", "time", "title", "location", "mapLink", "capacity", "host", "description", "password", "hostSignupId", "createdAt", "editToken"];
-const SIGNUPS_HEADERS = ["id", "eventId", "name", "realName", "contact", "createdAt", "editToken"];
+const SIGNUPS_HEADERS = ["id", "eventId", "name", "realName", "contact", "createdAt", "editToken", "canceledAt"];
 
 /** Run this once from the Apps Script editor (select "setup" > Run) before deploying. */
 function setup() {
@@ -233,13 +233,17 @@ function publicEvents_() {
 }
 
 function publicSignups_() {
-  // deliberately omits `contact` and `editToken` — only names are public
-  return sheetRows_(SIGNUPS_SHEET).map((s) => ({
-    id: s.id,
-    eventId: s.eventId,
-    name: s.name,
-    createdAt: s.createdAt,
-  }));
+  // deliberately omits `contact` and `editToken` — only names are public;
+  // canceled signups are excluded (soft-delete) so they don't count toward
+  // capacity or appear in the public participant list
+  return sheetRows_(SIGNUPS_SHEET)
+    .filter((s) => !s.canceledAt)
+    .map((s) => ({
+      id: s.id,
+      eventId: s.eventId,
+      name: s.name,
+      createdAt: s.createdAt,
+    }));
 }
 
 // shared validation for the fields createEvent_/updateEvent_ both take;
@@ -363,6 +367,8 @@ function eventParticipants_(body) {
     return { ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." };
   }
 
+  // host/admin sees ALL signups including canceled, so they can track who
+  // originally registered and then withdrew
   const participants = sheetRows_(SIGNUPS_SHEET)
     .filter((s) => s.eventId === id)
     .map((s) => ({
@@ -372,6 +378,7 @@ function eventParticipants_(body) {
       contact: s.contact,
       isHost: s.id === target.hostSignupId,
       createdAt: s.createdAt,
+      canceledAt: s.canceledAt || null,
     }));
   return { ok: true, participants };
 }
@@ -385,7 +392,7 @@ function updateEvent_(body) {
     return { ok: false, error: "수정 권한이 없어요. 비밀번호를 확인해주세요." };
   }
 
-  const currentSignupCount = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === id).length;
+  const currentSignupCount = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === id && !s.canceledAt).length;
   const fields = validateEventFields_(body, currentSignupCount);
   if (fields.error) return { ok: false, error: fields.error };
   const { title, date, host, capacity, time, location, mapLink, description } = fields;
@@ -419,7 +426,8 @@ function deleteEvent_(body) {
   }
 
   const allSignups = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === id);
-  const otherSignups = allSignups.filter((s) => s.id !== target.hostSignupId);
+  // only active (non-canceled) signups block the host from deleting the event
+  const otherSignups = allSignups.filter((s) => s.id !== target.hostSignupId && !s.canceledAt);
   if (otherSignups.length > 0 && !isAdmin) {
     return { ok: false, error: "다른 참가자가 있어 삭제할 수 없어요." };
   }
@@ -440,6 +448,8 @@ function deleteEvent_(body) {
 
 // signups close this long before the event's start
 const SIGNUP_CLOSE_BEFORE_MS = 24 * 60 * 60 * 1000;
+// signups can't be withdrawn this close to the event
+const CANCEL_DEADLINE_BEFORE_MS = 2 * 24 * 60 * 60 * 1000;
 
 // true once we're within 24h of the event start. Both "now" and the stored
 // event date/time are compared in the spreadsheet's own timezone (the club's
@@ -459,6 +469,20 @@ function signupsClosed_(event) {
   return nowMs >= startMs - SIGNUP_CLOSE_BEFORE_MS;
 }
 
+// returns true if the event is still more than 2 days away (withdrawal allowed).
+// Unknown/unparseable dates return true so a bad row never permanently locks
+// someone in.
+function canWithdrawSignup_(event) {
+  const date = String(asDateString_(event.date) || "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return true;
+  const time = String(asTimeString_(event.time) || "").trim() || "00:00";
+  const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
+  const nowMs = new Date(Utilities.formatDate(new Date(), tz, "yyyy-MM-dd'T'HH:mm:ss") + "Z").getTime();
+  const startMs = new Date(date + "T" + time + ":00Z").getTime();
+  if (isNaN(startMs)) return true;
+  return nowMs < startMs - CANCEL_DEADLINE_BEFORE_MS;
+}
+
 function signUp_(body) {
   const eventId = String(body.eventId || "");
   const name = String(body.name || "").trim();
@@ -471,7 +495,8 @@ function signUp_(body) {
 
   if (signupsClosed_(event)) return { ok: false, error: "신청이 마감되었어요. (행사 24시간 전 마감)" };
 
-  const existingSignups = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === eventId);
+  // only count active (non-canceled) signups toward capacity and name-uniqueness
+  const existingSignups = sheetRows_(SIGNUPS_SHEET).filter((s) => s.eventId === eventId && !s.canceledAt);
   if (event.capacity !== "" && existingSignups.length >= Number(event.capacity)) {
     return { ok: false, error: "정원이 찼어요." };
   }
@@ -495,7 +520,17 @@ function cancelSignup_(body) {
   const target = sheetRows_(SIGNUPS_SHEET).find((r) => r.id === id);
   if (!target) return { ok: false, error: "존재하지 않는 신청이에요." };
   if (String(target.editToken) !== editToken) return { ok: false, error: "취소 권한이 없어요." };
+  if (target.canceledAt) return { ok: false, error: "이미 취소된 신청이에요." };
 
-  SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SIGNUPS_SHEET).deleteRow(target._row);
+  // enforce the 2-day withdrawal deadline
+  const event = sheetRows_(EVENTS_SHEET).find((e) => e.id === target.eventId);
+  if (event && !canWithdrawSignup_(event)) {
+    return { ok: false, error: "행사 2일 전부터는 신청을 취소할 수 없어요." };
+  }
+
+  // soft-delete: stamp canceledAt so the cancellation is tracked in the sheet;
+  // the row stays so the host can see who originally signed up and withdrew
+  const sheet = ensureSheet_(SIGNUPS_SHEET, SIGNUPS_HEADERS);
+  setRowFieldsByHeader_(sheet, target._row, { canceledAt: new Date().toISOString() });
   return { ok: true };
 }
