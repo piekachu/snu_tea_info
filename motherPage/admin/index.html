@@ -1113,9 +1113,12 @@
         setStatus("소모임 목록 불러오는 중…");
         refreshBtn.disabled = true;
         try {
-            const url = new URL(JOIN_API);
-            url.searchParams.set("action", "list");
-            const res  = await fetch(url.toString(), { method: "GET", cache: "no-store" });
+            const res  = await fetch(JOIN_API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "list" }),
+                cache: "no-store",
+            });
             const data = await res.json();
             if (!data.ok) { setStatus(data.error || "오류가 발생했습니다.", true); return; }
 
@@ -1275,11 +1278,12 @@
             lookupBtn.disabled = true; lookupBtn.textContent = "조회 중…";
             errEl.hidden = true; tableWrapEl.innerHTML = "";
             try {
-                const url = new URL(JOIN_API);
-                url.searchParams.set("action", "eventParticipants");
-                url.searchParams.set("id", ev.id);
-                url.searchParams.set("adminPassword", adminPassword);
-                const res  = await fetch(url.toString(), { method: "GET", cache: "no-store" });
+                const res  = await fetch(JOIN_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "eventParticipants", id: ev.id, adminPassword }),
+                    cache: "no-store",
+                });
                 const data = await res.json();
                 if (!data.ok) { errEl.textContent = data.error || "오류가 발생했습니다."; errEl.hidden = false; return; }
                 renderParticipantTable(tableWrapEl, data.participants || []);
