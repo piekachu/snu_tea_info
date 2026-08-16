@@ -1273,7 +1273,12 @@
                 : district + " " + venues.length + "곳 — 마커를 클릭하면 정보가 표시돼요";
         }
 
-        /* clear existing markers */
+        /* always update the venue list first */
+        renderVenueList(district, venues);
+
+        /* map marker work — bail out if map not ready */
+        if (!map) return;
+
         markers.forEach(function (m) { m.setMap(null); });
         markers = [];
         if (openInfoWindow) { openInfoWindow.close(); openInfoWindow = null; }
@@ -1323,8 +1328,6 @@
         } else {
             map.fitBounds(bounds, { top: 56, right: 56, bottom: 56, left: 56 });
         }
-
-        renderVenueList(district, venues);
     }
 
     /* ── Init map ── */
@@ -1392,10 +1395,8 @@
             });
             chip.classList.add("is-active");
 
-            /* update map markers only — no scrolling */
-            if (map) {
-                showDistrict(chip.dataset.district);
-            }
+            /* update map + venue list (map guard is inside showDistrict) */
+            showDistrict(chip.dataset.district);
         });
     }
 
