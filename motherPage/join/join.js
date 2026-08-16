@@ -235,7 +235,9 @@
         const id = uid();
         const editToken = uid();
         const createdAt = new Date().toISOString();
-        d.signups.push({ id, eventId: body.eventId, name, realName, contact: String(body.contact || "").trim(), createdAt, editToken });
+        // cancelPassword stored as plain text in demo (no real backend to hash it)
+        const cancelPassword = String(body.cancelPassword || "").trim() || null;
+        d.signups.push({ id, eventId: body.eventId, name, realName, contact: String(body.contact || "").trim(), createdAt, editToken, cancelPassword });
         saveDemo(d);
         return { ok: true, signup: { id, eventId: body.eventId, name, createdAt }, editToken };
     }
@@ -252,6 +254,28 @@
             return { ok: false, error: "행사 2일 전부터는 신청을 취소할 수 없어요." };
         }
         // soft-delete: stamp canceledAt so the cancellation is tracked
+        d.signups[idx].canceledAt = new Date().toISOString();
+        saveDemo(d);
+        return { ok: true };
+    }
+
+    function demoCancelSignupByPassword(body) {
+        const d = loadDemo();
+        const event = d.events.find((e) => e.id === body.eventId);
+        if (!event) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        if (!canWithdrawSignup(event)) return { ok: false, error: "행사 2일 전부터는 신청을 취소할 수 없어요." };
+
+        const realName = String(body.realName || "").trim();
+        const cancelPassword = String(body.cancelPassword || "");
+        const idx = d.signups.findIndex(
+            (s) =>
+                s.eventId === body.eventId &&
+                String(s.realName || "").trim() === realName &&
+                s.cancelPassword &&
+                s.cancelPassword === cancelPassword &&
+                !s.canceledAt
+        );
+        if (idx === -1) return { ok: false, error: "실명 또는 취소 비밀번호가 올바르지 않아요." };
         d.signups[idx].canceledAt = new Date().toISOString();
         saveDemo(d);
         return { ok: true };
@@ -324,6 +348,8 @@
                     return demoSignup(payload);
                 case "cancelSignup":
                     return demoCancelSignup(payload);
+                case "cancelSignupByPassword":
+                    return demoCancelSignupByPassword(payload);
                 case "eventParticipants":
                     return demoEventParticipants(payload);
                 default:
@@ -851,15 +877,14 @@
             return;
         }
 
+        // For full/closed: show the status but don't return — let the
+        // cross-device cancel section render below for people who signed up
+        // on another device and still want to withdraw.
         if (isFull(ev)) {
             area.appendChild(el("div", "join_signup_state is-full", "정원이 찼습니다."));
-            return;
-        }
-
-        if (signupsClosed(ev)) {
+        } else if (signupsClosed(ev)) {
             area.appendChild(el("div", "join_signup_state is-closed", "신청이 마감되었어요. (행사 24시간 전 마감)"));
-            return;
-        }
+        } else {
 
         const form = document.createElement("form");
         form.className = "join_signup_form";
@@ -901,6 +926,20 @@
         contactField.appendChild(contactLabel);
         contactField.appendChild(contactInput);
 
+        // optional — lets the user cancel from a different device later
+        const cancelPwField = el("div", "join_field");
+        const cancelPwLabel = el("label", null, "취소 비밀번호 (선택)");
+        cancelPwLabel.htmlFor = "signupCancelPw";
+        const cancelPwHint = el("span", "join_field_hint", "다른 기기에서 신청을 취소할 때 필요해요.");
+        const cancelPwInput = document.createElement("input");
+        cancelPwInput.type = "password";
+        cancelPwInput.id = "signupCancelPw";
+        cancelPwInput.maxLength = 60;
+        cancelPwInput.placeholder = "비밀번호를 설정하면 다른 기기에서도 취소 가능";
+        cancelPwField.appendChild(cancelPwLabel);
+        cancelPwField.appendChild(cancelPwHint);
+        cancelPwField.appendChild(cancelPwInput);
+
         const error = el("p", "join_form_error", "");
         error.hidden = true;
 
@@ -911,6 +950,7 @@
         form.appendChild(nameField);
         form.appendChild(realNameField);
         form.appendChild(contactField);
+        form.appendChild(cancelPwField);
         form.appendChild(error);
         form.appendChild(submitBtn);
 
@@ -919,7 +959,13 @@
             error.hidden = true;
             submitBtn.disabled = true;
             try {
-                const result = await apiPost("signup", { eventId: ev.id, name: nameInput.value, realName: realNameInput.value, contact: contactInput.value });
+                const result = await apiPost("signup", {
+                    eventId: ev.id,
+                    name: nameInput.value,
+                    realName: realNameInput.value,
+                    contact: contactInput.value,
+                    cancelPassword: cancelPwInput.value || undefined,
+                });
                 if (!result.ok) {
                     error.textContent = result.error || "신청하지 못했어요. 다시 시도해주세요.";
                     error.hidden = false;
@@ -938,6 +984,98 @@
         });
 
         area.appendChild(form);
+
+        } // end else (not full, not closed)
+
+        // Cross-device cancel: visible whenever someone might have signed up
+        // on another device and the withdrawal window is still open.
+        if (canWithdrawSignup(ev)) {
+            renderCrossDeviceCancel(area, ev);
+        }
+    }
+
+    // Collapsible section that lets someone cancel their signup using the
+    // cancel password they set at registration — works from any device.
+    function renderCrossDeviceCancel(area, ev) {
+        const section = el("div", "join_crossdevice_cancel");
+
+        const toggle = el("button", "join_admin_link", "다른 기기에서 신청하셨나요? 비밀번호로 취소하기");
+        toggle.type = "button";
+        section.appendChild(toggle);
+
+        const formWrap = el("div", "join_crossdevice_form");
+        formWrap.hidden = true;
+
+        const realNameField = el("div", "join_field");
+        const realNameLabel = el("label", null, "실명 *");
+        realNameLabel.htmlFor = "cancelByPwRealName";
+        const realNameInput = document.createElement("input");
+        realNameInput.type = "text";
+        realNameInput.id = "cancelByPwRealName";
+        realNameInput.placeholder = "신청 시 입력한 실명";
+        realNameInput.required = true;
+        realNameField.appendChild(realNameLabel);
+        realNameField.appendChild(realNameInput);
+
+        const pwField = el("div", "join_field");
+        const pwLabel = el("label", null, "취소 비밀번호 *");
+        pwLabel.htmlFor = "cancelByPwPw";
+        const pwInput = document.createElement("input");
+        pwInput.type = "password";
+        pwInput.id = "cancelByPwPw";
+        pwInput.placeholder = "신청 시 설정한 취소 비밀번호";
+        pwInput.required = true;
+        pwField.appendChild(pwLabel);
+        pwField.appendChild(pwInput);
+
+        const cancelError = el("p", "join_form_error", "");
+        cancelError.hidden = true;
+
+        const cancelSubmitBtn = el("button", "join_btn_danger", "신청 취소하기");
+        cancelSubmitBtn.type = "submit";
+        cancelSubmitBtn.style.width = "100%";
+
+        const cancelForm = document.createElement("form");
+        cancelForm.appendChild(realNameField);
+        cancelForm.appendChild(pwField);
+        cancelForm.appendChild(cancelError);
+        cancelForm.appendChild(cancelSubmitBtn);
+
+        cancelForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            cancelError.hidden = true;
+            cancelSubmitBtn.disabled = true;
+            try {
+                const result = await apiPost("cancelSignupByPassword", {
+                    eventId: ev.id,
+                    realName: realNameInput.value,
+                    cancelPassword: pwInput.value,
+                });
+                if (result.ok) {
+                    await refresh();
+                    renderDetailModal();
+                } else {
+                    cancelError.textContent = result.error || "취소하지 못했어요.";
+                    cancelError.hidden = false;
+                }
+            } catch (err) {
+                console.error(err);
+                cancelError.textContent = "네트워크 오류가 발생했어요.";
+                cancelError.hidden = false;
+            } finally {
+                cancelSubmitBtn.disabled = false;
+            }
+        });
+
+        formWrap.appendChild(cancelForm);
+        section.appendChild(formWrap);
+
+        toggle.addEventListener("click", () => {
+            formWrap.hidden = !formWrap.hidden;
+            if (!formWrap.hidden) realNameInput.focus();
+        });
+
+        area.appendChild(section);
     }
 
     async function handleCancelSignup(signupId) {

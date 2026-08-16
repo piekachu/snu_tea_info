@@ -26,15 +26,19 @@
 //   );
 //
 //   CREATE TABLE IF NOT EXISTS join_signups (
-//     id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-//     event_id    UUID        NOT NULL REFERENCES join_events(id),
-//     name        TEXT        NOT NULL,
-//     real_name   TEXT        NOT NULL,
-//     contact     TEXT,
-//     created_at  TIMESTAMPTZ DEFAULT now(),
-//     edit_token  UUID        NOT NULL,
-//     canceled_at TIMESTAMPTZ            -- NULL = active; non-NULL = soft-deleted
+//     id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+//     event_id        UUID        NOT NULL REFERENCES join_events(id),
+//     name            TEXT        NOT NULL,
+//     real_name       TEXT        NOT NULL,
+//     contact         TEXT,
+//     created_at      TIMESTAMPTZ DEFAULT now(),
+//     edit_token      UUID        NOT NULL,
+//     canceled_at     TIMESTAMPTZ,           -- NULL = active; non-NULL = soft-deleted
+//     cancel_password TEXT                   -- SHA-256 hash; NULL if not set
 //   );
+//
+// If the table already exists, just add the cancel_password column:
+//   ALTER TABLE join_signups ADD COLUMN IF NOT EXISTS cancel_password TEXT;
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -340,7 +344,7 @@ Deno.serve(async (req: Request) => {
 
     // ── signup ────────────────────────────────────────────────────────
     if (action === "signup") {
-      const { eventId, name, realName, contact } = body;
+      const { eventId, name, realName, contact, cancelPassword } = body;
       if (!eventId || !name) return json({ ok: false, error: "이름을 입력해주세요." });
       if (!realName) return json({ ok: false, error: "실명을 입력해주세요." });
 
@@ -372,6 +376,10 @@ Deno.serve(async (req: Request) => {
         return json({ ok: false, error: "이미 같은 이름으로 신청되어 있어요." });
 
       const editToken = crypto.randomUUID();
+      const cancelPwHash = cancelPassword
+        ? await hashPassword(String(cancelPassword))
+        : null;
+
       const { data: sig, error: sigErr } = await supabase
         .from("join_signups")
         .insert({
@@ -380,6 +388,7 @@ Deno.serve(async (req: Request) => {
           real_name: String(realName).trim(),
           contact: contact ? String(contact).trim() : null,
           edit_token: editToken,
+          cancel_password: cancelPwHash,
         })
         .select("id, event_id, name, created_at")
         .single();
@@ -426,6 +435,45 @@ Deno.serve(async (req: Request) => {
         .from("join_signups")
         .update({ canceled_at: new Date().toISOString() })
         .eq("id", id);
+
+      return json({ ok: true });
+    }
+
+    // ── cancelSignupByPassword (different device — realName + cancel password) ──
+    if (action === "cancelSignupByPassword") {
+      const { eventId, realName, cancelPassword } = body;
+      if (!eventId || !realName || !cancelPassword)
+        return json({ ok: false, error: "필수 입력값이 누락되었어요." });
+
+      // Enforce the 2-day withdrawal deadline before touching anything
+      const { data: ev } = await supabase
+        .from("join_events")
+        .select("date")
+        .eq("id", eventId)
+        .single();
+      if (ev && isPastDeadline(ev.date, CANCEL_DEADLINE_DAYS))
+        return json({ ok: false, error: "행사 2일 전부터는 신청을 취소할 수 없어요." });
+
+      const pwHash = await hashPassword(String(cancelPassword));
+
+      // Look up by eventId + real_name + hashed cancel_password (active signups only)
+      const { data: sig, error: sigErr } = await supabase
+        .from("join_signups")
+        .select("id")
+        .eq("event_id", eventId)
+        .eq("real_name", String(realName).trim())
+        .eq("cancel_password", pwHash)
+        .is("canceled_at", null)
+        .limit(1)
+        .single();
+
+      if (sigErr || !sig)
+        return json({ ok: false, error: "실명 또는 취소 비밀번호가 올바르지 않아요." });
+
+      await supabase
+        .from("join_signups")
+        .update({ canceled_at: new Date().toISOString() })
+        .eq("id", sig.id);
 
       return json({ ok: true });
     }

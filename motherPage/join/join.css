@@ -536,6 +536,22 @@ body.join-modal-open {
 .join_host_contacts_contact.is-empty {
     color: rgba(0, 0, 0, 0.3);
 }
+.join_field_hint {
+    font-size: 12px;
+    color: var(--fontGray);
+    line-height: 1.4;
+}
+
+.join_crossdevice_cancel {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.join_crossdevice_form {
+    margin-top: 14px;
+}
+
 .join_admin_link {
     display: inline-block;
     margin-top: 10px;
