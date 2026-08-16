@@ -278,6 +278,32 @@
         }
         .ci-summary strong { color: var(--fontColor); }
 
+        /* ── view tabs (지도 / 목록) ── */
+        .ci-tab-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid rgba(0,0,0,0.08);
+        }
+        .ci-tab-btn {
+            padding: 9px 18px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: var(--font-weight-semibold);
+            font-family: inherit;
+            color: var(--fontGray);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .ci-tab-btn.is-active {
+            color: var(--osullocGreen);
+            border-bottom-color: var(--osullocGreen);
+        }
+        .ci-panel[hidden] { display: none; }
+
         /* ── responsive header adjustments ── */
         @media (max-width: 640px) {
             .ci-wrap { padding: 28px 16px 60px; }
@@ -313,8 +339,17 @@
         <p class="ci-subtitle">설다연 부원들이 추천하는 서울·경기권 찻집 목록입니다. 네이버 지도 링크로 위치를 바로 확인할 수 있어요.</p>
     </div>
 
-    <!-- district quick-nav (also drives the map) -->
-    <nav class="ci-district-nav" id="ciDistrictNav" aria-label="구별 지도 및 목록 이동">
+    <!-- view tabs -->
+    <div class="ci-tab-bar" id="ciTabBar" role="tablist">
+        <button class="ci-tab-btn is-active" data-panel="panel-map" role="tab" aria-selected="true">지도</button>
+        <button class="ci-tab-btn" data-panel="panel-list" role="tab" aria-selected="false">목록</button>
+    </div>
+
+    <!-- ── 지도 탭 panel ── -->
+    <div class="ci-panel" id="panel-map" role="tabpanel">
+
+    <!-- district chips (map filter only — no scroll) -->
+    <nav class="ci-district-nav" id="ciDistrictNav" aria-label="구별 지도 필터">
         <button class="ci-district-chip is-active" data-district="전체" data-anchor="">전체 <span class="ci-chip-cnt">61</span></button>
         <button class="ci-district-chip" data-district="강남구" data-anchor="dist-gangnam">강남구 <span class="ci-chip-cnt">8</span></button>
         <button class="ci-district-chip" data-district="강동구" data-anchor="dist-gangdong">강동구 <span class="ci-chip-cnt">2</span></button>
@@ -340,6 +375,11 @@
         <p class="ci-map-label" id="ciMapLabel">전체 61곳</p>
         <div class="ci-map-canvas" id="ciMapCanvas"></div>
     </div>
+
+    </div><!-- /panel-map -->
+
+    <!-- ── 목록 탭 panel ── -->
+    <div class="ci-panel" id="panel-list" role="tabpanel" hidden>
 
     <!-- ── 강남구 ── -->
     <section class="ci-section" id="dist-gangnam">
@@ -1019,6 +1059,8 @@
     <!-- summary -->
     <p class="ci-summary">총 <strong>61곳</strong>의 찻집 · <strong>17개</strong> 지역 수록 · 네이버 지도 링크로 바로 길찾기 가능</p>
 
+    </div><!-- /panel-list -->
+
 </div>
 </main>
 
@@ -1257,6 +1299,37 @@
         showDistrict("전체");
     }
 
+    /* ── Tab switching ── */
+    function wireTabs() {
+        var bar = document.getElementById("ciTabBar");
+        if (!bar) return;
+        bar.addEventListener("click", function (e) {
+            var btn = e.target.closest(".ci-tab-btn");
+            if (!btn) return;
+            var targetId = btn.dataset.panel;
+
+            /* toggle buttons */
+            bar.querySelectorAll(".ci-tab-btn").forEach(function (b) {
+                var active = b.dataset.panel === targetId;
+                b.classList.toggle("is-active", active);
+                b.setAttribute("aria-selected", active ? "true" : "false");
+            });
+
+            /* toggle panels */
+            ["panel-map", "panel-list"].forEach(function (id) {
+                var panel = document.getElementById(id);
+                if (panel) panel.hidden = (id !== targetId);
+            });
+
+            /* if switching to map, trigger a resize so Naver redraws */
+            if (targetId === "panel-map" && map) {
+                setTimeout(function () {
+                    naver.maps.Event.trigger(map, "resize");
+                }, 50);
+            }
+        });
+    }
+
     /* ── District chip click handlers ── */
     function wireChips() {
         var nav = document.getElementById("ciDistrictNav");
@@ -1272,28 +1345,16 @@
             });
             chip.classList.add("is-active");
 
-            var district = chip.dataset.district;
-            var anchor   = chip.dataset.anchor;
-
-            /* update map */
+            /* update map markers only — no scrolling */
             if (map) {
-                showDistrict(district);
-            }
-
-            /* scroll to section (not for 전체) */
-            if (anchor) {
-                var section = document.getElementById(anchor);
-                if (section) {
-                    setTimeout(function () {
-                        section.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }, 80);
-                }
+                showDistrict(chip.dataset.district);
             }
         });
     }
 
     /* ── Boot ── */
     function boot() {
+        wireTabs();
         wireChips();
         loadSdk(initMap);
     }
