@@ -135,6 +135,46 @@
         @media (max-width: 640px) {
             .ci-map-canvas { height: 260px; }
         }
+        /* ── map marker pins (dot + name label) ── */
+        .ci-pin {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            transform: translate(-50%, -50%);
+        }
+        .ci-pin-dot {
+            display: block;
+            width: 10px;
+            height: 10px;
+            box-sizing: border-box;
+            border-radius: 50%;
+            background: var(--osullocGreen);
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.32);
+        }
+        .ci-pin-label {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            pointer-events: none;
+            background: var(--osullocGreen);
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            font-family: "Pretendard Variable", -apple-system, "Noto Sans KR", sans-serif;
+        }
+        /* hidden when it would collide with a higher-priority label */
+        .ci-pin-label.is-hidden { display: none; }
+        /* hovering the dot always reveals its name */
+        .ci-pin:hover { z-index: 100; }
+        .ci-pin:hover .ci-pin-label.is-hidden { display: block; }
+
         /* Naver Maps info window styling */
         .ci-infowin {
             display: flex;
@@ -1260,6 +1300,38 @@
             + '</div>';
     }
 
+    /* ── Label decluttering ──
+       Every venue keeps its dot; only the name labels are thinned out.
+       Labels are placed greedily top-to-bottom and one is hidden when its
+       rendered box overlaps a label already placed. Because it measures real
+       geometry, zooming in naturally reveals more names. */
+    function declutter() {
+        var labels = Array.prototype.slice.call(
+            document.querySelectorAll("#ciMapCanvas .ci-pin-label"));
+        if (!labels.length) return;
+
+        /* reset so every label is measurable at full size */
+        labels.forEach(function (l) { l.classList.remove("is-hidden"); });
+
+        var boxes = labels.map(function (l) {
+            var r = l.getBoundingClientRect();
+            return { el: l, top: r.top, left: r.left, right: r.right, bottom: r.bottom };
+        }).filter(function (b) { return b.right > b.left; });
+
+        boxes.sort(function (a, b) { return (a.top - b.top) || (a.left - b.left); });
+
+        var placed = [];
+        var PAD = 3;
+        boxes.forEach(function (b) {
+            var collides = placed.some(function (p) {
+                return !(b.right + PAD < p.left || b.left - PAD > p.right ||
+                         b.bottom + PAD < p.top || b.top - PAD > p.bottom);
+            });
+            if (collides) b.el.classList.add("is-hidden");
+            else placed.push(b);
+        });
+    }
+
     /* ── Render or update markers on the map ── */
     function showDistrict(district) {
         currentDistrict = district;
@@ -1291,28 +1363,15 @@
             var pos = new naver.maps.LatLng(v.lat, v.lng);
             bounds.extend(pos);
 
-            var labelStyle = [
-                'display:inline-block',
-                'transform:translate(-50%,-100%)',
-                'white-space:nowrap',
-                'cursor:pointer',
-                'background:#1c6655',
-                'color:#fff',
-                'padding:4px 10px',
-                'border-radius:6px',
-                'font-size:11px',
-                'font-weight:700',
-                'letter-spacing:-0.01em',
-                'box-shadow:0 2px 8px rgba(0,0,0,0.18)',
-                "font-family:'Pretendard Variable',-apple-system,'Noto Sans KR',sans-serif"
-            ].join(';');
-
             var marker = new naver.maps.Marker({
                 position: pos,
                 map: map,
                 title: v.name,
                 icon: {
-                    content: '<div style="' + labelStyle + '">' + v.name + '</div>',
+                    content: '<div class="ci-pin">'
+                        + '<span class="ci-pin-label">' + v.name + '</span>'
+                        + '<span class="ci-pin-dot"></span>'
+                        + '</div>',
                     anchor: new naver.maps.Point(0, 0)
                 }
             });
@@ -1348,6 +1407,8 @@
         } else {
             map.fitBounds(bounds, { top: 56, right: 56, bottom: 56, left: 56 });
         }
+
+        setTimeout(declutter, 0);
     }
 
     /* ── Init map ── */
@@ -1360,6 +1421,9 @@
             center: new naver.maps.LatLng(37.5400, 126.9900),
             zoom: 12
         });
+
+        /* re-thin labels whenever the view settles after a zoom or pan */
+        naver.maps.Event.addListener(map, "idle", declutter);
 
         showDistrict("전체");
     }
