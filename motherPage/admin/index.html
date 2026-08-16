@@ -572,6 +572,8 @@
         }
         .sm-detail-table tr:last-child td { border-bottom: none; }
         .sm-detail-table .is-host-row td { background: rgba(28,102,85,.04); }
+        .sm-detail-table .is-canceled-row td { color: #bbb; }
+        .sm-detail-table .is-canceled-row td:nth-child(2) { text-decoration: line-through; }
         .sm-host-badge {
             display: inline-block;
             font-size: 10px;
@@ -582,6 +584,36 @@
             border-radius: 6px;
             margin-left: 4px;
         }
+        .sm-cancel-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1px 5px;
+            border-radius: 6px;
+            margin-left: 4px;
+            text-decoration: none;
+        }
+        .sm-delete-row {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: flex-end;
+        }
+        .adm-btn-danger {
+            padding: 5px 14px;
+            border: 1px solid #dc2626;
+            border-radius: 6px;
+            background: none;
+            color: #dc2626;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .adm-btn-danger:hover { background: #fee2e2; }
 
         /* section heading for past events */
         .sm-section-head {
@@ -1294,6 +1326,36 @@
         lookupBtn.addEventListener("click", doLookup);
         pwInput.addEventListener("keydown", e => { if (e.key === "Enter") doLookup(); });
 
+        // ── admin delete ──
+        const deleteRow = document.createElement("div");
+        deleteRow.className = "sm-delete-row";
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "adm-btn-danger";
+        deleteBtn.textContent = "소모임 삭제";
+        deleteRow.appendChild(deleteBtn);
+        detailPanel.appendChild(deleteRow);
+
+        deleteBtn.addEventListener("click", async () => {
+            const adminPassword = pwInput.value.trim();
+            if (!adminPassword) { errEl.textContent = "먼저 관리자 비밀번호를 입력해주세요."; errEl.hidden = false; pwInput.focus(); return; }
+            if (!window.confirm(`"${ev.title}" 소모임을 삭제할까요?\n참가자가 있어도 강제 삭제됩니다. 되돌릴 수 없어요.`)) return;
+            deleteBtn.disabled = true; deleteBtn.textContent = "삭제 중…";
+            errEl.hidden = true;
+            try {
+                const res  = await fetch(JOIN_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "deleteEvent", id: ev.id, adminPassword }),
+                    cache: "no-store",
+                });
+                const data = await res.json();
+                if (!data.ok) { errEl.textContent = data.error || "삭제에 실패했습니다."; errEl.hidden = false; return; }
+                card.remove();
+                setStatus("소모임이 삭제되었습니다.");
+            } catch { errEl.textContent = "네트워크 오류가 발생했습니다."; errEl.hidden = false; }
+            finally { deleteBtn.disabled = false; deleteBtn.textContent = "소모임 삭제"; }
+        });
+
         card.appendChild(toggleBtn);
         card.appendChild(detailPanel);
         return card;
@@ -1304,20 +1366,32 @@
             wrap.innerHTML = '<p style="font-size:12px;color:#aaa;padding:6px 0">참가자가 없습니다.</p>';
             return;
         }
+        const fmtTs = iso => iso
+            ? new Date(iso).toLocaleDateString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"})
+            : "—";
+
         const tbl = document.createElement("table");
         tbl.className = "sm-detail-table";
         const hdr = document.createElement("tr");
-        ["#","닉네임","실명","연락처","신청 일시"].forEach(h => {
+        ["#","닉네임","실명","연락처","신청 일시","취소 일시"].forEach(h => {
             const th = document.createElement("th"); th.textContent = h; hdr.appendChild(th);
         });
         tbl.appendChild(hdr);
+
         participants
             .sort((a,b) => new Date(a.createdAt||0) - new Date(b.createdAt||0))
             .forEach((p, i) => {
+                const canceled = !!p.canceledAt;
                 const tr = document.createElement("tr");
-                if (p.isHost) tr.className = "is-host-row";
-                const ts = p.createdAt ? new Date(p.createdAt).toLocaleDateString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "—";
-                [i+1, p.name + (p.isHost ? ' <span class="sm-host-badge">주최</span>' : ""), p.realName||"—", p.contact||"—", ts].forEach((v, vi) => {
+                if (canceled) tr.classList.add("is-canceled-row");
+                else if (p.isHost) tr.classList.add("is-host-row");
+
+                // nickname cell — host badge or cancel badge
+                let nameCellHtml = p.name;
+                if (p.isHost) nameCellHtml += ' <span class="sm-host-badge">주최</span>';
+                if (canceled)  nameCellHtml += ' <span class="sm-cancel-badge">취소</span>';
+
+                [i+1, nameCellHtml, p.realName||"—", p.contact||"—", fmtTs(p.createdAt), fmtTs(p.canceledAt)].forEach((v, vi) => {
                     const td = document.createElement("td");
                     if (vi === 1) td.innerHTML = v; else td.textContent = v;
                     tr.appendChild(td);
