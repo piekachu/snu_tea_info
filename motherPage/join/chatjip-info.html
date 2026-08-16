@@ -1291,10 +1291,30 @@
             var pos = new naver.maps.LatLng(v.lat, v.lng);
             bounds.extend(pos);
 
+            var labelStyle = [
+                'display:inline-block',
+                'transform:translate(-50%,-100%)',
+                'white-space:nowrap',
+                'cursor:pointer',
+                'background:#1c6655',
+                'color:#fff',
+                'padding:4px 10px',
+                'border-radius:6px',
+                'font-size:11px',
+                'font-weight:700',
+                'letter-spacing:-0.01em',
+                'box-shadow:0 2px 8px rgba(0,0,0,0.18)',
+                "font-family:'Pretendard Variable',-apple-system,'Noto Sans KR',sans-serif"
+            ].join(';');
+
             var marker = new naver.maps.Marker({
                 position: pos,
                 map: map,
-                title: v.name
+                title: v.name,
+                icon: {
+                    content: '<div style="' + labelStyle + '">' + v.name + '</div>',
+                    anchor: new naver.maps.Point(0, 0)
+                }
             });
 
             var iw = new naver.maps.InfoWindow({
