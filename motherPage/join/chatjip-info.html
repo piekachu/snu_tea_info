@@ -141,6 +141,18 @@
             width: 10px;
             height: 10px;
             transform: translate(-50%, -50%);
+            cursor: pointer;
+        }
+        /* invisible, larger tap target — the dot itself is only 10px */
+        .ci-pin::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 34px;
+            height: 34px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
         }
         .ci-pin-dot {
             display: block;
