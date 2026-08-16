@@ -69,9 +69,7 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            margin-bottom: 40px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
+            margin-bottom: 20px;
         }
         .ci-district-chip {
             display: inline-flex;
@@ -86,14 +84,17 @@
             color: var(--fontColor);
             text-decoration: none;
             white-space: nowrap;
+            cursor: pointer;
             transition: background 0.15s, border-color 0.15s, color 0.15s;
         }
-        .ci-district-chip:hover {
+        .ci-district-chip:hover,
+        .ci-district-chip.is-active {
             background: var(--osullocGreen);
             border-color: var(--osullocGreen);
             color: #fff;
         }
-        .ci-district-chip:hover .ci-chip-cnt { color: rgba(255,255,255,0.75); }
+        .ci-district-chip:hover .ci-chip-cnt,
+        .ci-district-chip.is-active .ci-chip-cnt { color: rgba(255,255,255,0.75); }
         .ci-chip-cnt {
             font-size: 11px;
             font-weight: var(--font-weight-normal);
@@ -105,6 +106,63 @@
             background: rgba(0,0,0,0.06);
             border-radius: 999px;
         }
+        .ci-district-chip.is-active .ci-chip-ext {
+            background: rgba(255,255,255,0.22);
+        }
+
+        /* ── district map ── */
+        .ci-map-block {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        .ci-map-label {
+            font-size: 12px;
+            color: var(--fontGray);
+            margin-bottom: 10px;
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .ci-map-canvas {
+            width: 100%;
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #eee;
+        }
+        @media (max-width: 640px) {
+            .ci-map-canvas { height: 260px; }
+        }
+        /* Naver Maps info window styling */
+        .ci-infowin {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding: 10px 14px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.14);
+            white-space: nowrap;
+            font-family: "Pretendard Variable", -apple-system, "Noto Sans KR", sans-serif;
+        }
+        .ci-infowin-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111;
+        }
+        .ci-infowin-addr {
+            font-size: 11px;
+            color: #888;
+        }
+        .ci-infowin-link {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #1c6655;
+            text-decoration: none;
+            margin-top: 4px;
+        }
+        .ci-infowin-link:hover { text-decoration: underline; }
 
         /* ── district section ── */
         .ci-section {
@@ -255,26 +313,33 @@
         <p class="ci-subtitle">설다연 부원들이 추천하는 서울·경기권 찻집 목록입니다. 네이버 지도 링크로 위치를 바로 확인할 수 있어요.</p>
     </div>
 
-    <!-- district quick-nav -->
-    <nav class="ci-district-nav" aria-label="구별 빠른 이동">
-        <a class="ci-district-chip" href="#dist-gangnam">강남구 <span class="ci-chip-cnt">8</span></a>
-        <a class="ci-district-chip" href="#dist-gangdong">강동구 <span class="ci-chip-cnt">2</span></a>
-        <a class="ci-district-chip" href="#dist-gwanak">관악구 <span class="ci-chip-cnt">3</span></a>
-        <a class="ci-district-chip" href="#dist-dongjak">동작구 <span class="ci-chip-cnt">1</span></a>
-        <a class="ci-district-chip" href="#dist-mapo">마포구 <span class="ci-chip-cnt">5</span></a>
-        <a class="ci-district-chip" href="#dist-seodaemun">서대문구 <span class="ci-chip-cnt">4</span></a>
-        <a class="ci-district-chip" href="#dist-seocho">서초구 <span class="ci-chip-cnt">2</span></a>
-        <a class="ci-district-chip" href="#dist-seongdong">성동구 <span class="ci-chip-cnt">2</span></a>
-        <a class="ci-district-chip" href="#dist-seongbuk">성북구 <span class="ci-chip-cnt">2</span></a>
-        <a class="ci-district-chip" href="#dist-songpa">송파구 <span class="ci-chip-cnt">2</span></a>
-        <a class="ci-district-chip" href="#dist-yangcheon">양천구 <span class="ci-chip-cnt">1</span></a>
-        <a class="ci-district-chip" href="#dist-yeongdeungpo">영등포구 <span class="ci-chip-cnt">1</span></a>
-        <a class="ci-district-chip" href="#dist-yongsan">용산구 <span class="ci-chip-cnt">6</span></a>
-        <a class="ci-district-chip" href="#dist-jongno">종로구 <span class="ci-chip-cnt">14</span></a>
-        <a class="ci-district-chip" href="#dist-jung">중구 <span class="ci-chip-cnt">4</span></a>
-        <a class="ci-district-chip" href="#dist-jungnang">중랑구 <span class="ci-chip-cnt">2</span></a>
-        <a class="ci-district-chip" href="#dist-gyeonggi">경기 <span class="ci-chip-cnt ci-chip-ext">2</span></a>
+    <!-- district quick-nav (also drives the map) -->
+    <nav class="ci-district-nav" id="ciDistrictNav" aria-label="구별 지도 및 목록 이동">
+        <button class="ci-district-chip is-active" data-district="전체" data-anchor="">전체 <span class="ci-chip-cnt">61</span></button>
+        <button class="ci-district-chip" data-district="강남구" data-anchor="dist-gangnam">강남구 <span class="ci-chip-cnt">8</span></button>
+        <button class="ci-district-chip" data-district="강동구" data-anchor="dist-gangdong">강동구 <span class="ci-chip-cnt">2</span></button>
+        <button class="ci-district-chip" data-district="관악구" data-anchor="dist-gwanak">관악구 <span class="ci-chip-cnt">3</span></button>
+        <button class="ci-district-chip" data-district="동작구" data-anchor="dist-dongjak">동작구 <span class="ci-chip-cnt">1</span></button>
+        <button class="ci-district-chip" data-district="마포구" data-anchor="dist-mapo">마포구 <span class="ci-chip-cnt">5</span></button>
+        <button class="ci-district-chip" data-district="서대문구" data-anchor="dist-seodaemun">서대문구 <span class="ci-chip-cnt">4</span></button>
+        <button class="ci-district-chip" data-district="서초구" data-anchor="dist-seocho">서초구 <span class="ci-chip-cnt">2</span></button>
+        <button class="ci-district-chip" data-district="성동구" data-anchor="dist-seongdong">성동구 <span class="ci-chip-cnt">2</span></button>
+        <button class="ci-district-chip" data-district="성북구" data-anchor="dist-seongbuk">성북구 <span class="ci-chip-cnt">2</span></button>
+        <button class="ci-district-chip" data-district="송파구" data-anchor="dist-songpa">송파구 <span class="ci-chip-cnt">2</span></button>
+        <button class="ci-district-chip" data-district="양천구" data-anchor="dist-yangcheon">양천구 <span class="ci-chip-cnt">1</span></button>
+        <button class="ci-district-chip" data-district="영등포구" data-anchor="dist-yeongdeungpo">영등포구 <span class="ci-chip-cnt">1</span></button>
+        <button class="ci-district-chip" data-district="용산구" data-anchor="dist-yongsan">용산구 <span class="ci-chip-cnt">6</span></button>
+        <button class="ci-district-chip" data-district="종로구" data-anchor="dist-jongno">종로구 <span class="ci-chip-cnt">14</span></button>
+        <button class="ci-district-chip" data-district="중구" data-anchor="dist-jung">중구 <span class="ci-chip-cnt">4</span></button>
+        <button class="ci-district-chip" data-district="중랑구" data-anchor="dist-jungnang">중랑구 <span class="ci-chip-cnt">2</span></button>
+        <button class="ci-district-chip" data-district="경기" data-anchor="dist-gyeonggi">경기 <span class="ci-chip-cnt ci-chip-ext">2</span></button>
     </nav>
+
+    <!-- district map -->
+    <div class="ci-map-block">
+        <p class="ci-map-label" id="ciMapLabel">전체 61곳</p>
+        <div class="ci-map-canvas" id="ciMapCanvas"></div>
+    </div>
 
     <!-- ── 강남구 ── -->
     <section class="ci-section" id="dist-gangnam">
@@ -984,5 +1049,261 @@
     </div>
 </footer>
 
+<script>
+(function () {
+    "use strict";
+
+    var NCP_KEY_ID = "7x2r5r252m";
+
+    /* ── Venue data: all 61 찻집 with coordinates ── */
+    var VENUES = {
+        "강남구": [
+            { name: "티하우스 청담",              addr: "서울 강남구 삼성동 57-11 1층",              lat: 37.5212, lng: 127.0551, q: "티하우스 청담" },
+            { name: "클로리스 역삼점",             addr: "서울 강남구 역삼동 641-3 1층",              lat: 37.5002, lng: 127.0284, q: "클로리스 역삼점" },
+            { name: "한과와락",                   addr: "서울 강남구 역삼동 812-6",                  lat: 37.4994, lng: 127.0376, q: "한과와락" },
+            { name: "공부차 갤러리 티하우스 청담", addr: "서울 강남구 청담동 119-8 4층",               lat: 37.5268, lng: 127.0481, q: "공부차 갤러리 티하우스 청담" },
+            { name: "TWG Tea 압구정 안다즈점",     addr: "서울 강남구 신사동 603 안다즈호텔 1층",      lat: 37.5274, lng: 127.0390, q: "TWG Tea 압구정 안다즈점" },
+            { name: "클로리스 삼성중앙역점",        addr: "서울 강남구 삼성동 145 1층",                lat: 37.5089, lng: 127.0592, q: "클로리스 삼성중앙역점" },
+            { name: "로네펠트티하우스 선릉점",      addr: "서울 강남구 삼성동 142-21 명지빌딩 1층",    lat: 37.5079, lng: 127.0490, q: "로네펠트티하우스 선릉점" },
+            { name: "로네펠트티하우스 코엑스점",    addr: "서울 강남구 삼성동 159 코엑스 1층 E001",    lat: 37.5115, lng: 127.0594, q: "로네펠트티하우스 코엑스점" }
+        ],
+        "강동구": [
+            { name: "카페제이",                   addr: "서울 강동구 고덕동 294-1",                  lat: 37.5542, lng: 127.1637, q: "카페제이" },
+            { name: "차덕분 서울 강동점",          addr: "서울 강동구 상일동 341-5",                  lat: 37.5482, lng: 127.1789, q: "차덕분 서울 강동점" }
+        ],
+        "관악구": [
+            { name: "안밀",                       addr: "서울 관악구 봉천동 1688-126 1층",            lat: 37.4783, lng: 126.9448, q: "안밀" },
+            { name: "애프터레스트",               addr: "서울 관악구 봉천동 1641-31 1층",             lat: 37.4802, lng: 126.9445, q: "애프터레스트" },
+            { name: "BANJO",                     addr: "서울 관악구 봉천동 1598-31 2층",              lat: 37.4820, lng: 126.9462, q: "BANJO" }
+        ],
+        "동작구": [
+            { name: "이소 다과점",                addr: "서울 동작구 상도동 502-8 서정힐탑 2층",      lat: 37.4974, lng: 126.9385, q: "이소 다과점" }
+        ],
+        "마포구": [
+            { name: "티노마드",                   addr: "서울 마포구 망원동 414-83 2층",              lat: 37.5561, lng: 126.9100, q: "티노마드" },
+            { name: "호랑티티",                   addr: "서울 마포구 동교동 204-36 302호",            lat: 37.5543, lng: 126.9221, q: "호랑티티" },
+            { name: "달콤다정 연남점",             addr: "서울 마포구 연남동 384-7 2층",               lat: 37.5628, lng: 126.9228, q: "달콤다정 연남점" },
+            { name: "포담 티하우스",               addr: "서울 마포구 연남동 223-111 2층",             lat: 37.5616, lng: 126.9276, q: "포담 티하우스" },
+            { name: "두레차",                     addr: "서울 마포구 서교동 346-29",                  lat: 37.5541, lng: 126.9163, q: "두레차" }
+        ],
+        "서대문구": [
+            { name: "마리드 로얄 밀크티",          addr: "서울 서대문구 창천동 70-46 1층",             lat: 37.5582, lng: 126.9380, q: "마리드 로얄 밀크티" },
+            { name: "라오상하이 신촌점",           addr: "서울 서대문구 창천동 2-7 2층",               lat: 37.5562, lng: 126.9373, q: "라오상하이 신촌점" },
+            { name: "하니앤손스 (서대문)",         addr: "서울 서대문구 연희동 188-89 3~5층",          lat: 37.5722, lng: 126.9260, q: "하니앤손스" },
+            { name: "클로리스 신촌본점",           addr: "서울 서대문구 창천동 13-35",                 lat: 37.5573, lng: 126.9399, q: "클로리스 신촌본점" }
+        ],
+        "서초구": [
+            { name: "오쎄",                       addr: "서울 서초구 방배동 454-20 1·2층",            lat: 37.4840, lng: 126.9873, q: "오쎄" },
+            { name: "요고당",                     addr: "서울 서초구 방배동 450-10 4층",              lat: 37.4833, lng: 126.9865, q: "요고당" }
+        ],
+        "성동구": [
+            { name: "묘차",                       addr: "서울 성동구 성수동2가 301-64 2층",            lat: 37.5474, lng: 127.0577, q: "묘차" },
+            { name: "TWG Tea 성수낙낙점",          addr: "서울 성동구 성수동2가 280 1층",              lat: 37.5459, lng: 127.0551, q: "TWG Tea 성수낙낙점" }
+        ],
+        "성북구": [
+            { name: "수연산방",                   addr: "서울 성북구 성북동 248 상허 이태준 가옥",    lat: 37.5916, lng: 126.9984, q: "수연산방" },
+            { name: "밀월",                       addr: "서울 성북구 동소문동4가 16",                  lat: 37.5914, lng: 127.0125, q: "밀월" }
+        ],
+        "송파구": [
+            { name: "베질루르선셋에비뉴 롯데월드몰점", addr: "서울 송파구 신천동 29 롯데월드몰 5층",   lat: 37.5133, lng: 127.1002, q: "베질루르선셋에비뉴 롯데월드몰점" },
+            { name: "콰이어트 크림티",             addr: "서울 송파구 삼전동 2-4",                    lat: 37.5063, lng: 127.0998, q: "콰이어트 크림티" }
+        ],
+        "양천구": [
+            { name: "하니앤손스 (양천)",           addr: "서울 양천구 목동 404-5",                    lat: 37.5291, lng: 126.8763, q: "하니앤손스" }
+        ],
+        "영등포구": [
+            { name: "클로리스 여의도역점",         addr: "서울 영등포구 여의도동 35-3 The-K공제회관 B1", lat: 37.5212, lng: 126.9241, q: "클로리스 여의도역점" }
+        ],
+        "용산구": [
+            { name: "다몽헌",                     addr: "서울 용산구 후암동 297-9 지하1층",            lat: 37.5483, lng: 126.9798, q: "다몽헌" },
+            { name: "예평",                       addr: "서울 용산구 이태원동 227-28 3층",             lat: 37.5360, lng: 126.9894, q: "예평" },
+            { name: "하니앤손스 (용산)",           addr: "서울 용산구 한강로2가 422 래미안센트럴 지하",  lat: 37.5302, lng: 126.9665, q: "하니앤손스" },
+            { name: "무심헌 용산점",               addr: "서울 용산구 한강로2가 113-2 1층",            lat: 37.5309, lng: 126.9651, q: "무심헌 용산점" },
+            { name: "소월길 밀영",                 addr: "서울 용산구 후암동 265-15 2층",              lat: 37.5498, lng: 126.9783, q: "소월길 밀영" },
+            { name: "티룸 로제티",                 addr: "서울 용산구 후암동 303-2",                   lat: 37.5478, lng: 126.9808, q: "티룸 로제티" }
+        ],
+        "종로구": [
+            { name: "푸드떼",                     addr: "서울 종로구 사간동 26 한옥",                 lat: 37.5803, lng: 126.9758, q: "푸드떼" },
+            { name: "사모",                       addr: "서울 종로구 원서동 55 1층",                  lat: 37.5818, lng: 126.9890, q: "사모" },
+            { name: "어리틀케틀",                 addr: "서울 종로구 누하동 17 1층",                  lat: 37.5759, lng: 126.9718, q: "어리틀케틀" },
+            { name: "연경당",                     addr: "서울 종로구 팔판동 39 1층",                  lat: 37.5844, lng: 126.9776, q: "연경당" },
+            { name: "오설록티하우스 현대미술관점", addr: "서울 종로구 소격동 165",                      lat: 37.5788, lng: 126.9804, q: "오설록티하우스 현대미술관점" },
+            { name: "티로아",                     addr: "서울 종로구 관훈동 155-2 안녕인사동 1층",    lat: 37.5739, lng: 126.9842, q: "티로아" },
+            { name: "보이차전문점 명가원",         addr: "서울 종로구 안국동 175-56",                  lat: 37.5817, lng: 126.9839, q: "보이차전문점 명가원" },
+            { name: "끽다거",                     addr: "서울 종로구 계동 115-1 1층",                 lat: 37.5820, lng: 126.9860, q: "끽다거" },
+            { name: "휴다인",                     addr: "서울 종로구 견지동 19",                      lat: 37.5714, lng: 126.9809, q: "휴다인" },
+            { name: "이음 티하우스",               addr: "서울 종로구 부암동 254-7 201호",             lat: 37.6013, lng: 126.9641, q: "이음 티하우스" },
+            { name: "로네펠트티하우스 광화문점",   addr: "서울 종로구 신문로1가 115 콘코디언빌딩 1층", lat: 37.5711, lng: 126.9749, q: "로네펠트티하우스 광화문점" },
+            { name: "밀밀홍",                     addr: "서울 종로구 계동 15-11",                     lat: 37.5823, lng: 126.9862, q: "밀밀홍" },
+            { name: "티테라피",                   addr: "서울 종로구 안국동 6-1",                     lat: 37.5778, lng: 126.9831, q: "티테라피" },
+            { name: "아름다운차박물관",            addr: "서울 종로구 인사동 193-1",                   lat: 37.5741, lng: 126.9843, q: "아름다운차박물관" }
+        ],
+        "중구": [
+            { name: "아케이드토오베",              addr: "서울 중구 태평로1가 25 지하1층",              lat: 37.5638, lng: 126.9776, q: "아케이드토오베" },
+            { name: "운비차실",                   addr: "서울 중구 회현동1가 172-4 2층",              lat: 37.5573, lng: 126.9798, q: "운비차실" },
+            { name: "레레플레이",                 addr: "서울 중구 황학동 753-33 1·2층",              lat: 37.5741, lng: 127.0112, q: "레레플레이" },
+            { name: "다만프레르 SFC점",            addr: "서울 중구 태평로1가 84 파이넨스빌딩 지하1층", lat: 37.5623, lng: 126.9773, q: "다만프레르 SFC점" }
+        ],
+        "중랑구": [
+            { name: "티하우스나니",               addr: "서울 중랑구 신내동 493-46 로뎀하이빌 102호", lat: 37.6194, lng: 127.1094, q: "티하우스나니" },
+            { name: "양원재",                     addr: "서울 중랑구 중화동 450",                     lat: 37.5973, lng: 127.0741, q: "양원재" }
+        ],
+        "경기": [
+            { name: "정명당",                     addr: "경기도 광명시 소하동 1398-5",                lat: 37.4375, lng: 126.8921, q: "정명당" },
+            { name: "수연제",                     addr: "경기도 고양시 일산서구 대화동 2087-4",       lat: 37.6713, lng: 126.7541, q: "수연제" }
+        ]
+    };
+
+    /* ── Flatten all venues for "전체" view ── */
+    var ALL_VENUES = [];
+    Object.keys(VENUES).forEach(function (district) {
+        VENUES[district].forEach(function (v) {
+            ALL_VENUES.push(Object.assign({}, v, { district: district }));
+        });
+    });
+
+    /* ── Map state ── */
+    var map = null;
+    var markers = [];
+    var openInfoWindow = null;
+    var currentDistrict = "전체";
+
+    /* ── Load Naver Maps SDK ── */
+    function loadSdk(cb) {
+        if (window.naver && window.naver.maps) { cb(); return; }
+        window.__ciMapReady = function () { setTimeout(cb, 0); };
+        var s = document.createElement("script");
+        s.src = "https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=" + NCP_KEY_ID + "&callback=__ciMapReady";
+        s.onerror = function () { console.error("[chatjip-map] Naver Maps SDK 로드 실패"); };
+        document.head.appendChild(s);
+    }
+
+    /* ── Render or update markers on the map ── */
+    function showDistrict(district) {
+        currentDistrict = district;
+        var venues = district === "전체" ? ALL_VENUES : (VENUES[district] || []);
+
+        /* update label */
+        var label = document.getElementById("ciMapLabel");
+        if (label) {
+            label.textContent = district === "전체"
+                ? "전체 61곳 — 마커를 클릭하면 정보가 표시돼요"
+                : district + " " + venues.length + "곳 — 마커를 클릭하면 정보가 표시돼요";
+        }
+
+        /* clear existing markers */
+        markers.forEach(function (m) { m.setMap(null); });
+        markers = [];
+        if (openInfoWindow) { openInfoWindow.close(); openInfoWindow = null; }
+
+        if (!venues.length) return;
+
+        var bounds = new naver.maps.LatLngBounds();
+
+        venues.forEach(function (v) {
+            var pos = new naver.maps.LatLng(v.lat, v.lng);
+            bounds.extend(pos);
+
+            var marker = new naver.maps.Marker({
+                position: pos,
+                map: map,
+                title: v.name
+            });
+
+            var iw = new naver.maps.InfoWindow({
+                content: '<div class="ci-infowin">'
+                    + '<span class="ci-infowin-name">' + v.name + '</span>'
+                    + '<span class="ci-infowin-addr">' + v.addr + '</span>'
+                    + '<a class="ci-infowin-link" href="https://map.naver.com/v5/search/' + encodeURIComponent(v.q) + '" target="_blank" rel="noopener">네이버 지도에서 보기 →</a>'
+                    + '</div>',
+                borderWidth: 0,
+                disableAnchor: false,
+                backgroundColor: "transparent",
+                pixelOffset: new naver.maps.Point(0, -8)
+            });
+
+            naver.maps.Event.addListener(marker, "click", function () {
+                if (openInfoWindow) {
+                    openInfoWindow.close();
+                    if (openInfoWindow === iw) { openInfoWindow = null; return; }
+                }
+                iw.open(map, marker);
+                openInfoWindow = iw;
+            });
+
+            markers.push(marker);
+        });
+
+        /* fit bounds */
+        if (venues.length === 1) {
+            map.setCenter(new naver.maps.LatLng(venues[0].lat, venues[0].lng));
+            map.setZoom(17);
+        } else {
+            map.fitBounds(bounds, { top: 56, right: 56, bottom: 56, left: 56 });
+        }
+    }
+
+    /* ── Init map ── */
+    function initMap() {
+        var canvas = document.getElementById("ciMapCanvas");
+        if (!canvas) return;
+
+        /* default center: Seoul */
+        map = new naver.maps.Map(canvas, {
+            center: new naver.maps.LatLng(37.5400, 126.9900),
+            zoom: 12
+        });
+
+        showDistrict("전체");
+    }
+
+    /* ── District chip click handlers ── */
+    function wireChips() {
+        var nav = document.getElementById("ciDistrictNav");
+        if (!nav) return;
+
+        nav.addEventListener("click", function (e) {
+            var chip = e.target.closest(".ci-district-chip");
+            if (!chip) return;
+
+            /* update active state */
+            nav.querySelectorAll(".ci-district-chip").forEach(function (c) {
+                c.classList.remove("is-active");
+            });
+            chip.classList.add("is-active");
+
+            var district = chip.dataset.district;
+            var anchor   = chip.dataset.anchor;
+
+            /* update map */
+            if (map) {
+                showDistrict(district);
+            }
+
+            /* scroll to section (not for 전체) */
+            if (anchor) {
+                var section = document.getElementById(anchor);
+                if (section) {
+                    setTimeout(function () {
+                        section.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 80);
+                }
+            }
+        });
+    }
+
+    /* ── Boot ── */
+    function boot() {
+        wireChips();
+        loadSdk(initMap);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", boot);
+    } else {
+        boot();
+    }
+})();
+</script>
 </body>
 </html>
