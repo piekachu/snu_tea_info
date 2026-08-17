@@ -488,7 +488,6 @@
         btn.className = "lang_toggle";
         btn.innerHTML =
             '<span class="lang_opt" data-lang="ko">KOR</span>'
-            + '<span class="lang_sep" aria-hidden="true">/</span>'
             + '<span class="lang_opt" data-lang="en">ENG</span>';
         btn.addEventListener("click", function () {
             setLang(lang === "ko" ? "en" : "ko");

@@ -566,47 +566,77 @@ body.page-home .header_logo .logo_img {
 }
 
 /* ── language toggle (injected into .header_inner by i18n.js) ──
+   A segmented control: the whole pill is the track, and the active language
+   is a filled lozenge inside it — far easier to spot than coloured text.
    The logo is absolutely positioned at these breakpoints, so margin-left:auto
-   pins the toggle to the right edge regardless of what else is in the bar.
+   pins the toggle right; margin-right keeps it off the page edge.
    position/z-index keep it above the header's ::before backdrop. */
 .lang_toggle {
-    margin-left: auto;
-    position: relative;
+    /* absolutely positioned against .header (position:fixed) rather than laid
+       out in .header_inner — that container is only as tall as its content, so
+       a flex child would sit at the top of the bar instead of centred. Keeping
+       it out of flow also leaves .header_inner untouched for every other page
+       that shares this stylesheet. */
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
     z-index: 2;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 6px 12px;
+    gap: 3px;
+    padding: 4px;
     border: 1px solid rgba(0, 0, 0, 0.14);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.09);
     font-family: inherit;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     line-height: 1;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color 0.15s, box-shadow 0.15s;
 }
 .lang_toggle:hover {
     border-color: var(--osullocGreen);
-    background: #fff;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.14);
 }
 .lang_opt {
+    padding: 7px 15px;
+    border-radius: 999px;
     color: var(--fontGray);
-    transition: color 0.15s;
+    transition: background 0.18s, color 0.18s;
 }
 .lang_opt.is-active {
-    color: var(--osullocGreen);
+    background: var(--osullocGreen);
+    color: #fff;
     font-weight: var(--font-weight-bold);
 }
-.lang_sep {
-    color: rgba(0, 0, 0, 0.22);
+/* inactive side gets a hint of fill on hover so it reads as clickable */
+.lang_toggle:hover .lang_opt:not(.is-active) {
+    background: rgba(28, 102, 85, 0.09);
+    color: var(--osullocGreen);
 }
 @media all and (max-width: 1024px) {
     .lang_toggle {
-        padding: 5px 10px;
-        font-size: 10px;
+        font-size: 12px;
+    }
+    .lang_opt {
+        padding: 6px 12px;
+    }
+}
+/* on phones the logo is centred in the same bar, so keep the pill compact
+   enough that the two never collide */
+@media all and (max-width: 640px) {
+    .lang_toggle {
+        right: 8px;
+        font-size: 10.5px;
+        gap: 2px;
+        padding: 3px;
+    }
+    .lang_opt {
+        padding: 5px 9px;
     }
 }
 /* main page site nav: a fixed vertical rail on the left edge of the
