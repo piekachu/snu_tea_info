@@ -97,15 +97,12 @@
 
    Layered on top of the plain frame:
    - a green accent stripe along the left edge to anchor the card visually
-   - the 茶 character as a very faint watermark in the bottom-right, echoing
-     the SEOUL茶緣 logo
    - pinned cards get a soft green gradient wash so the "important" ones
      stand out from the flat plain cards
-   - hover lifts the card, tints the border, and deepens both watermarks */
+   - hover lifts the card, tints the border, and thickens the stripe */
 .notice_card {
     display: flex;
     position: relative;
-    overflow: hidden; /* clip the watermark so it can be oversize */
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: transform 0.22s ease, box-shadow 0.22s ease,
                 border-color 0.22s ease;
@@ -120,34 +117,14 @@
     opacity: 0.75;
     transition: opacity 0.22s ease, width 0.22s ease;
 }
-/* 茶 watermark, echoing the logo */
-.notice_card::after {
-    content: "茶";
-    position: absolute;
-    right: -18px;
-    bottom: -46px;
-    font-size: 168px;
-    line-height: 1;
-    font-weight: 700;
-    color: var(--osullocGreen);
-    opacity: 0.055;
-    pointer-events: none;
-    transition: opacity 0.22s ease, transform 0.4s ease;
-}
 .notice_card:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 28px rgba(28, 102, 85, 0.14);
     border-color: rgba(28, 102, 85, 0.28);
 }
 .notice_card:hover::before { opacity: 1; width: 5px; }
-.notice_card:hover::after {
-    opacity: 0.11;
-    transform: translate(-6px, -6px) rotate(-4deg);
-}
 
 .notice_card_body {
-    position: relative; /* stack above ::after */
-    z-index: 1;
     display: flex;
     flex-direction: column;
     gap: 10px;
