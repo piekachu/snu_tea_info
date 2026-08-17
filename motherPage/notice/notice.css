@@ -186,6 +186,285 @@
     margin-bottom: 2px;
 }
 
+/* -----------------------
+*  OT (신입부원 오리엔테이션) page — editorial layout that leans on the
+*  handful of photos from the source PDF instead of the rigid text-only
+*  frame the .bylaws_* classes give. Kept scoped so nothing else changes.
+* ----------------------- */
+.ot_hero {
+    position: relative;
+    margin: -8px -20px 40px;        /* bleed to the edges of .notice_detail */
+    aspect-ratio: 16 / 8;
+    max-height: 380px;
+    overflow: hidden;
+    border-radius: 14px;
+}
+.ot_hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* dark wash so overlay copy stays legible on any part of the image */
+.ot_hero_overlay {
+    position: absolute;
+    inset: 0;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: #fff;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%,
+                                        rgba(0, 0, 0, 0.15) 45%,
+                                        rgba(0, 0, 0, 0) 75%);
+}
+.ot_hero_kicker {
+    font-size: 12px;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin: 0 0 6px;
+}
+.ot_hero_headline {
+    font-size: 26px;
+    font-weight: var(--font-weight-bold);
+    line-height: 1.35;
+    margin: 0;
+    max-width: 32ch;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* section header — bigger than .bylaws_chapter, with an accent underline */
+.ot_section_head {
+    margin: 56px 0 22px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--osullocGreenS);
+}
+.ot_section_head:first-of-type { margin-top: 8px; }
+.ot_section_head_label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--osullocGreen);
+    margin-bottom: 6px;
+}
+.ot_section_head_title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: var(--font-weight-bold);
+    color: var(--fontColor);
+    letter-spacing: -0.01em;
+}
+
+/* body copy — a touch more airy than the bylaws styling */
+.ot_body p {
+    margin: 0 0 14px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #2a2a2a;
+}
+.ot_body a { color: var(--osullocGreen); font-weight: 500; }
+.ot_body a:hover { text-decoration: underline; }
+
+/* two-column split: image on one side, prose on the other. The
+   :nth-of-type flip alternates left/right through the page. */
+.ot_split {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 28px;
+    align-items: center;
+    margin: 22px 0 30px;
+}
+.ot_split_flip { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.ot_split_flip .ot_split_image { order: 2; }
+.ot_split_image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+.ot_split_caption {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--fontGray);
+    font-style: italic;
+    text-align: center;
+}
+
+/* activity card row — the six activities read as a grid of tiles instead
+   of another long list */
+.ot_activities {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 8px 0 30px;
+}
+.ot_activity {
+    padding: 20px 20px 22px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-left: 3px solid var(--osullocGreen);
+    border-radius: 10px;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.ot_activity:hover {
+    box-shadow: 0 6px 18px rgba(28, 102, 85, 0.10);
+    transform: translateY(-2px);
+}
+.ot_activity_name {
+    margin: 0 0 6px;
+    font-size: 15.5px;
+    font-weight: var(--font-weight-bold);
+    color: var(--osullocGreen);
+}
+.ot_activity_body {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #333;
+}
+.ot_activity_body em {
+    font-style: normal;
+    color: var(--fontGray);
+    font-size: 11.5px;
+    display: block;
+    margin-top: 4px;
+    letter-spacing: 0.02em;
+}
+
+/* soft numbered list for the 소모임 weekly workflow */
+.ot_steps {
+    counter-reset: otstep;
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 24px;
+    display: grid;
+    gap: 10px;
+}
+.ot_steps li {
+    counter-increment: otstep;
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: #2a2a2a;
+}
+.ot_steps li::before {
+    content: counter(otstep, decimal-leading-zero);
+    font-size: 12px;
+    font-weight: var(--font-weight-bold);
+    color: #fff;
+    background: var(--osullocGreen);
+    border-radius: 6px;
+    padding: 4px 0;
+    text-align: center;
+    letter-spacing: 0.02em;
+}
+
+/* rules / cancellation-fee callouts — a warm amber to read as "attention" */
+.ot_rules {
+    display: grid;
+    gap: 14px;
+    margin: 12px 0 24px;
+}
+.ot_rule {
+    padding: 18px 22px;
+    background: linear-gradient(135deg, rgba(226, 168, 68, 0.09) 0%,
+                                        rgba(226, 168, 68, 0.03) 100%);
+    border: 1px solid rgba(226, 168, 68, 0.28);
+    border-left: 4px solid #cd8b30;
+    border-radius: 10px;
+}
+.ot_rule_title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    font-size: 14.5px;
+    font-weight: var(--font-weight-bold);
+    color: #7a4f10;
+}
+.ot_rule_title::before {
+    content: "!";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    background: #cd8b30;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+}
+.ot_rule p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #453b1e;
+}
+
+/* brewing guide: image tile + steps beside it, alternating with .ot_split_flip */
+.ot_brew_steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+}
+.ot_brew_steps li {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #2a2a2a;
+}
+.ot_brew_steps li::before {
+    content: "•";
+    color: var(--osullocGreen);
+    font-weight: 700;
+    line-height: 1.7;
+}
+
+.ot_closing {
+    margin: 56px 0 0;
+    padding: 24px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(204, 220, 202, 0.25) 0%, #fff 100%);
+    border-radius: 12px;
+    font-size: 15px;
+    color: #2a2a2a;
+    line-height: 1.7;
+}
+.ot_closing strong {
+    display: block;
+    color: var(--osullocGreen);
+    font-size: 17px;
+    margin-bottom: 4px;
+}
+
+@media all and (max-width: 720px) {
+    .ot_hero { margin: -8px 0 32px; aspect-ratio: 16 / 10; }
+    .ot_hero_overlay { padding: 20px; }
+    .ot_hero_headline { font-size: 20px; }
+    .ot_split, .ot_split_flip {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .ot_split_flip .ot_split_image { order: 0; }
+    .ot_section_head { margin-top: 40px; }
+    .ot_section_head_title { font-size: 19px; }
+    .ot_body p, .ot_activity_body { font-size: 14.5px; }
+}
+
 @media all and (max-width: 640px) {
     /* .layout_max has no side padding, so the content would otherwise sit
        flush against the screen edges on mobile — give it a gutter */
