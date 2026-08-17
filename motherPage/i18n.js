@@ -52,7 +52,7 @@
         "home.info.title":     { ko: "정보", en: "Info" },
         "home.info.intro":     { ko: "설다연에 관한 다양한 정보와 글을 만나보세요. 차 문화, 찻집 안내, 동아리 활동 이야기 등 유익한 내용을 공유합니다.",
                                  en: "Browse articles and guides about Seoldayeon — tea culture, tea house recommendations, and stories from club activities." },
-        "home.notice.title":   { ko: "공지사항/FAQ", en: "Notices & FAQ" },
+        "home.notice.title":   { ko: "공지사항/FAQ", en: "Notices & FAQs" },
         "home.notice.intro":   { ko: "설다연의 소식과 공지사항을 놓치지 마세요. 정기 모임 일정, 회칙 안내, 신입 오티 정보 등 동아리 운영에 필요한 주요 소식과 자주 묻는 질문들을 확인할 수 있습니다.",
                                  en: "Keep up with news and announcements — meeting schedules, the club bylaws, new member orientation, and answers to frequently asked questions." },
         "carousel.upcomingEvents": { ko: "다가오는 행사", en: "Upcoming Events" },
@@ -68,8 +68,8 @@
         "info.pinned":         { ko: "고정", en: "Pinned" },
 
         /* ── notice listing ───────────────────────────────────────── */
-        "notice.pageTitle":    { ko: "공지사항/FAQ", en: "Notices & FAQ" },
-        "notice.title":        { ko: "공지사항/FAQ", en: "Notices & FAQ" },
+        "notice.pageTitle":    { ko: "공지사항/FAQ", en: "Notices & FAQs" },
+        "notice.title":        { ko: "공지사항/FAQ", en: "Notices & FAQs" },
         "notice.intro":        { ko: "설다연의 공지사항을 확인하세요.",
                                  en: "Check the latest announcements from Seoldayeon." },
 
