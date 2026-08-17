@@ -27,8 +27,8 @@ const teaClubNotices = [
         pinned: true,
     },
     {
-        title: "설다연 회칙 (1판, ver.3)",
-        titleEn: "Seoldayeon Bylaws (1st ed., v.3)",
+        title: "설다연 회칙",
+        titleEn: "Seoldayeon Bylaws",
         date: "2026-08-05",
         excerpt: "동아리 운영의 기준이 되는 회칙 전문입니다. 총칙부터 부칙까지 여섯 개 장에 걸쳐 회원 자격, 임원진 구성, 재정과 징계 규정을 담고 있어요.",
         excerptEn: "The full club bylaws. Six chapters covering membership, the officer structure, finances and disciplinary rules, from the general provisions through to the addendum.",

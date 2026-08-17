@@ -111,8 +111,8 @@
         /* ── 회칙 / bylaws ────────────────────────────────────────────
            English intentionally left empty — the club will supply it.
            Until then these fall back to the Korean text. */
-        "bylaws.pageTitle":    { ko: "설다연 회칙 (1판, ver.3) — 공지사항", en: "" },
-        "bylaws.title":        { ko: "설다연 회칙 (1판, ver.3)", en: "" },
+        "bylaws.pageTitle":    { ko: "설다연 회칙 — 공지사항", en: "" },
+        "bylaws.title":        { ko: "설다연 회칙", en: "" },
         "bylaws.pendingNote":  { ko: "", en: "An English translation of the bylaws has not been written yet. The Korean text below is the authoritative version." },
         /* Every block below is wired and waiting for its English text. Fill in
            the empty en values; anything still empty keeps showing the Korean. */
