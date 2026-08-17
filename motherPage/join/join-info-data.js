@@ -1,5 +1,5 @@
 // 소모임 정보 항목 — "정보" 탭에 표시되는 안내/FAQ 목록.
-// 공지사항/Q&A 데이터(notices-data.js)와 같은 구조:
+// 공지사항/FAQ 데이터(notices-data.js)와 같은 구조:
 //   title   — 항목 제목
 //   date    — 최종 수정 또는 작성일 (YYYY-MM-DD)
 //   path    — 상세 페이지 경로 (motherPage/ 기준).
