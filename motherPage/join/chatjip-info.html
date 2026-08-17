@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../common.css">
     <script src="../i18n.js"></script>
 
-    <title>찻집 정보 — 설다연</title>
+    <title data-i18n="chatjip.pageTitle">찻집 정보 — 설다연</title>
 
     <style>
         /* ── page shell ── */
@@ -387,24 +387,24 @@
             <svg viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path d="M7 11L2 6l5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            정보 목록으로
+            <span data-i18n="nav.backToInfo">정보 목록으로</span>
         </a>
-        <h2 class="ci-title">찻집 정보<span class="ci-count-badge">61곳</span></h2>
-        <p class="ci-subtitle">설다연 부원들이 추천하는 서울·경기권 찻집 목록입니다. 네이버 지도 링크로 위치를 바로 확인할 수 있어요.</p>
+        <h2 class="ci-title"><span data-i18n="chatjip.title">찻집 정보</span><span class="ci-count-badge" data-i18n="chatjip.badge">61곳</span></h2>
+        <p class="ci-subtitle" data-i18n="chatjip.subtitle">설다연 부원들이 추천하는 서울·경기권 찻집 목록입니다. 네이버 지도 링크로 위치를 바로 확인할 수 있어요.</p>
     </div>
 
     <!-- view tabs -->
     <div class="ci-tab-bar" id="ciTabBar" role="tablist">
-        <button class="ci-tab-btn is-active" data-panel="panel-map" role="tab" aria-selected="true">지도</button>
-        <button class="ci-tab-btn" data-panel="panel-list" role="tab" aria-selected="false">목록</button>
+        <button class="ci-tab-btn is-active" data-panel="panel-map" role="tab" aria-selected="true" data-i18n="chatjip.tabMap">지도</button>
+        <button class="ci-tab-btn" data-panel="panel-list" role="tab" aria-selected="false" data-i18n="chatjip.tabList">목록</button>
     </div>
 
     <!-- ── 지도 탭 panel ── -->
     <div class="ci-panel" id="panel-map" role="tabpanel">
 
     <!-- district chips (map filter only — no scroll) -->
-    <nav class="ci-district-nav" id="ciDistrictNav" aria-label="구별 지도 필터">
-        <button class="ci-district-chip is-active" data-district="전체" data-anchor="">전체 <span class="ci-chip-cnt">61</span></button>
+    <nav class="ci-district-nav" id="ciDistrictNav" aria-label="구별 지도 필터" data-i18n-attr="aria-label:chatjip.navAria">
+        <button class="ci-district-chip is-active" data-district="전체" data-anchor=""><span data-i18n="common.all">전체</span> <span class="ci-chip-cnt">61</span></button>
         <button class="ci-district-chip" data-district="강남구" data-anchor="dist-gangnam">강남구 <span class="ci-chip-cnt">8</span></button>
         <button class="ci-district-chip" data-district="강동구" data-anchor="dist-gangdong">강동구 <span class="ci-chip-cnt">2</span></button>
         <button class="ci-district-chip" data-district="관악구" data-anchor="dist-gwanak">관악구 <span class="ci-chip-cnt">3</span></button>
@@ -442,7 +442,7 @@
     <section class="ci-section" id="dist-gangnam">
         <div class="ci-section-head">
             <h3 class="ci-section-name">강남구</h3>
-            <span class="ci-section-cnt">8곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:8">8곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -451,7 +451,7 @@
                 <p class="ci-card-addr">서울 강남구 삼성동 57-11 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/티하우스 청담" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -459,7 +459,7 @@
                 <p class="ci-card-addr">서울 강남구 역삼동 641-3 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/클로리스 역삼점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -467,7 +467,7 @@
                 <p class="ci-card-addr">서울 강남구 역삼동 812-6</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/한과와락" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -475,7 +475,7 @@
                 <p class="ci-card-addr">서울 강남구 청담동 119-8 4층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/공부차 갤러리 티하우스 청담" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -483,7 +483,7 @@
                 <p class="ci-card-addr">서울 강남구 신사동 603 안다즈호텔 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/TWG Tea 압구정 안다즈점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -491,7 +491,7 @@
                 <p class="ci-card-addr">서울 강남구 삼성동 145 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/클로리스 삼성중앙역점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -499,7 +499,7 @@
                 <p class="ci-card-addr">서울 강남구 삼성동 142-21 명지빌딩 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/로네펠트티하우스 선릉점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -507,7 +507,7 @@
                 <p class="ci-card-addr">서울 강남구 삼성동 159 코엑스전시홀 1층 E001</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/로네펠트티하우스 코엑스점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -517,7 +517,7 @@
     <section class="ci-section" id="dist-gangdong">
         <div class="ci-section-head">
             <h3 class="ci-section-name">강동구</h3>
-            <span class="ci-section-cnt">2곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:2">2곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -526,7 +526,7 @@
                 <p class="ci-card-addr">서울 강동구 고덕동 294-1</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/카페제이" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -534,7 +534,7 @@
                 <p class="ci-card-addr">서울 강동구 상일동 341-5 1·2·3층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/차덕분 서울 강동점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -544,7 +544,7 @@
     <section class="ci-section" id="dist-gwanak">
         <div class="ci-section-head">
             <h3 class="ci-section-name">관악구</h3>
-            <span class="ci-section-cnt">3곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:3">3곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -553,7 +553,7 @@
                 <p class="ci-card-addr">서울 관악구 봉천동 1688-126 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/안밀" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -561,7 +561,7 @@
                 <p class="ci-card-addr">서울 관악구 봉천동 1641-31 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/애프터레스트" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -569,7 +569,7 @@
                 <p class="ci-card-addr">서울 관악구 봉천동 1598-31 2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/BANJO" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -579,7 +579,7 @@
     <section class="ci-section" id="dist-dongjak">
         <div class="ci-section-head">
             <h3 class="ci-section-name">동작구</h3>
-            <span class="ci-section-cnt">1곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:1">1곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -588,7 +588,7 @@
                 <p class="ci-card-addr">서울 동작구 상도동 502-8 서정힐탑 2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/이소 다과점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -598,7 +598,7 @@
     <section class="ci-section" id="dist-mapo">
         <div class="ci-section-head">
             <h3 class="ci-section-name">마포구</h3>
-            <span class="ci-section-cnt">5곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:5">5곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -607,7 +607,7 @@
                 <p class="ci-card-addr">서울 마포구 망원동 414-83 2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/티노마드" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -615,7 +615,7 @@
                 <p class="ci-card-addr">서울 마포구 동교동 204-36 302호</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/호랑티티" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -623,7 +623,7 @@
                 <p class="ci-card-addr">서울 마포구 연남동 384-7 2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/달콤다정 연남점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -631,7 +631,7 @@
                 <p class="ci-card-addr">서울 마포구 연남동 223-111 2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/포담 티하우스" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -639,7 +639,7 @@
                 <p class="ci-card-addr">서울 마포구 서교동 346-29</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/두레차" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -649,7 +649,7 @@
     <section class="ci-section" id="dist-seodaemun">
         <div class="ci-section-head">
             <h3 class="ci-section-name">서대문구</h3>
-            <span class="ci-section-cnt">4곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:4">4곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -658,7 +658,7 @@
                 <p class="ci-card-addr">서울 서대문구 창천동 70-46 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/마리드 로얄 밀크티" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -666,7 +666,7 @@
                 <p class="ci-card-addr">서울 서대문구 창천동 2-7 2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/라오상하이 신촌점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -674,7 +674,7 @@
                 <p class="ci-card-addr">서울 서대문구 연희동 188-89 3·4·5층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/하니앤손스" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -682,7 +682,7 @@
                 <p class="ci-card-addr">서울 서대문구 창천동 13-35</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/클로리스 신촌본점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -692,7 +692,7 @@
     <section class="ci-section" id="dist-seocho">
         <div class="ci-section-head">
             <h3 class="ci-section-name">서초구</h3>
-            <span class="ci-section-cnt">2곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:2">2곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -701,7 +701,7 @@
                 <p class="ci-card-addr">서울 서초구 방배동 454-20 1·2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/오쎄" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -709,7 +709,7 @@
                 <p class="ci-card-addr">서울 서초구 방배동 450-10 4층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/요고당" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -719,7 +719,7 @@
     <section class="ci-section" id="dist-seongdong">
         <div class="ci-section-head">
             <h3 class="ci-section-name">성동구</h3>
-            <span class="ci-section-cnt">2곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:2">2곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -728,7 +728,7 @@
                 <p class="ci-card-addr">서울 성동구 성수동2가 301-64 2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/묘차" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -736,7 +736,7 @@
                 <p class="ci-card-addr">서울 성동구 성수동2가 280 성수SK V1 CENTER1 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/TWG Tea 성수낙낙점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -746,7 +746,7 @@
     <section class="ci-section" id="dist-seongbuk">
         <div class="ci-section-head">
             <h3 class="ci-section-name">성북구</h3>
-            <span class="ci-section-cnt">2곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:2">2곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -755,7 +755,7 @@
                 <p class="ci-card-addr">서울 성북구 성북동 248 상허 이태준 가옥</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/수연산방" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -763,7 +763,7 @@
                 <p class="ci-card-addr">서울 성북구 동소문동4가 16</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/밀월" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -773,7 +773,7 @@
     <section class="ci-section" id="dist-songpa">
         <div class="ci-section-head">
             <h3 class="ci-section-name">송파구</h3>
-            <span class="ci-section-cnt">2곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:2">2곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -782,7 +782,7 @@
                 <p class="ci-card-addr">서울 송파구 신천동 29 롯데월드몰 5층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/베질루르선셋에비뉴 롯데월드몰점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -790,7 +790,7 @@
                 <p class="ci-card-addr">서울 송파구 삼전동 2-4</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/콰이어트 크림티" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -800,7 +800,7 @@
     <section class="ci-section" id="dist-yangcheon">
         <div class="ci-section-head">
             <h3 class="ci-section-name">양천구</h3>
-            <span class="ci-section-cnt">1곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:1">1곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -809,7 +809,7 @@
                 <p class="ci-card-addr">서울 양천구 목동 404-5</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/하니앤손스" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -819,7 +819,7 @@
     <section class="ci-section" id="dist-yeongdeungpo">
         <div class="ci-section-head">
             <h3 class="ci-section-name">영등포구</h3>
-            <span class="ci-section-cnt">1곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:1">1곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -828,7 +828,7 @@
                 <p class="ci-card-addr">서울 영등포구 여의도동 35-3 The-K한국교직원공제회관 B1-14호</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/클로리스 여의도역점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -838,7 +838,7 @@
     <section class="ci-section" id="dist-yongsan">
         <div class="ci-section-head">
             <h3 class="ci-section-name">용산구</h3>
-            <span class="ci-section-cnt">6곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:6">6곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -847,7 +847,7 @@
                 <p class="ci-card-addr">서울 용산구 후암동 297-9 지하1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/다몽헌" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -855,7 +855,7 @@
                 <p class="ci-card-addr">서울 용산구 이태원동 227-28 3층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/예평" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -863,7 +863,7 @@
                 <p class="ci-card-addr">서울 용산구 한강로2가 422 래미안 더 센트럴 B동 지하1층 b113호</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/하니앤손스" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -871,7 +871,7 @@
                 <p class="ci-card-addr">서울 용산구 한강로2가 113-2 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/무심헌 용산점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -879,7 +879,7 @@
                 <p class="ci-card-addr">서울 용산구 후암동 265-15 2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/소월길 밀영" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -887,7 +887,7 @@
                 <p class="ci-card-addr">서울 용산구 후암동 303-2</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/티룸 로제티" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -897,7 +897,7 @@
     <section class="ci-section" id="dist-jongno">
         <div class="ci-section-head">
             <h3 class="ci-section-name">종로구</h3>
-            <span class="ci-section-cnt">14곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:14">14곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -906,7 +906,7 @@
                 <p class="ci-card-addr">서울 종로구 사간동 26 한옥</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/푸드떼" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -914,7 +914,7 @@
                 <p class="ci-card-addr">서울 종로구 원서동 55 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/사모" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -922,7 +922,7 @@
                 <p class="ci-card-addr">서울 종로구 누하동 17 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/어리틀케틀" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -930,7 +930,7 @@
                 <p class="ci-card-addr">서울 종로구 팔판동 39 1층 단독</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/연경당" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -938,7 +938,7 @@
                 <p class="ci-card-addr">서울 종로구 소격동 165</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/오설록티하우스 현대미술관점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -946,7 +946,7 @@
                 <p class="ci-card-addr">서울 종로구 관훈동 155-2 안녕인사동 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/티로아" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -954,7 +954,7 @@
                 <p class="ci-card-addr">서울 종로구 안국동 175-56</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/보이차전문점 명가원" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -962,7 +962,7 @@
                 <p class="ci-card-addr">서울 종로구 계동 115-1 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/끽다거" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -970,7 +970,7 @@
                 <p class="ci-card-addr">서울 종로구 견지동 19</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/휴다인" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -978,7 +978,7 @@
                 <p class="ci-card-addr">서울 종로구 부암동 254-7 2동 3층 201호</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/이음 티하우스" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -986,7 +986,7 @@
                 <p class="ci-card-addr">서울 종로구 신문로1가 115 콘코디언빌딩 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/로네펠트티하우스 광화문점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -994,7 +994,7 @@
                 <p class="ci-card-addr">서울 종로구 계동 15-11</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/밀밀홍" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -1002,7 +1002,7 @@
                 <p class="ci-card-addr">서울 종로구 안국동 6-1</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/티테라피" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -1010,7 +1010,7 @@
                 <p class="ci-card-addr">서울 종로구 인사동 193-1</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/아름다운차박물관" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -1020,7 +1020,7 @@
     <section class="ci-section" id="dist-jung">
         <div class="ci-section-head">
             <h3 class="ci-section-name">중구</h3>
-            <span class="ci-section-cnt">4곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:4">4곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -1029,7 +1029,7 @@
                 <p class="ci-card-addr">서울 중구 태평로1가 25 지하1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/아케이드토오베" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -1037,7 +1037,7 @@
                 <p class="ci-card-addr">서울 중구 회현동1가 172-4 2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/운비차실" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -1045,7 +1045,7 @@
                 <p class="ci-card-addr">서울 중구 황학동 753-33 1·2층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/레레플레이" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -1053,7 +1053,7 @@
                 <p class="ci-card-addr">서울 중구 태평로1가 84 파이넨스빌딩 지하1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/다만프레르 SFC점" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -1063,7 +1063,7 @@
     <section class="ci-section" id="dist-jungnang">
         <div class="ci-section-head">
             <h3 class="ci-section-name">중랑구</h3>
-            <span class="ci-section-cnt">2곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:2">2곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -1072,7 +1072,7 @@
                 <p class="ci-card-addr">서울 중랑구 신내동 493-46 로뎀하이빌 102호</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/티하우스나니" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -1080,7 +1080,7 @@
                 <p class="ci-card-addr">서울 중랑구 중화동 450</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/양원재" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
@@ -1090,7 +1090,7 @@
     <section class="ci-section" id="dist-gyeonggi">
         <div class="ci-section-head">
             <h3 class="ci-section-name">경기</h3>
-            <span class="ci-section-cnt">2곳</span>
+            <span class="ci-section-cnt" data-i18n="chatjip.count" data-i18n-vars="n:2">2곳</span>
             <div class="ci-divider"></div>
         </div>
         <div class="ci-grid">
@@ -1099,7 +1099,7 @@
                 <p class="ci-card-addr">경기도 광명시 소하동 1398-5</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/정명당" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
             <div class="ci-card">
@@ -1107,14 +1107,14 @@
                 <p class="ci-card-addr">경기도 고양시 일산서구 대화동 2087-4 1층</p>
                 <div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/수연제" target="_blank" rel="noopener">
                     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="5" r="1.3" stroke="currentColor" stroke-width="1.2"/></svg>
-                    네이버 지도
+                    <span data-i18n="chatjip.naverMap">네이버 지도</span>
                 </a></div>
             </div>
         </div>
     </section>
 
     <!-- summary -->
-    <p class="ci-summary">총 <strong>61곳</strong>의 찻집 · <strong>17개</strong> 지역 수록 · 네이버 지도 링크로 바로 길찾기 가능</p>
+    <p class="ci-summary" data-i18n-html="chatjip.summary">총 <strong>61곳</strong>의 찻집 · <strong>17개</strong> 지역 수록 · 네이버 지도 링크로 바로 길찾기 가능</p>
 
     </div><!-- /panel-list -->
 
@@ -1292,7 +1292,7 @@
                 var dvenues = VENUES[dist];
                 html += '<div class="ci-section" style="margin-bottom:36px">'
                     + '<div class="ci-section-head"><h3 class="ci-section-name">' + dist + '</h3>'
-                    + '<span class="ci-section-cnt">' + dvenues.length + '곳</span>'
+                    + '<span class="ci-section-cnt">' + I18N.t("chatjip.count", { n: dvenues.length }) + '</span>'
                     + '<div class="ci-divider"></div></div>'
                     + '<div class="ci-grid">' + dvenues.map(venueCard).join("") + '</div>'
                     + '</div>';
@@ -1309,7 +1309,7 @@
             + '<p class="ci-card-addr">' + v.addr + '</p>'
             + '<div class="ci-card-footer"><a class="ci-map-btn" href="https://map.naver.com/v5/search/'
             + encodeURIComponent(v.q) + '" target="_blank" rel="noopener">'
-            + PIN_SVG + ' 네이버 지도</a></div>'
+            + PIN_SVG + ' ' + I18N.t("chatjip.naverMap") + '</a></div>'
             + '</div>';
     }
 
@@ -1354,8 +1354,8 @@
         var label = document.getElementById("ciMapLabel");
         if (label) {
             label.textContent = district === "전체"
-                ? "전체 61곳 — 마커를 클릭하면 정보가 표시돼요"
-                : district + " " + venues.length + "곳 — 마커를 클릭하면 정보가 표시돼요";
+                ? I18N.t("chatjip.mapHintAll", { n: ALL_VENUES.length })
+                : I18N.t("chatjip.mapHintOne", { d: district, n: venues.length });
         }
 
         /* always update the venue list first */
@@ -1393,7 +1393,7 @@
                 content: '<div class="ci-infowin">'
                     + '<span class="ci-infowin-name">' + v.name + '</span>'
                     + '<span class="ci-infowin-addr">' + v.addr + '</span>'
-                    + '<a class="ci-infowin-link" href="https://map.naver.com/v5/search/' + encodeURIComponent(v.q) + '" target="_blank" rel="noopener">네이버 지도에서 보기 →</a>'
+                    + '<a class="ci-infowin-link" href="https://map.naver.com/v5/search/' + encodeURIComponent(v.q) + '" target="_blank" rel="noopener">' + I18N.t("chatjip.viewOnNaver") + '</a>'
                     + '</div>',
                 borderWidth: 0,
                 disableAnchor: false,
@@ -1502,6 +1502,12 @@
         wireTabs();
         wireChips();
         initVenueList();   /* show venue list immediately, before map SDK loads */
+
+        /* repaint the JS-built venue cards and map label on a language switch
+           (venue names and addresses stay Korean either way) */
+        window.addEventListener("i18n:changed", function () {
+            showDistrict(currentDistrict);
+        });
         loadSdk(initMap);
     }
 

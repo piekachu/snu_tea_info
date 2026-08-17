@@ -103,12 +103,90 @@
         "chatjip.summary":     { ko: "총 <strong>61곳</strong>의 찻집 · <strong>17개</strong> 지역 수록 · 네이버 지도 링크로 바로 길찾기 가능",
                                  en: "<strong>61</strong> tea houses across <strong>17</strong> districts · directions via Naver Maps" },
 
+        /* ── 신입부원 OT ──────────────────────────────────────────── */
+        "ot.pageTitle":        { ko: "신입부원 OT 자료 — 공지사항", en: "New Member Orientation — Notices" },
+        "ot.title":            { ko: "신입부원 OT 자료", en: "New Member Orientation" },
+        "ot.empty":            { ko: "아직 등록된 내용이 없습니다.", en: "Nothing has been posted yet." },
+
         /* ── 회칙 / bylaws ────────────────────────────────────────────
            English intentionally left empty — the club will supply it.
            Until then these fall back to the Korean text. */
-        "bylaws.pageTitle":    { ko: "회칙", en: "" },
-        "bylaws.title":        { ko: "회칙", en: "" },
-        "bylaws.pendingNote":  { ko: "", en: "An English version of the bylaws is not available yet. The Korean text below is authoritative." },
+        "bylaws.pageTitle":    { ko: "설다연 회칙 (1판, ver.3) — 공지사항", en: "" },
+        "bylaws.title":        { ko: "설다연 회칙 (1판, ver.3)", en: "" },
+        "bylaws.pendingNote":  { ko: "", en: "An English translation of the bylaws has not been written yet. The Korean text below is the authoritative version." },
+        /* Every block below is wired and waiting for its English text. Fill in
+           the empty en values; anything still empty keeps showing the Korean. */
+        "bylaws.docTitle": { ko: "설다연 회칙", en: "" },
+        "bylaws.docDate": { ko: "2026.03.17. [1판]", en: "" },
+        "bylaws.ch1": { ko: "제1장 총칙", en: "" },
+        "bylaws.ch1.art1.title": { ko: "제1조 명칭", en: "" },
+        "bylaws.ch1.art1.p1": { ko: "본 동아리는 ‘설다연’이라 칭한다.", en: "" },
+        "bylaws.ch1.art2.title": { ko: "제2조 목적", en: "" },
+        "bylaws.ch1.art2.p1": { ko: "본 동아리는 회원 간의 친목 도모 및 다도 등 차 문화 활동을 목적으로 하며, 서울대학교 총동아리연합회 산하 정등록 동아리로서 학생 자치 활동의 원칙을 준수한다.", en: "" },
+        "bylaws.ch1.art3.title": { ko: "제3조 정의", en: "" },
+        "bylaws.ch1.art3.p1": { ko: "본 회칙에서 사용하는 용어의 뜻은 다음과 같다.", en: "" },
+        "bylaws.ch1.art3.p2": { ko: "① “회원”이란 제4조의 자격을 갖추어 본 동아리에 가입한 자를 말한다.", en: "" },
+        "bylaws.ch1.art3.p3": { ko: "② “정규 활동”이란 동아리에서 활동 지원비를 전액 또는 일부 지원하는 모든 활동을 말한다.", en: "" },
+        "bylaws.ch1.art3.p4": { ko: "③ “학기”의 시작일과 종료일은 서울대학교 학사일정상 명시된 날짜를 따른다.", en: "" },
+        "bylaws.ch2": { ko: "제2장 회원", en: "" },
+        "bylaws.ch2.art1.title": { ko: "제4조 자격", en: "" },
+        "bylaws.ch2.art1.p1": { ko: "① 본 동아리의 회원은 서울대학교 학부 및 대학원에 재학 또는 휴학 중인 자(학생 신분)로 한정한다.", en: "" },
+        "bylaws.ch2.art1.p2": { ko: "② 가입 시 학부생과 대학원생의 신분을 구분하여 명부에 기록한다.", en: "" },
+        "bylaws.ch2.art2.title": { ko: "제5조 권리와 의무", en: "" },
+        "bylaws.ch2.art2.p1": { ko: "① 회원은 이 회칙이 정하는 바에 따라 동아리의 모든 정규 활동에 참여할 권리를 가진다.", en: "" },
+        "bylaws.ch2.art2.p2": { ko: "② 회원은 다음 각 호의 의무를 진다.", en: "" },
+        "bylaws.ch3": { ko: "제3장 임원진 및 기구", en: "" },
+        "bylaws.ch3.art1.title": { ko: "제6조 구성", en: "" },
+        "bylaws.ch3.art1.p1": { ko: "본 동아리의 원활한 운영을 위하여 1명의 회장과 약간 명의 운영진을 둔다.", en: "" },
+        "bylaws.ch3.art2.title": { ko: "제7조 선출 및 임기", en: "" },
+        "bylaws.ch3.art2.p1": { ko: "① 회장은 동아리에 대한 기여도와 리더십을 고려하여 전임 회장의 지명 및 운영진 과반수의 동의로 선출한다.", en: "" },
+        "bylaws.ch3.art2.p2": { ko: "② 운영진은 회장이 필요에 따라 임명한다.", en: "" },
+        "bylaws.ch3.art2.p3": { ko: "③ 회장과 운영진의 임기는 1학기로 하되, 연임할 수 있다.", en: "" },
+        "bylaws.ch3.art3.title": { ko: "제8조 권한", en: "" },
+        "bylaws.ch3.art3.p1": { ko: "회장 및 운영진은 동아리 행사 기획, 회원 관리, 회칙 해석 및 징계, 재정 관리 등 동아리 운영에 관한 전반적인 권한을 갖는다.", en: "" },
+        "bylaws.ch3.art4.title": { ko: "제9조 운영진 회의", en: "" },
+        "bylaws.ch3.art4.p1": { ko: "① 운영진 회의는 회장이 소집하며, 회장과 운영진으로 구성한다.", en: "" },
+        "bylaws.ch3.art4.p2": { ko: "② 운영진 회의는 재적 운영진(회장을 포함한다) 과반수의 출석으로 개회하고, 출석 운영진 과반수의 찬성으로 의결한다.", en: "" },
+        "bylaws.ch4": { ko: "제4장 재정", en: "" },
+        "bylaws.ch4.art1.title": { ko: "제10조 재원", en: "" },
+        "bylaws.ch4.art1.p1": { ko: "본 동아리의 재정은 회원들이 납부하는 가입비와 그 밖의 지원금으로 충당한다.", en: "" },
+        "bylaws.ch4.art2.title": { ko: "제11조 관리", en: "" },
+        "bylaws.ch4.art2.p1": { ko: "① 재정은 회장 및 운영진의 권한과 책임 하에 자율적으로 수합, 집행, 관리한다.", en: "" },
+        "bylaws.ch4.art2.p2": { ko: "② 동아리 자금을 지출할 때에는 그 목적과 금액을 반드시 별도의 회계장부에 기록해 두어야 한다.", en: "" },
+        "bylaws.ch4.art2.p3": { ko: "③ 회원은 매 학기 마지막 주에 운영진에게 요구하여 회계장부를 자유롭게 열람할 수 있다.", en: "" },
+        "bylaws.ch4.art3.title": { ko: "제12조 가입비", en: "" },
+        "bylaws.ch4.art3.p1": { ko: "① 가입비는 학기 시작 시점의 회계 사정에 따라 회장 및 운영진이 정하며, 해당 학기에 가입하는 모든 회원에게 동일하게 적용된다.", en: "" },
+        "bylaws.ch4.art3.p2": { ko: "② 가입비의 환불은 활동 참여 이력이 없는 회원에 한해 가입비를 납부하고 단체 소통방에 초대된 날로부터 7일 이내에만 유효하다.", en: "" },
+        "bylaws.ch4.art4.title": { ko: "제13조 불참비", en: "" },
+        "bylaws.ch4.art4.p1": { ko: "① 회장 및 운영진은 정규 활동의 원활한 운영을 위해, 사전 공지된 기한 이후 일방적인 불참을 통보한 회원에게 해당 활동에 대한 불참비를 부과할 수 있다.", en: "" },
+        "bylaws.ch4.art4.p2": { ko: "② 불참비 부과 기준과 액수는 학기 시작 시에 공지하며, 정규 활동에 참석을 신청한 모든 회원은 해당 공지에 동의한 것으로 본다.", en: "" },
+        "bylaws.ch4.art4.p3": { ko: "③ 불참비를 납부하지 않은 회원은 미납 기간 동안 동아리 활동 참여가 제한된다.", en: "" },
+        "bylaws.ch5": { ko: "제5장 자격 상실 및 징계", en: "" },
+        "bylaws.ch5.art1.title": { ko: "제14조 자격의 자동 상실", en: "" },
+        "bylaws.ch5.art1.p1": { ko: "① 회원이 제4조 제1항에 따른 학생 신분을 상실한 경우, 그 회원의 자격은 별도의 의결 없이 자동으로 상실된다.", en: "" },
+        "bylaws.ch5.art1.p2": { ko: "② 탈퇴 의사를 밝혀 가입비를 환불받은 회원은 즉시 자격을 상실한 것으로 본다.", en: "" },
+        "bylaws.ch5.art2.title": { ko: "제15조 징계", en: "" },
+        "bylaws.ch5.art2.p1": { ko: "① 회원이 다음 각 호의 어느 하나에 해당하는 경우, 운영진 회의는 그 회원에 대하여 경고 또는 제명(회원 자격 박탈)의 징계를 의결할 수 있다.", en: "" },
+        "bylaws.ch5.art2.p2": { ko: "② 징계의 의결은 제9조 제2항의 정족수에 따른다.", en: "" },
+        "bylaws.ch5.art3.title": { ko: "제16조 소명", en: "" },
+        "bylaws.ch5.art3.p1": { ko: "운영진 회의는 제15조에 따른 징계를 의결하기 전에 해당 회원에게 징계 사유를 명확히 통보하고, 3일의 기한을 두어 서면 또는 대면으로 소명(해명)할 기회를 부여하여야 한다. 다만, 해당 회원이 소명을 거부하거나 기한 내에 응답하지 아니하는 경우에는 소명할 의사가 없는 것으로 본다.", en: "" },
+        "bylaws.ch5.art4.title": { ko: "제17조 징계의 효력", en: "" },
+        "bylaws.ch5.art4.p1": { ko: "① 경고를 받은 회원이 동일 또는 유사한 사유로 다시 징계 사유에 해당하는 경우, 운영진 회의는 이를 가중하여 징계할 수 있다.", en: "" },
+        "bylaws.ch5.art4.p2": { ko: "② 제명된 회원은 즉시 단체 소통방에서 퇴장 조치되고 명부에서 삭제된다.", en: "" },
+        "bylaws.ch6": { ko: "부칙", en: "" },
+        "bylaws.ch6.art1.title": { ko: "제1조 효력 발생", en: "" },
+        "bylaws.ch6.art1.p1": { ko: "① 본 회칙은 공포된 날부터 3일 후에 효력이 발생한다.", en: "" },
+        "bylaws.ch6.art1.p2": { ko: "② 회칙 공포는 매 학기 1회 전체 공지방에 게시하고 가입신청서에 첨부함으로써 이루어진다.", en: "" },
+        "bylaws.ch6.art2.title": { ko: "제2조 회칙 개정", en: "" },
+        "bylaws.ch6.art2.p1": { ko: "회칙의 개정은 운영진의 발의로 시작하여 운영진 회의 과반수의 찬성으로 의결한다. 개정된 회칙은 공포된 날부터 3일 후에 효력이 발생한다.", en: "" },
+        "bylaws.ch6.art3.title": { ko: "제3조 관례 적용", en: "" },
+        "bylaws.ch6.art3.p1": { ko: "본 회칙에 명시되지 않은 사항은 서울대학교 총동아리연합회 회칙 및 세칙, 그리고 일반적인 통상 관례와 운영진의 합의에 따른다.", en: "" },
+        "bylaws.ch2.art2.li1": { ko: "본 회칙을 준수할 의무", en: "" },
+        "bylaws.ch2.art2.li2": { ko: "회원 자격을 유지하기 위하여 학기마다 소정의 가입비를 납부할 의무", en: "" },
+        "bylaws.ch2.art2.li3": { ko: "동아리의 명예를 훼손하거나 회원 간의 화합을 저해하는 행위를 하지 아니할 의무", en: "" },
+        "bylaws.ch5.art2.li1": { ko: "다른 회원에 대한 폭언, 과격한 언행, 차별적 발언 등으로 동아리 내에 심각한 불화나 위화감을 조성한 경우", en: "" },
+        "bylaws.ch5.art2.li2": { ko: "동아리 및 운영진의 정당한 행정 지침이나 통제에 지속적으로 불응하여 운영을 심각하게 방해한 경우", en: "" },
+        "bylaws.ch5.art2.li3": { ko: "그 밖에 동아리의 명예를 심대하게 실추시킨 경우", en: "" },
 
         /* ── shared list/card chrome (info + notice listings) ─────── */
         "common.pinned":       { ko: "고정", en: "Pinned" },
@@ -162,7 +240,121 @@
         "join.field.desc":          { ko: "소개", en: "Description" },
         "join.field.descPh":        { ko: "어떤 자리인지 간단히 소개해주세요", en: "Briefly describe the gathering" },
         "join.btn.cancel":          { ko: "취소", en: "Cancel" },
-        "join.btn.create":          { ko: "만들기", en: "Create" }
+        "join.btn.create":          { ko: "만들기", en: "Create" },
+        "join.modal.editTitle":     { ko: "소모임 수정하기", en: "Edit meetup" },
+        "join.btn.save":            { ko: "수정하기", en: "Save changes" },
+
+        /* detail modal + day panel */
+        "join.meta.when":      { ko: "일시", en: "When" },
+        "join.meta.where":     { ko: "장소", en: "Where" },
+        "join.meta.host":      { ko: "주최자", en: "Host" },
+        "join.meta.capacity":  { ko: "정원", en: "Capacity" },
+        "join.unlimited":      { ko: "무제한", en: "Unlimited" },
+        "join.people":         { ko: "{n}명", en: "{n} people" },
+        "join.mapView":        { ko: "지도에서 보기", en: "View on map" },
+        "join.share":          { ko: "공유하기", en: "Share" },
+        "join.shareDefault":   { ko: "소모임에 초대합니다!", en: "You're invited to a meetup!" },
+        "join.share.when":     { ko: "🗓 일시 : {v}", en: "🗓 When : {v}" },
+        "join.share.where":    { ko: "🚡 장소 : {v}", en: "🚡 Where : {v}" },
+        "join.share.host":     { ko: "🙋 주최 : {v}", en: "🙋 Host : {v}" },
+        "join.share.how":      { ko: "✅️ 신청 방법 : 아래 링크를 통해 신청", en: "✅️ To sign up : use the link below" },
+        "join.copyPrompt":     { ko: "아래 내용을 복사해주세요:", en: "Please copy the text below:" },
+        "join.createHint":     { ko: "내일 이후 날짜를 선택해야 소모임을 만들 수 있어요.",
+                                 en: "Meetups can only be created for tomorrow onwards." },
+        "join.dayEmptyFirst":  { ko: "이 날짜에는 아직 소모임이 없어요. 첫 소모임을 만들어보세요!",
+                                 en: "No meetups on this day yet — be the first to create one!" },
+        "join.dayEmpty":       { ko: "이 날짜에는 소모임이 없어요.", en: "No meetups on this day." },
+        "join.participants":   { ko: "참가자 ({v})", en: "Participants ({v})" },
+        "join.noParticipants": { ko: "아직 신청자가 없어요.", en: "No one has signed up yet." },
+        "join.hostSuffix":     { ko: "{name} (주최자)", en: "{name} (host)" },
+        "join.signedUpAs":     { ko: "✅ {name}님으로 신청 완료했어요.", en: "✅ You're signed up as {name}." },
+        "join.cancelSignup":   { ko: "신청 취소하기", en: "Cancel my sign-up" },
+        "join.cancelTooLate":  { ko: "행사 2일 전이라 신청 취소가 불가능해요.",
+                                 en: "Sign-ups can't be cancelled within 2 days of the event." },
+        "join.hostParticipating": { ko: "✅ 주최자로 참여 중이에요.", en: "✅ You're taking part as the host." },
+        "join.eventEnded":     { ko: "행사가 종료되었어요.", en: "This event has ended." },
+        "join.capacityFull":   { ko: "정원이 찼습니다.", en: "This meetup is full." },
+        "join.signupClosedNote": { ko: "신청이 마감되었어요. (행사 24시간 전 마감)",
+                                   en: "Sign-ups are closed (they close 24 hours before the event)." },
+
+        /* signup form */
+        "join.f.name":         { ko: "이름 *", en: "Name *" },
+        "join.f.namePh":       { ko: "닉네임도 좋아요", en: "A nickname is fine" },
+        "join.f.realName":     { ko: "실명 *", en: "Real name *" },
+        "join.f.realNamePh":   { ko: "관리자 확인용, 공개되지 않아요", en: "For admin verification only; never shown publicly" },
+        "join.f.contact":      { ko: "연락처 (선택)", en: "Contact (optional)" },
+        "join.f.contactPh":    { ko: "카카오톡 ID / 전화번호 등 (주최자만 볼 수 있어요)",
+                                 en: "KakaoTalk ID, phone number, etc. (only the host can see this)" },
+        "join.f.cancelPw":     { ko: "취소 비밀번호 (선택)", en: "Cancellation password (optional)" },
+        "join.f.cancelPwHint": { ko: "다른 기기에서 신청을 취소할 때 필요해요.",
+                                 en: "Needed to cancel your sign-up from another device." },
+        "join.f.cancelPwPh":   { ko: "비밀번호를 설정하면 다른 기기에서도 취소 가능",
+                                 en: "Set one to allow cancelling from another device" },
+        "join.f.submit":       { ko: "신청하기", en: "Sign up" },
+        "join.f.otherDevice":  { ko: "다른 기기에서 신청하셨나요? 비밀번호로 취소하기",
+                                 en: "Signed up on another device? Cancel with your password" },
+        "join.f.realNamePh2":  { ko: "신청 시 입력한 실명", en: "The real name you signed up with" },
+        "join.f.cancelPwReq":  { ko: "취소 비밀번호 *", en: "Cancellation password *" },
+        "join.f.cancelPwPh2":  { ko: "신청 시 설정한 취소 비밀번호", en: "The cancellation password you set" },
+
+        /* host controls */
+        "join.h.edit":         { ko: "이 소모임 수정하기", en: "Edit this meetup" },
+        "join.h.delete":       { ko: "이 소모임 삭제하기", en: "Delete this meetup" },
+        "join.h.contacts":     { ko: "참가자 연락처 보기", en: "View participant contacts" },
+        "join.h.hasOthers":    { ko: "다른 참가자가 있어 삭제할 수 없어요.",
+                                 en: "Can't delete — other people have signed up." },
+        "join.h.unlock":       { ko: "비밀번호로 관리 (수정/삭제)", en: "Manage with password (edit/delete)" },
+        "join.h.adminDelete":  { ko: "관리자 권한으로 삭제", en: "Delete as admin" },
+        "join.h.promptPw":     { ko: "이 소모임을 만들 때 설정한 비밀번호를 입력해주세요.",
+                                 en: "Enter the password you set when creating this meetup." },
+        "join.h.promptAdminPw":{ ko: "관리자 비밀번호를 입력해주세요.", en: "Enter the admin password." },
+        "join.h.confirmDelete":{ ko: "이 소모임을 삭제할까요? 되돌릴 수 없어요.",
+                                 en: "Delete this meetup? This can't be undone." },
+        "join.h.contactsTitle":{ ko: "참가자 연락처 (주최자 전용)", en: "Participant contacts (host only)" },
+        "join.h.canceledSuffix": { ko: " (취소)", en: " (cancelled)" },
+        "join.h.realNamePrefix": { ko: "실명: {v}", en: "Real name: {v}" },
+        "join.h.noRealName":   { ko: "실명 미입력", en: "No real name given" },
+        "join.h.noContact":    { ko: "연락처 미입력", en: "No contact given" },
+
+        /* errors (also produced by the demo-mode backend) */
+        "join.err.required":       { ko: "제목, 날짜, 주최자 이름은 필수예요.", en: "Title, date and host name are required." },
+        "join.err.capacityMin":    { ko: "정원은 1 이상의 숫자여야 해요 (본인 포함).", en: "Capacity must be at least 1 (including you)." },
+        "join.err.capacityBelow":  { ko: "이미 {n}명이 참가 중이라 정원을 그보다 줄일 수 없어요.",
+                                     en: "{n} people have already joined, so capacity can't go below that." },
+        "join.err.needPassword":   { ko: "비밀번호를 설정해주세요. 나중에 수정/삭제할 때 필요해요.",
+                                     en: "Please set a password — you'll need it to edit or delete this later." },
+        "join.err.needHostRealName": { ko: "주최자 실명을 입력해주세요.", en: "Please enter the host's real name." },
+        "join.err.noEvent":        { ko: "존재하지 않는 소모임이에요.", en: "That meetup doesn't exist." },
+        "join.err.noEditPerm":     { ko: "수정 권한이 없어요. 비밀번호를 확인해주세요.", en: "You can't edit this. Please check the password." },
+        "join.err.noDeletePerm":   { ko: "삭제 권한이 없어요. 비밀번호를 확인해주세요.", en: "You can't delete this. Please check the password." },
+        "join.err.hasOthers":      { ko: "다른 참가자가 있어 삭제할 수 없어요.", en: "Can't delete — other people have signed up." },
+        "join.err.signupClosed":   { ko: "신청이 마감되었어요. (행사 24시간 전 마감)",
+                                     en: "Sign-ups are closed (they close 24 hours before the event)." },
+        "join.err.needName":       { ko: "이름을 입력해주세요.", en: "Please enter your name." },
+        "join.err.needRealName":   { ko: "실명을 입력해주세요.", en: "Please enter your real name." },
+        "join.err.full":           { ko: "정원이 찼어요.", en: "This meetup is full." },
+        "join.err.dupName":        { ko: "이미 같은 이름으로 신청되어 있어요.", en: "Someone has already signed up with that name." },
+        "join.err.noSignup":       { ko: "존재하지 않는 신청이에요.", en: "That sign-up doesn't exist." },
+        "join.err.noCancelPerm":   { ko: "취소 권한이 없어요.", en: "You don't have permission to cancel this." },
+        "join.err.alreadyCanceled":{ ko: "이미 취소된 신청이에요.", en: "That sign-up was already cancelled." },
+        "join.err.tooLateCancel":  { ko: "행사 2일 전부터는 신청을 취소할 수 없어요.",
+                                     en: "Sign-ups can't be cancelled within 2 days of the event." },
+        "join.err.badCancelCreds": { ko: "실명 또는 취소 비밀번호가 올바르지 않아요.",
+                                     en: "The real name or cancellation password is incorrect." },
+        "join.err.noPerm":         { ko: "권한이 없어요. 비밀번호를 확인해주세요.", en: "Not permitted. Please check the password." },
+        "join.err.badAdminPw":     { ko: "관리자 비밀번호가 올바르지 않습니다.", en: "The admin password is incorrect." },
+        "join.err.saveFailed":     { ko: "저장하지 못했어요. 다시 시도해주세요.", en: "Couldn't save. Please try again." },
+        "join.err.network":        { ko: "네트워크 오류가 발생했어요. 다시 시도해주세요.", en: "A network error occurred. Please try again." },
+        "join.err.networkShort":   { ko: "네트워크 오류가 발생했어요.", en: "A network error occurred." },
+        "join.err.signupFailed":   { ko: "신청하지 못했어요. 다시 시도해주세요.", en: "Couldn't sign up. Please try again." },
+        "join.err.cancelFailed":   { ko: "취소하지 못했어요.", en: "Couldn't cancel." },
+        "join.err.deleteFailed":   { ko: "삭제하지 못했어요.", en: "Couldn't delete." },
+        "join.err.contactsFailed": { ko: "참가자 목록을 불러오지 못했어요.", en: "Couldn't load the participant list." },
+
+        /* time <select> options */
+        "join.hourOpt":            { ko: "{h}시", en: "{h}:00" },
+        "join.minuteOpt":          { ko: "{m}분", en: ":{m}" },
+        "join.minuteOptExisting":  { ko: "{m}분 (기존)", en: ":{m} (existing)" }
     };
 
     /* ── dates ────────────────────────────────────────────────────
@@ -185,6 +377,11 @@
     }
     function formatMonthLabel(y, m) {
         return lang === "en" ? MONTHS_EN[m - 1] + " " + y : y + "년 " + m + "월";
+    }
+    /* full date including weekday, e.g. "2026년 8월 17일 (월)" / "August 17, 2026 (Mon)" */
+    function formatDateWithWeekday(y, m, d) {
+        var wd = WEEKDAYS[lang][new Date(y, m - 1, d).getDay()];
+        return formatDate(y, m, d) + " (" + wd + ")";
     }
     /* short form with weekday, e.g. "8월 17일 (월)" / "Aug 17 (Mon)" */
     function formatDayShort(y, m, d) {
@@ -228,8 +425,20 @@
     function apply(root) {
         var scope = root || document;
 
+        /* optional "n:8|d:강남구" companion attribute for {placeholder} values */
+        function varsOf(el) {
+            var raw = el.getAttribute("data-i18n-vars");
+            if (!raw) return null;
+            var out = {};
+            raw.split("|").forEach(function (pair) {
+                var i = pair.indexOf(":");
+                if (i > 0) out[pair.slice(0, i).trim()] = pair.slice(i + 1).trim();
+            });
+            return out;
+        }
+
         scope.querySelectorAll("[data-i18n]").forEach(function (el) {
-            var v = t(el.getAttribute("data-i18n"));
+            var v = t(el.getAttribute("data-i18n"), varsOf(el));
             if (v !== "") el.textContent = v;
         });
 
@@ -306,6 +515,7 @@
         formatDate: formatDate,
         formatMonthLabel: formatMonthLabel,
         formatDayShort: formatDayShort,
+        formatDateWithWeekday: formatDateWithWeekday,
         formatTime: formatTime,
         weekdays: weekdays,
         /* picks entry.titleEn (or any *En field) when running in English,

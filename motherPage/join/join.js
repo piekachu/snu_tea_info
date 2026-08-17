@@ -16,7 +16,7 @@
     // data is already local). Shared with join-carousel.js on the home page.
     const LIST_CACHE_KEY = "joinListCache_v1";
 
-    const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+    const WEEKDAY_LABELS = () => I18N.weekdays();
 
     // ---------- edit-token storage (per browser; proves "I made this") ----------
     function loadTokens() {
@@ -106,14 +106,14 @@
         const date = String(body.date || "").trim();
         const host = String(body.host || "").trim();
         if (!title || !date || !host) {
-            return { error: "제목, 날짜, 주최자 이름은 필수예요." };
+            return { error: I18N.t("join.err.required") };
         }
         const capacity = Number(body.capacity);
         if (body.capacity === "" || body.capacity == null || !Number.isFinite(capacity) || capacity < 1) {
-            return { error: "정원은 1 이상의 숫자여야 해요 (본인 포함)." };
+            return { error: I18N.t("join.err.capacityMin") };
         }
         if (existingSignupCount != null && capacity < existingSignupCount) {
-            return { error: `이미 ${existingSignupCount}명이 참가 중이라 정원을 그보다 줄일 수 없어요.` };
+            return { error: I18N.t("join.err.capacityBelow", { n: existingSignupCount }) };
         }
         return {
             title,
@@ -129,14 +129,14 @@
 
     function demoCreateEvent(body) {
         const password = String(body.password || "");
-        if (!password) return { ok: false, error: "비밀번호를 설정해주세요. 나중에 수정/삭제할 때 필요해요." };
+        if (!password) return { ok: false, error: I18N.t("join.err.needPassword") };
 
         const fields = validateDemoEventFields(body, null);
         if (fields.error) return { ok: false, error: fields.error };
 
         // the host is a participant too, so they give a real name like everyone else
         const hostRealName = String(body.hostRealName || "").trim();
-        if (!hostRealName) return { ok: false, error: "주최자 실명을 입력해주세요." };
+        if (!hostRealName) return { ok: false, error: I18N.t("join.err.needHostRealName") };
 
         const d = loadDemo();
         const id = uid();
@@ -157,12 +157,12 @@
     function demoUpdateEvent(body) {
         const d = loadDemo();
         const idx = d.events.findIndex((e) => e.id === body.id);
-        if (idx === -1) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        if (idx === -1) return { ok: false, error: I18N.t("join.err.noEvent") };
         const target = d.events[idx];
 
         const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
-        if (!isOwner && !isAdmin) return { ok: false, error: "수정 권한이 없어요. 비밀번호를 확인해주세요." };
+        if (!isOwner && !isAdmin) return { ok: false, error: I18N.t("join.err.noEditPerm") };
 
         const currentSignupCount = d.signups.filter((s) => s.eventId === body.id && !s.canceledAt).length;
         const fields = validateDemoEventFields(body, currentSignupCount);
@@ -195,17 +195,17 @@
     function demoDeleteEvent(body) {
         const d = loadDemo();
         const idx = d.events.findIndex((e) => e.id === body.id);
-        if (idx === -1) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        if (idx === -1) return { ok: false, error: I18N.t("join.err.noEvent") };
         const target = d.events[idx];
 
         const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
-        if (!isOwner && !isAdmin) return { ok: false, error: "삭제 권한이 없어요. 비밀번호를 확인해주세요." };
+        if (!isOwner && !isAdmin) return { ok: false, error: I18N.t("join.err.noDeletePerm") };
 
         const allSignups = d.signups.filter((s) => s.eventId === body.id);
         // only active (non-canceled) signups block the host from deleting the event
         const otherSignups = allSignups.filter((s) => s.id !== target.hostSignupId && !s.canceledAt);
-        if (otherSignups.length > 0 && !isAdmin) return { ok: false, error: "다른 참가자가 있어 삭제할 수 없어요." };
+        if (otherSignups.length > 0 && !isAdmin) return { ok: false, error: I18N.t("join.err.hasOthers") };
 
         // safe to clear every signup tied to this event now — either it's
         // just the creator's own auto-signup, or an admin is force-clearing
@@ -218,19 +218,19 @@
     function demoSignup(body) {
         const d = loadDemo();
         const event = d.events.find((e) => e.id === body.eventId);
-        if (!event) return { ok: false, error: "존재하지 않는 소모임이에요." };
-        if (signupsClosed(event)) return { ok: false, error: "신청이 마감되었어요. (행사 24시간 전 마감)" };
+        if (!event) return { ok: false, error: I18N.t("join.err.noEvent") };
+        if (signupsClosed(event)) return { ok: false, error: I18N.t("join.err.signupClosed") };
         const name = String(body.name || "").trim();
-        if (!name) return { ok: false, error: "이름을 입력해주세요." };
+        if (!name) return { ok: false, error: I18N.t("join.err.needName") };
         const realName = String(body.realName || "").trim();
-        if (!realName) return { ok: false, error: "실명을 입력해주세요." };
+        if (!realName) return { ok: false, error: I18N.t("join.err.needRealName") };
         // only count active (non-canceled) signups against capacity and name-uniqueness
         const existing = d.signups.filter((s) => s.eventId === body.eventId && !s.canceledAt);
         if (event.capacity !== "" && existing.length >= Number(event.capacity)) {
-            return { ok: false, error: "정원이 찼어요." };
+            return { ok: false, error: I18N.t("join.err.full") };
         }
         if (existing.some((s) => s.name.trim().toLowerCase() === name.toLowerCase())) {
-            return { ok: false, error: "이미 같은 이름으로 신청되어 있어요." };
+            return { ok: false, error: I18N.t("join.err.dupName") };
         }
         const id = uid();
         const editToken = uid();
@@ -245,13 +245,13 @@
     function demoCancelSignup(body) {
         const d = loadDemo();
         const idx = d.signups.findIndex((s) => s.id === body.id);
-        if (idx === -1) return { ok: false, error: "존재하지 않는 신청이에요." };
-        if (d.signups[idx].editToken !== body.editToken) return { ok: false, error: "취소 권한이 없어요." };
-        if (d.signups[idx].canceledAt) return { ok: false, error: "이미 취소된 신청이에요." };
+        if (idx === -1) return { ok: false, error: I18N.t("join.err.noSignup") };
+        if (d.signups[idx].editToken !== body.editToken) return { ok: false, error: I18N.t("join.err.noCancelPerm") };
+        if (d.signups[idx].canceledAt) return { ok: false, error: I18N.t("join.err.alreadyCanceled") };
         // enforce the 2-day withdrawal deadline
         const event = d.events.find((e) => e.id === d.signups[idx].eventId);
         if (event && !canWithdrawSignup(event)) {
-            return { ok: false, error: "행사 2일 전부터는 신청을 취소할 수 없어요." };
+            return { ok: false, error: I18N.t("join.err.tooLateCancel") };
         }
         // soft-delete: stamp canceledAt so the cancellation is tracked
         d.signups[idx].canceledAt = new Date().toISOString();
@@ -262,8 +262,8 @@
     function demoCancelSignupByPassword(body) {
         const d = loadDemo();
         const event = d.events.find((e) => e.id === body.eventId);
-        if (!event) return { ok: false, error: "존재하지 않는 소모임이에요." };
-        if (!canWithdrawSignup(event)) return { ok: false, error: "행사 2일 전부터는 신청을 취소할 수 없어요." };
+        if (!event) return { ok: false, error: I18N.t("join.err.noEvent") };
+        if (!canWithdrawSignup(event)) return { ok: false, error: I18N.t("join.err.tooLateCancel") };
 
         const realName = String(body.realName || "").trim();
         const cancelPassword = String(body.cancelPassword || "");
@@ -275,7 +275,7 @@
                 s.cancelPassword === cancelPassword &&
                 !s.canceledAt
         );
-        if (idx === -1) return { ok: false, error: "실명 또는 취소 비밀번호가 올바르지 않아요." };
+        if (idx === -1) return { ok: false, error: I18N.t("join.err.badCancelCreds") };
         d.signups[idx].canceledAt = new Date().toISOString();
         saveDemo(d);
         return { ok: true };
@@ -284,10 +284,10 @@
     function demoEventParticipants(body) {
         const d = loadDemo();
         const target = d.events.find((e) => e.id === body.id);
-        if (!target) return { ok: false, error: "존재하지 않는 소모임이에요." };
+        if (!target) return { ok: false, error: I18N.t("join.err.noEvent") };
         const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
-        if (!isOwner && !isAdmin) return { ok: false, error: "권한이 없어요. 비밀번호를 확인해주세요." };
+        if (!isOwner && !isAdmin) return { ok: false, error: I18N.t("join.err.noPerm") };
         // Admin sees all signups (active + canceled); host only sees active participants.
         // Cancellation history is admin-only — hosts see the current roster.
         const participants = d.signups
@@ -306,7 +306,7 @@
 
     function demoAdminListAll(body) {
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
-        if (!isAdmin) return { ok: false, error: "관리자 비밀번호가 올바르지 않습니다." };
+        if (!isAdmin) return { ok: false, error: I18N.t("join.err.badAdminPw") };
         const d = loadDemo();
         const events = d.events.map((e) => ({
             id: e.id,
@@ -397,15 +397,12 @@
     }
     function formatDateLabel(key) {
         const [y, m, d] = key.split("-").map(Number);
-        const wd = WEEKDAY_LABELS[new Date(y, m - 1, d).getDay()];
-        return `${y}년 ${m}월 ${d}일 (${wd})`;
+        return I18N.formatDateWithWeekday(y, m, d);
     }
     function formatTime(time) {
         if (!time) return "";
         const [h, m] = time.split(":").map(Number);
-        const period = h < 12 ? "오전" : "오후";
-        const h12 = h % 12 === 0 ? 12 : h % 12;
-        return `${period} ${h12}:${pad2(m)}`;
+        return I18N.formatTime(h, m);
     }
 
     // (re)build the hour + minute <select>s. The minute list is only :00 / :30,
@@ -415,13 +412,13 @@
     // zero-padded "HH" / "MM"; getTimeValue() joins them into "HH:MM".
     function populateTimeOptions() {
         if (!els.createHour) return;
-        const hours = ['<option value="">선택 안 함</option>'];
+        const hours = [`<option value="">${I18N.t("join.field.timeNone")}</option>`];
         for (let h = 0; h < 24; h += 1) {
-            hours.push(`<option value="${pad2(h)}">${h}시</option>`);
+            hours.push(`<option value="${pad2(h)}">${I18N.t("join.hourOpt", { h })}</option>`);
         }
         els.createHour.innerHTML = hours.join("");
         els.createMinute.innerHTML = ["00", "30"]
-            .map((m) => `<option value="${m}">${m}분</option>`)
+            .map((m) => `<option value="${m}">${I18N.t("join.minuteOpt", { m })}</option>`)
             .join("");
     }
 
@@ -439,7 +436,7 @@
         const [hh = "", mm = ""] = (time || "").split(":");
         els.createHour.value = hh;
         if (mm && !Array.from(els.createMinute.options).some((o) => o.value === mm)) {
-            els.createMinute.add(new Option(`${mm}분 (기존)`, mm));
+            els.createMinute.add(new Option(I18N.t("join.minuteOptExisting", { m: mm }), mm));
         }
         els.createMinute.value = mm || "00";
     }
@@ -454,7 +451,7 @@
 
     // one dt/dd row in the event-page-style info list (.event_meta_list,
     // shared with event subpages via subpage.css); `mapHref` adds a
-    // "지도에서 보기" link next to the value, pointed wherever it says
+    // I18N.t("join.mapView") link next to the value, pointed wherever it says
     function addMetaRow(list, label, value, opts) {
         if (!value) return;
         const row = el("div", "event_meta_row");
@@ -468,7 +465,7 @@
             link.target = "_blank";
             link.rel = "noopener noreferrer";
             link.className = "event_meta_link";
-            link.textContent = "지도에서 보기";
+            link.textContent = I18N.t("join.mapView");
             dd.appendChild(link);
         }
         row.appendChild(dd);
@@ -483,7 +480,7 @@
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "event_meta_share_btn";
-        btn.setAttribute("aria-label", "공유하기");
+        btn.setAttribute("aria-label", I18N.t("join.share"));
         btn.innerHTML =
             '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
             '<path d="M12 15V3M7.5 7.5L12 3l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
@@ -492,12 +489,12 @@
 
         btn.addEventListener("click", async () => {
             const url = `${window.location.origin}${window.location.pathname}?event=${encodeURIComponent(ev.id)}`;
-            const lines = [`[${ev.title}]`, "", ev.description || "소모임에 초대합니다!"];
+            const lines = [`[${ev.title}]`, "", ev.description || I18N.t("join.shareDefault")];
             const datePart = [formatDateLabel(ev.date), formatTime(ev.time)].filter(Boolean).join(" ");
-            if (datePart) lines.push("", `🗓 일시 : ${datePart}`);
-            if (ev.location) lines.push("", `🚡 장소 : ${ev.location}`);
-            if (ev.host) lines.push("", `🙋 주최 : ${ev.host}`);
-            lines.push("", "✅️ 신청 방법 : 아래 링크를 통해 신청", "", url);
+            if (datePart) lines.push("", I18N.t("join.share.when", { v: datePart }));
+            if (ev.location) lines.push("", I18N.t("join.share.where", { v: ev.location }));
+            if (ev.host) lines.push("", I18N.t("join.share.host", { v: ev.host }));
+            lines.push("", I18N.t("join.share.how"), "", url);
 
             const text = lines.join("\n");
             try {
@@ -505,7 +502,7 @@
                 btn.classList.add("copied");
                 setTimeout(() => btn.classList.remove("copied"), 1500);
             } catch (err) {
-                window.prompt("아래 내용을 복사해주세요:", text);
+                window.prompt(I18N.t("join.copyPrompt"), text);
             }
         });
 
@@ -533,8 +530,8 @@
     }
     function capacityLabel(event) {
         const count = signupsForEvent(event.id).length;
-        if (event.capacity === "" || event.capacity == null) return `신청 ${count}명`;
-        return `${count}/${event.capacity}명`;
+        if (event.capacity === "" || event.capacity == null) return I18N.t("join.signupCount", { n: count });
+        return I18N.t("join.capacity", { n: count, cap: event.capacity });
     }
     function isFull(event) {
         if (event.capacity === "" || event.capacity == null) return false;
@@ -586,7 +583,7 @@
     // ---------- calendar rendering ----------
     function renderWeekdays() {
         els.calWeekdays.innerHTML = "";
-        WEEKDAY_LABELS.forEach((label, i) => {
+        WEEKDAY_LABELS().forEach((label, i) => {
             const cell = el("span", "calendar_weekday", label);
             if (i === 0 || i === 6) cell.classList.add("is-weekend");
             els.calWeekdays.appendChild(cell);
@@ -594,7 +591,7 @@
     }
 
     function renderCalendar() {
-        els.calLabel.textContent = `${viewYear}년 ${viewMonth + 1}월`;
+        els.calLabel.textContent = I18N.formatMonthLabel(viewYear, viewMonth + 1);
         els.calGrid.innerHTML = "";
 
         const byDate = eventsByDate();
@@ -637,7 +634,7 @@
             const cell = el("div", "calendar_cell");
             cell.tabIndex = 0;
             cell.setAttribute("role", "button");
-            cell.setAttribute("aria-label", `${cellYear}년 ${cellMonth + 1}월 ${cellDay}일`);
+            cell.setAttribute("aria-label", I18N.formatDate(cellYear, cellMonth + 1, cellDay));
             if (!inCurrentMonth) cell.classList.add("is-otherMonth");
             if (key === todayKey) cell.classList.add("is-today");
             if (key === selectedDateKey) cell.classList.add("is-selected");
@@ -691,14 +688,14 @@
         const todayStr = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
         const canCreate = selectedDateKey > todayStr;
         els.createBtn.disabled = !canCreate;
-        els.createBtn.title = canCreate ? "" : "내일 이후 날짜를 선택해야 소모임을 만들 수 있어요.";
+        els.createBtn.title = canCreate ? "" : I18N.t("join.createHint");
 
         const dayEvents = events.filter((ev) => ev.date === selectedDateKey).sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
         if (dayEvents.length === 0) {
             const msg = canCreate
-                ? "이 날짜에는 아직 소모임이 없어요. 첫 소모임을 만들어보세요!"
-                : "이 날짜에는 소모임이 없어요.";
+                ? I18N.t("join.dayEmptyFirst")
+                : I18N.t("join.dayEmpty");
             els.eventList.appendChild(el("p", "join_empty_state", msg));
             return;
         }
@@ -709,11 +706,11 @@
 
             const main = el("div", "join_event_card_main");
             main.appendChild(el("span", "join_event_card_title", ev.title));
-            const metaParts = [formatTime(ev.time), ev.location, `주최: ${ev.host}`].filter(Boolean);
+            const metaParts = [formatTime(ev.time), ev.location, I18N.t("join.hostPrefix", { name: ev.host })].filter(Boolean);
             main.appendChild(el("span", "join_event_card_meta", metaParts.join(" · ")));
             card.appendChild(main);
 
-            const badge = el("span", "join_event_card_badge", isPastEvent(ev) || isFull(ev) ? "마감" : capacityLabel(ev));
+            const badge = el("span", "join_event_card_badge", isPastEvent(ev) || isFull(ev) ? I18N.t("join.closed") : capacityLabel(ev));
             if (isFull(ev) || isPastEvent(ev)) badge.classList.add("is-full");
             card.appendChild(badge);
 
@@ -737,8 +734,8 @@
         els.createForm.reset();
         els.createCapacity.value = "1";
         els.createFormError.hidden = true;
-        els.createModalTitle.textContent = "새 소모임 만들기";
-        els.createSubmitBtn.textContent = "만들기";
+        els.createModalTitle.textContent = I18N.t("join.modal.createTitle");
+        els.createSubmitBtn.textContent = I18N.t("join.btn.create");
         els.createHostRealNameField.hidden = false;
         els.createHostRealName.required = true;
         els.createPasswordField.hidden = false;
@@ -753,8 +750,8 @@
         populateTimeOptions();
         els.createForm.reset();
         els.createFormError.hidden = true;
-        els.createModalTitle.textContent = "소모임 수정하기";
-        els.createSubmitBtn.textContent = "수정하기";
+        els.createModalTitle.textContent = I18N.t("join.modal.editTitle");
+        els.createSubmitBtn.textContent = I18N.t("join.btn.save");
         // editing never touches the password (there's no "change password"
         // here), the host's real name (already on file from creation), or the
         // date (reschedule = delete + recreate, for now)
@@ -805,7 +802,7 @@
             }
 
             if (!result.ok) {
-                els.createFormError.textContent = result.error || "저장하지 못했어요. 다시 시도해주세요.";
+                els.createFormError.textContent = result.error || I18N.t("join.err.saveFailed");
                 els.createFormError.hidden = false;
                 return;
             }
@@ -817,7 +814,7 @@
             openDetailModal(result.event.id);
         } catch (err) {
             console.error(err);
-            els.createFormError.textContent = "네트워크 오류가 발생했어요. 다시 시도해주세요.";
+            els.createFormError.textContent = I18N.t("join.err.network");
             els.createFormError.hidden = false;
         } finally {
             submitBtn.disabled = false;
@@ -849,23 +846,23 @@
         els.detailModalBadges.appendChild(createShareButton(ev));
 
         els.detailModalMetaList.innerHTML = "";
-        addMetaRow(els.detailModalMetaList, "일시", [formatDateLabel(ev.date), formatTime(ev.time)].filter(Boolean).join(" · "));
-        addMetaRow(els.detailModalMetaList, "장소", ev.location, { mapHref: ev.mapLink || (ev.location ? naverSearchUrl(ev.location) : null) });
-        addMetaRow(els.detailModalMetaList, "주최자", ev.host);
-        addMetaRow(els.detailModalMetaList, "정원", ev.capacity === "" || ev.capacity == null ? "무제한" : `${ev.capacity}명`);
+        addMetaRow(els.detailModalMetaList, I18N.t("join.meta.when"), [formatDateLabel(ev.date), formatTime(ev.time)].filter(Boolean).join(" · "));
+        addMetaRow(els.detailModalMetaList, I18N.t("join.meta.where"), ev.location, { mapHref: ev.mapLink || (ev.location ? naverSearchUrl(ev.location) : null) });
+        addMetaRow(els.detailModalMetaList, I18N.t("join.meta.host"), ev.host);
+        addMetaRow(els.detailModalMetaList, I18N.t("join.meta.capacity"), ev.capacity === "" || ev.capacity == null ? I18N.t("join.unlimited") : I18N.t("join.people", { n: ev.capacity }));
 
         els.detailModalDesc.textContent = ev.description || "";
         els.detailModalDesc.hidden = !ev.description;
 
         const participants = signupsForEvent(ev.id);
-        els.detailParticipantsTitle.textContent = `참가자 (${capacityLabel(ev)})`;
+        els.detailParticipantsTitle.textContent = I18N.t("join.participants", { v: capacityLabel(ev) });
         els.detailParticipantsList.innerHTML = "";
         if (participants.length === 0) {
-            els.detailParticipantsList.appendChild(el("span", "join_empty_state", "아직 신청자가 없어요."));
+            els.detailParticipantsList.appendChild(el("span", "join_empty_state", I18N.t("join.noParticipants")));
         } else {
             participants.forEach((s) => {
                 const isHost = s.id === ev.hostSignupId;
-                els.detailParticipantsList.appendChild(el("span", "join_participant_chip", isHost ? `${s.name} (주최자)` : s.name));
+                els.detailParticipantsList.appendChild(el("span", "join_participant_chip", isHost ? I18N.t("join.hostSuffix", { name: s.name }) : s.name));
             });
         }
 
@@ -880,15 +877,15 @@
         const mySignupId = mySignupIdForEvent(ev.id);
         if (mySignupId) {
             const mine = participants.find((s) => s.id === mySignupId);
-            const state = el("div", "join_signup_state", `✅ ${mine ? mine.name : ""}님으로 신청 완료했어요.`);
+            const state = el("div", "join_signup_state", I18N.t("join.signedUpAs", { name: mine ? mine.name : "" }));
             area.appendChild(state);
             if (canWithdrawSignup(ev)) {
-                const cancelBtn = el("button", "join_cancel_link", "신청 취소하기");
+                const cancelBtn = el("button", "join_cancel_link", I18N.t("join.cancelSignup"));
                 cancelBtn.type = "button";
                 cancelBtn.addEventListener("click", () => handleCancelSignup(mySignupId));
                 area.appendChild(cancelBtn);
             } else {
-                area.appendChild(el("p", "join_signup_state is-closed", "행사 2일 전이라 신청 취소가 불가능해요."));
+                area.appendChild(el("p", "join_signup_state is-closed", I18N.t("join.cancelTooLate")));
             }
             return;
         }
@@ -897,12 +894,12 @@
         // no separate signup action makes sense for them (edit/delete
         // instead, in the host area below)
         if (getEventAuth(ev)) {
-            area.appendChild(el("div", "join_signup_state", "✅ 주최자로 참여 중이에요."));
+            area.appendChild(el("div", "join_signup_state", I18N.t("join.hostParticipating")));
             return;
         }
 
         if (isPastEvent(ev)) {
-            area.appendChild(el("div", "join_signup_state is-full", "행사가 종료되었어요."));
+            area.appendChild(el("div", "join_signup_state is-full", I18N.t("join.eventEnded")));
             return;
         }
 
@@ -910,61 +907,61 @@
         // cross-device cancel section render below for people who signed up
         // on another device and still want to withdraw.
         if (isFull(ev)) {
-            area.appendChild(el("div", "join_signup_state is-full", "정원이 찼습니다."));
+            area.appendChild(el("div", "join_signup_state is-full", I18N.t("join.capacityFull")));
         } else if (signupsClosed(ev)) {
-            area.appendChild(el("div", "join_signup_state is-closed", "신청이 마감되었어요. (행사 24시간 전 마감)"));
+            area.appendChild(el("div", "join_signup_state is-closed", I18N.t("join.err.signupClosed")));
         } else {
 
         const form = document.createElement("form");
         form.className = "join_signup_form";
 
         const nameField = el("div", "join_field");
-        const nameLabel = el("label", null, "이름 *");
+        const nameLabel = el("label", null, I18N.t("join.f.name"));
         nameLabel.htmlFor = "signupName";
         const nameInput = document.createElement("input");
         nameInput.type = "text";
         nameInput.id = "signupName";
         nameInput.maxLength = 30;
         nameInput.required = true;
-        nameInput.placeholder = "닉네임도 좋아요";
+        nameInput.placeholder = I18N.t("join.f.namePh");
         nameField.appendChild(nameLabel);
         nameField.appendChild(nameInput);
 
         // never shown publicly — only the host/admin can see this (participant
         // contacts view), so the admin can confirm who's actually attending
         const realNameField = el("div", "join_field");
-        const realNameLabel = el("label", null, "실명 *");
+        const realNameLabel = el("label", null, I18N.t("join.f.realName"));
         realNameLabel.htmlFor = "signupRealName";
         const realNameInput = document.createElement("input");
         realNameInput.type = "text";
         realNameInput.id = "signupRealName";
         realNameInput.maxLength = 30;
         realNameInput.required = true;
-        realNameInput.placeholder = "관리자 확인용, 공개되지 않아요";
+        realNameInput.placeholder = I18N.t("join.f.realNamePh");
         realNameField.appendChild(realNameLabel);
         realNameField.appendChild(realNameInput);
 
         const contactField = el("div", "join_field");
-        const contactLabel = el("label", null, "연락처 (선택)");
+        const contactLabel = el("label", null, I18N.t("join.f.contact"));
         contactLabel.htmlFor = "signupContact";
         const contactInput = document.createElement("input");
         contactInput.type = "text";
         contactInput.id = "signupContact";
         contactInput.maxLength = 60;
-        contactInput.placeholder = "카카오톡 ID / 전화번호 등 (주최자만 볼 수 있어요)";
+        contactInput.placeholder = I18N.t("join.f.contactPh");
         contactField.appendChild(contactLabel);
         contactField.appendChild(contactInput);
 
         // optional — lets the user cancel from a different device later
         const cancelPwField = el("div", "join_field");
-        const cancelPwLabel = el("label", null, "취소 비밀번호 (선택)");
+        const cancelPwLabel = el("label", null, I18N.t("join.f.cancelPw"));
         cancelPwLabel.htmlFor = "signupCancelPw";
-        const cancelPwHint = el("span", "join_field_hint", "다른 기기에서 신청을 취소할 때 필요해요.");
+        const cancelPwHint = el("span", "join_field_hint", I18N.t("join.f.cancelPwHint"));
         const cancelPwInput = document.createElement("input");
         cancelPwInput.type = "password";
         cancelPwInput.id = "signupCancelPw";
         cancelPwInput.maxLength = 60;
-        cancelPwInput.placeholder = "비밀번호를 설정하면 다른 기기에서도 취소 가능";
+        cancelPwInput.placeholder = I18N.t("join.f.cancelPwPh");
         cancelPwField.appendChild(cancelPwLabel);
         cancelPwField.appendChild(cancelPwHint);
         cancelPwField.appendChild(cancelPwInput);
@@ -972,7 +969,7 @@
         const error = el("p", "join_form_error", "");
         error.hidden = true;
 
-        const submitBtn = el("button", "join_btn_primary", "신청하기");
+        const submitBtn = el("button", "join_btn_primary", I18N.t("join.f.submit"));
         submitBtn.type = "submit";
         submitBtn.style.width = "100%";
 
@@ -996,7 +993,7 @@
                     cancelPassword: cancelPwInput.value || undefined,
                 });
                 if (!result.ok) {
-                    error.textContent = result.error || "신청하지 못했어요. 다시 시도해주세요.";
+                    error.textContent = result.error || I18N.t("join.err.signupFailed");
                     error.hidden = false;
                     return;
                 }
@@ -1005,7 +1002,7 @@
                 renderDetailModal();
             } catch (err) {
                 console.error(err);
-                error.textContent = "네트워크 오류가 발생했어요. 다시 시도해주세요.";
+                error.textContent = I18N.t("join.err.network");
                 error.hidden = false;
             } finally {
                 submitBtn.disabled = false;
@@ -1028,7 +1025,7 @@
     function renderCrossDeviceCancel(area, ev) {
         const section = el("div", "join_crossdevice_cancel");
 
-        const toggle = el("button", "join_admin_link", "다른 기기에서 신청하셨나요? 비밀번호로 취소하기");
+        const toggle = el("button", "join_admin_link", I18N.t("join.f.otherDevice"));
         toggle.type = "button";
         section.appendChild(toggle);
 
@@ -1036,23 +1033,23 @@
         formWrap.hidden = true;
 
         const realNameField = el("div", "join_field");
-        const realNameLabel = el("label", null, "실명 *");
+        const realNameLabel = el("label", null, I18N.t("join.f.realName"));
         realNameLabel.htmlFor = "cancelByPwRealName";
         const realNameInput = document.createElement("input");
         realNameInput.type = "text";
         realNameInput.id = "cancelByPwRealName";
-        realNameInput.placeholder = "신청 시 입력한 실명";
+        realNameInput.placeholder = I18N.t("join.f.realNamePh2");
         realNameInput.required = true;
         realNameField.appendChild(realNameLabel);
         realNameField.appendChild(realNameInput);
 
         const pwField = el("div", "join_field");
-        const pwLabel = el("label", null, "취소 비밀번호 *");
+        const pwLabel = el("label", null, I18N.t("join.f.cancelPwReq"));
         pwLabel.htmlFor = "cancelByPwPw";
         const pwInput = document.createElement("input");
         pwInput.type = "password";
         pwInput.id = "cancelByPwPw";
-        pwInput.placeholder = "신청 시 설정한 취소 비밀번호";
+        pwInput.placeholder = I18N.t("join.f.cancelPwPh2");
         pwInput.required = true;
         pwField.appendChild(pwLabel);
         pwField.appendChild(pwInput);
@@ -1060,7 +1057,7 @@
         const cancelError = el("p", "join_form_error", "");
         cancelError.hidden = true;
 
-        const cancelSubmitBtn = el("button", "join_btn_danger", "신청 취소하기");
+        const cancelSubmitBtn = el("button", "join_btn_danger", I18N.t("join.cancelSignup"));
         cancelSubmitBtn.type = "submit";
         cancelSubmitBtn.style.width = "100%";
 
@@ -1084,12 +1081,12 @@
                     await refresh();
                     renderDetailModal();
                 } else {
-                    cancelError.textContent = result.error || "취소하지 못했어요.";
+                    cancelError.textContent = result.error || I18N.t("join.err.cancelFailed");
                     cancelError.hidden = false;
                 }
             } catch (err) {
                 console.error(err);
-                cancelError.textContent = "네트워크 오류가 발생했어요.";
+                cancelError.textContent = I18N.t("join.err.networkShort");
                 cancelError.hidden = false;
             } finally {
                 cancelSubmitBtn.disabled = false;
@@ -1117,11 +1114,11 @@
                 await refresh();
                 renderDetailModal();
             } else {
-                window.alert(result.error || "취소하지 못했어요.");
+                window.alert(result.error || I18N.t("join.err.cancelFailed"));
             }
         } catch (err) {
             console.error(err);
-            window.alert("네트워크 오류가 발생했어요.");
+            window.alert(I18N.t("join.err.networkShort"));
         }
     }
 
@@ -1151,7 +1148,7 @@
         if (auth) {
             const actions = el("div", "join_host_actions");
 
-            const editBtn = el("button", "join_btn_secondary join_btn_small", "이 소모임 수정하기");
+            const editBtn = el("button", "join_btn_secondary join_btn_small", I18N.t("join.h.edit"));
             editBtn.type = "button";
             editBtn.addEventListener("click", () => openEditModal(ev));
             actions.appendChild(editBtn);
@@ -1161,7 +1158,7 @@
             // still be deletable
             const otherParticipants = participants.filter((p) => p.id !== ev.hostSignupId);
             if (otherParticipants.length === 0) {
-                const deleteBtn = el("button", "join_btn_danger", "이 소모임 삭제하기");
+                const deleteBtn = el("button", "join_btn_danger", I18N.t("join.h.delete"));
                 deleteBtn.type = "button";
                 deleteBtn.addEventListener("click", () => handleDeleteEvent(ev, auth));
                 actions.appendChild(deleteBtn);
@@ -1169,21 +1166,21 @@
 
             // host-only: fetch the participant list WITH contacts (the public
             // list never carries them) — server re-checks ownership
-            const contactsBtn = el("button", "join_btn_secondary join_btn_small", "참가자 연락처 보기");
+            const contactsBtn = el("button", "join_btn_secondary join_btn_small", I18N.t("join.h.contacts"));
             contactsBtn.type = "button";
             actions.appendChild(contactsBtn);
 
             area.appendChild(actions);
 
             if (otherParticipants.length > 0) {
-                area.appendChild(el("p", "join_host_note", "다른 참가자가 있어 삭제할 수 없어요."));
+                area.appendChild(el("p", "join_host_note", I18N.t("join.err.hasOthers")));
             }
 
             const contactsBody = el("div", "join_host_contacts_body");
             area.appendChild(contactsBody);
             contactsBtn.addEventListener("click", () => handleShowParticipants(ev, auth, contactsBody, contactsBtn));
         } else {
-            const unlockBtn = el("button", "join_admin_link", "비밀번호로 관리 (수정/삭제)");
+            const unlockBtn = el("button", "join_admin_link", I18N.t("join.h.unlock"));
             unlockBtn.type = "button";
             unlockBtn.addEventListener("click", () => handleOwnerUnlock(ev));
             area.appendChild(unlockBtn);
@@ -1192,14 +1189,14 @@
         // always available, to anyone — not just the creator — so an admin
         // can remove a problem event (spam, duplicate, etc.) even with
         // signups on it; the server is the one actually checking the password
-        const adminLink = el("button", "join_admin_link", "관리자 권한으로 삭제");
+        const adminLink = el("button", "join_admin_link", I18N.t("join.h.adminDelete"));
         adminLink.type = "button";
         adminLink.addEventListener("click", () => handleAdminDelete(ev));
         area.appendChild(adminLink);
     }
 
     function handleOwnerUnlock(ev) {
-        const password = window.prompt("이 소모임을 만들 때 설정한 비밀번호를 입력해주세요.");
+        const password = window.prompt(I18N.t("join.h.promptPw"));
         if (password == null || password === "") return; // cancelled
         // not verified until the first actual edit/delete attempt — a wrong
         // password just surfaces as that action's own error, at which point
@@ -1213,7 +1210,7 @@
         try {
             const result = await apiPost("eventParticipants", { id: ev.id, ...auth });
             if (!result.ok) {
-                window.alert(result.error || "참가자 목록을 불러오지 못했어요.");
+                window.alert(result.error || I18N.t("join.err.contactsFailed"));
                 // a wrong unlocked password surfaces here — forget it so the
                 // "비밀번호로 관리" prompt comes back
                 if (auth.password) {
@@ -1226,7 +1223,7 @@
             btn.hidden = true;
         } catch (err) {
             console.error(err);
-            window.alert("네트워크 오류가 발생했어요.");
+            window.alert(I18N.t("join.err.networkShort"));
         } finally {
             btn.disabled = false;
         }
@@ -1234,24 +1231,24 @@
 
     function renderParticipantContacts(container, participants) {
         container.innerHTML = "";
-        container.appendChild(el("p", "join_host_contacts_title", "참가자 연락처 (주최자 전용)"));
+        container.appendChild(el("p", "join_host_contacts_title", I18N.t("join.h.contactsTitle")));
         const list = el("ul", "join_host_contacts_list");
         participants.forEach((p) => {
             const isCanceled = !!p.canceledAt;
             const item = el("li", "join_host_contacts_item" + (isCanceled ? " is-canceled" : ""));
 
             // show name with role/status badge
-            let nameText = p.isHost ? `${p.name} (주최자)` : p.name;
-            if (isCanceled) nameText += " (취소)";
+            let nameText = p.isHost ? I18N.t("join.hostSuffix", { name: p.name }) : p.name;
+            if (isCanceled) nameText += I18N.t("join.h.canceledSuffix");
             item.appendChild(el("span", "join_host_contacts_name", nameText));
 
             const meta = el("div", "join_host_contacts_meta");
             // real name: host/admin-only (never on the public participant list),
             // so the admin can confirm who's actually attending
-            const realName = el("span", "join_host_contacts_realname", p.realName ? `실명: ${p.realName}` : "실명 미입력");
+            const realName = el("span", "join_host_contacts_realname", p.realName ? I18N.t("join.h.realNamePrefix", { v: p.realName }) : I18N.t("join.h.noRealName"));
             if (!p.realName) realName.classList.add("is-empty");
             meta.appendChild(realName);
-            const contact = el("span", "join_host_contacts_contact", p.contact ? p.contact : "연락처 미입력");
+            const contact = el("span", "join_host_contacts_contact", p.contact ? p.contact : I18N.t("join.h.noContact"));
             if (!p.contact) contact.classList.add("is-empty");
             meta.appendChild(contact);
             item.appendChild(meta);
@@ -1262,7 +1259,7 @@
     }
 
     async function handleDeleteEvent(ev, auth) {
-        if (!window.confirm("이 소모임을 삭제할까요? 되돌릴 수 없어요.")) return;
+        if (!window.confirm(I18N.t("join.h.confirmDelete"))) return;
         try {
             const result = await apiPost("deleteEvent", { id: ev.id, ...auth });
             if (result.ok) {
@@ -1271,7 +1268,7 @@
                 closeModal(els.detailModalOverlay);
                 await refresh();
             } else {
-                window.alert(result.error || "삭제하지 못했어요.");
+                window.alert(result.error || I18N.t("join.err.deleteFailed"));
                 if (auth.password) {
                     delete unlockedEventPasswords[ev.id];
                     renderDetailModal();
@@ -1279,12 +1276,12 @@
             }
         } catch (err) {
             console.error(err);
-            window.alert("네트워크 오류가 발생했어요.");
+            window.alert(I18N.t("join.err.networkShort"));
         }
     }
 
     async function handleAdminDelete(ev) {
-        const password = window.prompt("관리자 비밀번호를 입력해주세요.");
+        const password = window.prompt(I18N.t("join.h.promptAdminPw"));
         if (password == null || password === "") return; // cancelled
         await handleDeleteEvent(ev, { adminPassword: password });
     }
@@ -1421,7 +1418,7 @@
 
         // Reveal the calendar shell immediately instead of blocking the whole
         // page on the 3-8s Apps Script call behind a spinner — the calendar,
-        // month nav, day panel and "새 소모임 만들기" all work with no server
+        // month nav, day panel and I18N.t("join.modal.createTitle") all work with no server
         // data; only the event pills need the fetch. On a repeat visit we also
         // paint the last cached events instantly, then quietly revalidate.
         els.content.hidden = false;
@@ -1465,6 +1462,17 @@
         selectDate(ev.date);
         openDetailModal(ev.id);
     }
+
+    // repaint the language-dependent parts on a toggle. The open modals are
+    // left alone deliberately — their fields may hold half-typed input, and
+    // the static labels inside them are handled by i18n.js's own DOM pass.
+    window.addEventListener("i18n:changed", () => {
+        if (!els.calGrid) return;
+        populateTimeOptions();
+        renderWeekdays();
+        renderCalendar();
+        renderDayPanel();
+    });
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
