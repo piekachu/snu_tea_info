@@ -119,7 +119,7 @@
 
         // filter dropdown: "전체" plus every status that eventStatuses defines
         if (filterToggle && filterToggleLabel && filterMenu && typeof eventStatuses !== "undefined") {
-            const options = [{ key: "all", label: "전체" }].concat(
+            const options = [{ key: "all", label: I18N.t("common.all") }].concat(
                 Object.keys(eventStatuses).map((key) => ({ key, label: eventStatuses[key].label }))
             );
 

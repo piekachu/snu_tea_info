@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../common.css">
     <link rel="stylesheet" href="carousel.css">
     <link rel="stylesheet" href="calendar.css">
+    <script src="../i18n.js"></script>
 
     <title>Events</title>
 
@@ -43,32 +44,32 @@
 
             <section class="event_carousel" id="eventCarousel" data-path-prefix="../" aria-label="다가오는 행사">
                 <div class="carousel_header">
-                    <h3 class="carousel_title">다가오는 행사</h3>
+                    <h3 class="carousel_title" data-i18n="carousel.upcomingEvents">다가오는 행사</h3>
                     <div class="carousel_controls">
                         <div class="carousel_filter">
                             <button type="button" id="filterToggle" class="filter_toggle" aria-haspopup="listbox" aria-expanded="false">
-                                <span id="filterToggleLabel">전체</span>
+                                <span id="filterToggleLabel" data-i18n="common.all">전체</span>
                                 <svg class="filter_toggle_icon" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </button>
                             <ul id="filterMenu" class="filter_menu" role="listbox" hidden></ul>
                         </div>
-                        <button type="button" id="carouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
-                        <button type="button" id="carouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
+                        <button type="button" id="carouselPrev" class="carousel_nav" aria-label="이전" data-i18n-attr="aria-label:a11y.prev">&#8249;</button>
+                        <button type="button" id="carouselNext" class="carousel_nav" aria-label="다음" data-i18n-attr="aria-label:a11y.next">&#8250;</button>
                     </div>
                 </div>
                 <div class="carousel_track" id="carouselTrack"></div>
             </section>
 
-            <section class="calendar" aria-label="다과회 일정">
+            <section class="calendar" aria-label="다과회 일정" data-i18n-attr="aria-label:events.calendarAria">
                 <div class="calendar_header">
-                    <button type="button" id="calPrev" class="calendar_nav" aria-label="이전 달">&#8249;</button>
+                    <button type="button" id="calPrev" class="calendar_nav" aria-label="이전 달" data-i18n-attr="aria-label:a11y.prevMonth">&#8249;</button>
                     <div class="calendar_titlewrap">
                         <h3 id="calLabel" class="calendar_label"></h3>
-                        <button type="button" id="calToday" class="calendar_today">오늘</button>
+                        <button type="button" id="calToday" class="calendar_today" data-i18n="common.today">오늘</button>
                     </div>
-                    <button type="button" id="calNext" class="calendar_nav" aria-label="다음 달">&#8250;</button>
+                    <button type="button" id="calNext" class="calendar_nav" aria-label="다음 달" data-i18n-attr="aria-label:a11y.nextMonth">&#8250;</button>
                 </div>
                 <div class="calendar_weekdays" id="calWeekdays"></div>
                 <div class="calendar_grid" id="calGrid"></div>
@@ -85,8 +86,8 @@
     <footer class="footer">
         <div class="layout_max footer_inner">
             <div class="footer_about">
-                <h2 class="footer_brand">설다연</h2>
-                <p class="footer_desc">서울대학교 중앙 차동아리 설다연에 오신 것을 환영합니다!</p>
+                <h2 class="footer_brand" data-i18n="footer.brand">설다연</h2>
+                <p class="footer_desc" data-i18n="footer.desc">서울대학교 중앙 차동아리 설다연에 오신 것을 환영합니다!</p>
             </div>
             <div class="footer_contact">
                 <a class="footer_link" href="https://www.instagram.com/snu_dado/" target="_blank" rel="noopener noreferrer">
@@ -110,7 +111,7 @@
             </div>
         </div>
         <div class="footer_bottom">
-            <p>&copy; 2026 설다연. All rights reserved.</p>
+            <p data-i18n="footer.rights">&copy; 2026 설다연. All rights reserved.</p>
         </div>
     </footer>
 

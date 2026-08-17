@@ -4,7 +4,7 @@
 (function () {
     "use strict";
 
-    const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+    const WEEKDAY_LABELS = () => I18N.weekdays();
 
     function pad2(n) {
         return String(n).padStart(2, "0");
@@ -69,7 +69,7 @@
 
         function renderWeekdays() {
             weekdaysEl.innerHTML = "";
-            WEEKDAY_LABELS.forEach((label, i) => {
+            WEEKDAY_LABELS().forEach((label, i) => {
                 const cell = document.createElement("span");
                 cell.className = "calendar_weekday";
                 if (i === 0 || i === 6) {
@@ -160,7 +160,7 @@
         }
 
         function render() {
-            labelEl.textContent = `${viewYear}년 ${viewMonth + 1}월`;
+            labelEl.textContent = I18N.formatMonthLabel(viewYear, viewMonth + 1);
             renderGrid();
         }
 
@@ -185,6 +185,11 @@
         todayBtn?.addEventListener("click", () => {
             viewYear = today.getFullYear();
             viewMonth = today.getMonth();
+            render();
+        });
+
+        window.addEventListener("i18n:changed", () => {
+            renderWeekdays();
             render();
         });
 

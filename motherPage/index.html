@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="events/carousel.css">
     <link rel="stylesheet" href="home.css">
+    <script src="i18n.js"></script>
 
     <title>Main Hub</title>
 
@@ -40,27 +41,27 @@
                 <section id="events" class="home_band" aria-label="Events">
                     <div class="home_band_inner">
                         <div class="home_card_header">
-                            <h3 class="home_card_title">Events</h3>
-                            <a class="home_card_more" href="events/index.html">더 알아보기</a>
+                            <h3 class="home_card_title" data-i18n="home.events.title">Events</h3>
+                            <a class="home_card_more" href="events/index.html" data-i18n="nav.more">더 알아보기</a>
                         </div>
                         <section class="home_band_intro">
-                            <p>설다연에서 주최하는 정기 행사와 특별 프로그램들을 만나보세요. 차 시음회부터 문화 체험까지, 다양한 행사를 통해 함께 성장하고 즐거운 추억을 만들 수 있습니다.</p>
+                            <p data-i18n="home.events.intro">설다연에서 주최하는 정기 행사와 특별 프로그램들을 만나보세요. 차 시음회부터 문화 체험까지, 다양한 행사를 통해 함께 성장하고 즐거운 추억을 만들 수 있습니다.</p>
                         </section>
                         <section class="event_carousel" id="eventCarousel" data-path-prefix="" aria-label="다가오는 행사">
                             <div class="carousel_header">
-                                <h3 class="carousel_title">다가오는 행사</h3>
+                                <h3 class="carousel_title" data-i18n="carousel.upcomingEvents">다가오는 행사</h3>
                                 <div class="carousel_controls">
                                     <div class="carousel_filter">
                                         <button type="button" id="filterToggle" class="filter_toggle" aria-haspopup="listbox" aria-expanded="false">
-                                            <span id="filterToggleLabel">전체</span>
+                                            <span id="filterToggleLabel" data-i18n="common.all">전체</span>
                                             <svg class="filter_toggle_icon" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                                 <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </button>
                                         <ul id="filterMenu" class="filter_menu" role="listbox" hidden></ul>
                                     </div>
-                                    <button type="button" id="carouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
-                                    <button type="button" id="carouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
+                                    <button type="button" id="carouselPrev" class="carousel_nav" aria-label="이전" data-i18n-attr="aria-label:a11y.prev">&#8249;</button>
+                                    <button type="button" id="carouselNext" class="carousel_nav" aria-label="다음" data-i18n-attr="aria-label:a11y.next">&#8250;</button>
                                 </div>
                             </div>
                             <div class="carousel_track" id="carouselTrack"></div>
@@ -71,18 +72,18 @@
                 <section id="join" class="home_band" aria-label="소모임 신청">
                     <div class="home_band_inner">
                         <div class="home_card_header">
-                            <h3 class="home_card_title">소모임 신청</h3>
-                            <a class="home_card_more" href="join/index.html">더 알아보기</a>
+                            <h3 class="home_card_title" data-i18n="home.join.title">소모임 신청</h3>
+                            <a class="home_card_more" href="join/index.html" data-i18n="nav.more">더 알아보기</a>
                         </div>
                         <section class="home_band_intro">
-                            <p>누구나 자유롭게 소모임을 만들고 참여할 수 있습니다. 차에 관심 있는 사람들이 모여 함께 취미를 나누고, 새로운 경험을 쌓을 수 있는 공간입니다. 원하는 날짜를 선택해 새로운 소모임을 시작하거나, 이미 만들어진 모임에 참가 신청을 해보세요!</p>
+                            <p data-i18n="home.join.intro">누구나 자유롭게 소모임을 만들고 참여할 수 있습니다. 차에 관심 있는 사람들이 모여 함께 취미를 나누고, 새로운 경험을 쌓을 수 있는 공간입니다. 원하는 날짜를 선택해 새로운 소모임을 시작하거나, 이미 만들어진 모임에 참가 신청을 해보세요!</p>
                         </section>
                         <section class="event_carousel" id="joinCarousel" aria-label="다가오는 소모임">
                             <div class="carousel_header">
-                                <h3 class="carousel_title">다가오는 소모임</h3>
+                                <h3 class="carousel_title" data-i18n="carousel.upcomingJoin">다가오는 소모임</h3>
                                 <div class="carousel_controls">
-                                    <button type="button" id="joinCarouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
-                                    <button type="button" id="joinCarouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
+                                    <button type="button" id="joinCarouselPrev" class="carousel_nav" aria-label="이전" data-i18n-attr="aria-label:a11y.prev">&#8249;</button>
+                                    <button type="button" id="joinCarouselNext" class="carousel_nav" aria-label="다음" data-i18n-attr="aria-label:a11y.next">&#8250;</button>
                                 </div>
                             </div>
                             <div class="carousel_track" id="joinCarouselTrack"></div>
@@ -93,18 +94,18 @@
                 <section id="info" class="home_band" aria-label="정보">
                     <div class="home_band_inner">
                         <div class="home_card_header">
-                            <h3 class="home_card_title">정보</h3>
-                            <a class="home_card_more" href="info/index.html">더 알아보기</a>
+                            <h3 class="home_card_title" data-i18n="home.info.title">정보</h3>
+                            <a class="home_card_more" href="info/index.html" data-i18n="nav.more">더 알아보기</a>
                         </div>
                         <section class="home_band_intro">
-                            <p>설다연에 관한 다양한 정보와 글을 만나보세요. 차 문화, 찻집 안내, 동아리 활동 이야기 등 유익한 내용을 공유합니다.</p>
+                            <p data-i18n="home.info.intro">설다연에 관한 다양한 정보와 글을 만나보세요. 차 문화, 찻집 안내, 동아리 활동 이야기 등 유익한 내용을 공유합니다.</p>
                         </section>
                         <section class="event_carousel" id="infoCarousel" data-info-prefix="" aria-label="최근 정보">
                             <div class="carousel_header">
-                                <h3 class="carousel_title">최근 정보</h3>
+                                <h3 class="carousel_title" data-i18n="carousel.recentInfo">최근 정보</h3>
                                 <div class="carousel_controls">
-                                    <button type="button" id="infoCarouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
-                                    <button type="button" id="infoCarouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
+                                    <button type="button" id="infoCarouselPrev" class="carousel_nav" aria-label="이전" data-i18n-attr="aria-label:a11y.prev">&#8249;</button>
+                                    <button type="button" id="infoCarouselNext" class="carousel_nav" aria-label="다음" data-i18n-attr="aria-label:a11y.next">&#8250;</button>
                                 </div>
                             </div>
                             <div class="carousel_track" id="infoCarouselTrack"></div>
@@ -115,18 +116,18 @@
                 <section id="notice" class="home_band" aria-label="공지사항/Q&A">
                     <div class="home_band_inner">
                         <div class="home_card_header">
-                            <h3 class="home_card_title">공지사항/Q&amp;A</h3>
-                            <a class="home_card_more" href="notice/index.html">더 알아보기</a>
+                            <h3 class="home_card_title" data-i18n="home.notice.title">공지사항/Q&amp;A</h3>
+                            <a class="home_card_more" href="notice/index.html" data-i18n="nav.more">더 알아보기</a>
                         </div>
                         <section class="home_band_intro">
-                            <p>설다연의 소식과 공지사항을 놓치지 마세요. 정기 모임 일정, 회칙 안내, 신입 오티 정보 등 동아리 운영에 필요한 주요 소식과 자주 묻는 질문들을 확인할 수 있습니다.</p>
+                            <p data-i18n="home.notice.intro">설다연의 소식과 공지사항을 놓치지 마세요. 정기 모임 일정, 회칙 안내, 신입 오티 정보 등 동아리 운영에 필요한 주요 소식과 자주 묻는 질문들을 확인할 수 있습니다.</p>
                         </section>
                         <section class="event_carousel" id="noticeCarousel" data-notice-prefix="" aria-label="주요 공지">
                             <div class="carousel_header">
-                                <h3 class="carousel_title">주요 공지</h3>
+                                <h3 class="carousel_title" data-i18n="carousel.mainNotice">주요 공지</h3>
                                 <div class="carousel_controls">
-                                    <button type="button" id="noticeCarouselPrev" class="carousel_nav" aria-label="이전">&#8249;</button>
-                                    <button type="button" id="noticeCarouselNext" class="carousel_nav" aria-label="다음">&#8250;</button>
+                                    <button type="button" id="noticeCarouselPrev" class="carousel_nav" aria-label="이전" data-i18n-attr="aria-label:a11y.prev">&#8249;</button>
+                                    <button type="button" id="noticeCarouselNext" class="carousel_nav" aria-label="다음" data-i18n-attr="aria-label:a11y.next">&#8250;</button>
                                 </div>
                             </div>
                             <div class="carousel_track" id="noticeCarouselTrack"></div>
@@ -151,8 +152,8 @@
     <footer class="footer">
         <div class="layout_max footer_inner">
             <div class="footer_about">
-                <h2 class="footer_brand">설다연</h2>
-                <p class="footer_desc">서울대학교 중앙 차동아리 설다연에 오신 것을 환영합니다!</p>
+                <h2 class="footer_brand" data-i18n="footer.brand">설다연</h2>
+                <p class="footer_desc" data-i18n="footer.desc">서울대학교 중앙 차동아리 설다연에 오신 것을 환영합니다!</p>
             </div>
             <div class="footer_contact">
                 <a class="footer_link" href="https://www.instagram.com/snu_dado/" target="_blank" rel="noopener noreferrer">
@@ -176,7 +177,7 @@
             </div>
         </div>
         <div class="footer_bottom">
-            <p>&copy; 2026 설다연. All rights reserved.</p>
+            <p data-i18n="footer.rights">&copy; 2026 설다연. All rights reserved.</p>
         </div>
     </footer>
 

@@ -50,16 +50,13 @@
 
     function formatDateShortKo(dateKey) {
         const parts = dateKey.split("-").map(Number);
-        const wd = ["일", "월", "화", "수", "목", "금", "토"][new Date(parts[0], parts[1] - 1, parts[2]).getDay()];
-        return `${parts[1]}월 ${parts[2]}일 (${wd})`;
+        return I18N.formatDayShort(parts[0], parts[1], parts[2]);
     }
 
     function formatTime(time) {
         if (!time) return "";
         const [h, m] = time.split(":").map(Number);
-        const period = h < 12 ? "오전" : "오후";
-        const h12 = h % 12 === 0 ? 12 : h % 12;
-        return `${period} ${h12}:${pad2(m)}`;
+        return I18N.formatTime(h, m);
     }
 
     function sleep(ms) {
@@ -112,7 +109,9 @@
     }
 
     function capacityLabel(event, signupCount) {
-        return event.capacity === "" || event.capacity == null ? `신청 ${signupCount}명` : `${signupCount}/${event.capacity}명`;
+        return event.capacity === "" || event.capacity == null
+            ? I18N.t("join.signupCount", { n: signupCount })
+            : I18N.t("join.capacity", { n: signupCount, cap: event.capacity });
     }
 
     // "D-3", "D-DAY", or null for past events
@@ -141,7 +140,7 @@
         const full = isFull(event, signupCount);
         const badge = document.createElement("span");
         badge.className = `carousel_status ${past || full ? "event_status_closed" : "event_status_recruiting"}`;
-        badge.textContent = past || full ? "마감" : capacityLabel(event, signupCount);
+        badge.textContent = past || full ? I18N.t("join.closed") : capacityLabel(event, signupCount);
         thumb.appendChild(badge);
         if (!past) {
             const dday = dDayLabel(event.date);
@@ -167,7 +166,7 @@
         titleEl.textContent = event.title;
         body.appendChild(titleEl);
 
-        const descParts = [event.location, event.host ? `주최: ${event.host}` : ""].filter(Boolean);
+        const descParts = [event.location, event.host ? I18N.t("join.hostPrefix", { name: event.host }) : ""].filter(Boolean);
         if (descParts.length > 0) {
             const descEl = document.createElement("p");
             descEl.className = "carousel_desc";
@@ -195,7 +194,7 @@
 
         const label = document.createElement("p");
         label.className = "carousel_add_label";
-        label.textContent = "새 소모임 만들기";
+        label.textContent = I18N.t("join.createTile");
         card.appendChild(label);
 
         return card;
@@ -211,7 +210,9 @@
 
         // (re)build the card row from a given events/signups snapshot — called
         // once from cache (instant) and again after the fresh fetch resolves
+        let lastSnapshot = null;
         function render(events, signups) {
+            lastSnapshot = { events, signups };   // kept so a language switch can repaint
             const today = todayKey();
             const upcoming = events
                 .filter((event) => event.date >= today)
@@ -234,6 +235,10 @@
                 track.appendChild(renderCard(event, count));
             });
         }
+
+        window.addEventListener("i18n:changed", () => {
+            if (lastSnapshot) render(lastSnapshot.events, lastSnapshot.signups);
+        });
 
         function scrollByCard(direction) {
             const card = track.querySelector(".carousel_card");

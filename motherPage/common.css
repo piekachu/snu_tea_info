@@ -564,6 +564,51 @@ body.page-home .header_logo {
 body.page-home .header_logo .logo_img {
     width: var(--logo-width);
 }
+
+/* ── language toggle (injected into .header_inner by i18n.js) ──
+   The logo is absolutely positioned at these breakpoints, so margin-left:auto
+   pins the toggle to the right edge regardless of what else is in the bar.
+   position/z-index keep it above the header's ::before backdrop. */
+.lang_toggle {
+    margin-left: auto;
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+.lang_toggle:hover {
+    border-color: var(--osullocGreen);
+    background: #fff;
+}
+.lang_opt {
+    color: var(--fontGray);
+    transition: color 0.15s;
+}
+.lang_opt.is-active {
+    color: var(--osullocGreen);
+    font-weight: var(--font-weight-bold);
+}
+.lang_sep {
+    color: rgba(0, 0, 0, 0.22);
+}
+@media all and (max-width: 1024px) {
+    .lang_toggle {
+        padding: 5px 10px;
+        font-size: 10px;
+    }
+}
 /* main page site nav: a fixed vertical rail on the left edge of the
    viewport, separate from the header bar, echoing the tea-shortcuts
    rail (.magazine_lnb) used on the subordinate pages. Always visible

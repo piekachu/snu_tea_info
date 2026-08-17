@@ -20,8 +20,9 @@
     <link rel="stylesheet" href="../events/calendar.css">
     <link rel="stylesheet" href="join.css">
     <link rel="stylesheet" href="../notice/notice.css">
+    <script src="../i18n.js"></script>
 
-    <title>소모임 신청</title>
+    <title data-i18n="join.pageTitle">소모임 신청</title>
 
 </head>
 <body class="page-home">
@@ -40,48 +41,45 @@
 
             <!-- Page Title -->
             <div class="section_header">
-                <h2 class="title">소모임 신청</h2>
+                <h2 class="title" data-i18n="join.title">소모임 신청</h2>
             </div>
 
-            <p class="join_intro">
-                원하는 날짜를 골라 새로운 소모임을 열거나, 이미 열린 소모임에 참가 신청을 해보세요.
-                누구나 자유롭게 만들고 신청할 수 있어요.
-            </p>
+            <p class="join_intro" data-i18n="join.intro">원하는 날짜를 골라 새로운 소모임을 열거나, 이미 열린 소모임에 참가 신청을 해보세요. 누구나 자유롭게 만들고 신청할 수 있어요.</p>
 
             <!-- tab bar -->
             <div class="join_tabs" id="joinTabBar" role="tablist">
-                <button class="join_tab is-active" data-tab="calendar" role="tab" aria-selected="true" aria-controls="joinTabCalendar">소모임 신청</button>
-                <button class="join_tab" data-tab="info" role="tab" aria-selected="false" aria-controls="joinTabInfo">정보</button>
+                <button class="join_tab is-active" data-tab="calendar" role="tab" aria-selected="true" aria-controls="joinTabCalendar" data-i18n="join.tabCalendar">소모임 신청</button>
+                <button class="join_tab" data-tab="info" role="tab" aria-selected="false" aria-controls="joinTabInfo" data-i18n="join.tabInfo">정보</button>
             </div>
 
             <!-- panel 1: calendar + day panel (existing content) -->
             <div id="joinTabCalendar" role="tabpanel">
-                <div id="joinDemoBanner" class="join_demo_banner" hidden>
+                <div id="joinDemoBanner" class="join_demo_banner" data-i18n-html="join.demoBanner" hidden>
                     데모 모드로 실행 중이에요 — 지금 만든 소모임과 신청은 <strong>이 브라우저에만</strong> 저장돼요.
                     모두에게 공유되려면 <code>apps-script/SETUP.md</code> 안내에 따라 배포를 완료해주세요.
                 </div>
 
-                <p id="joinLoading" class="join_loading">불러오는 중...</p>
-                <p id="joinError" class="join_error" hidden>정보를 불러오지 못했어요. 새로고침 해주세요.</p>
+                <p id="joinLoading" class="join_loading" data-i18n="common.loading">불러오는 중...</p>
+                <p id="joinError" class="join_error" data-i18n="join.loadError" hidden>정보를 불러오지 못했어요. 새로고침 해주세요.</p>
 
                 <div id="joinContent" hidden>
-                    <section class="calendar" aria-label="소모임 일정">
+                    <section class="calendar" aria-label="소모임 일정" data-i18n-attr="aria-label:join.calendarAria">
                         <div class="calendar_header">
-                            <button type="button" id="calPrev" class="calendar_nav" aria-label="이전 달">&#8249;</button>
+                            <button type="button" id="calPrev" class="calendar_nav" aria-label="이전 달" data-i18n-attr="aria-label:a11y.prevMonth">&#8249;</button>
                             <div class="calendar_titlewrap">
                                 <h3 id="calLabel" class="calendar_label"></h3>
-                                <button type="button" id="calToday" class="calendar_today">오늘</button>
+                                <button type="button" id="calToday" class="calendar_today" data-i18n="common.today">오늘</button>
                             </div>
-                            <button type="button" id="calNext" class="calendar_nav" aria-label="다음 달">&#8250;</button>
+                            <button type="button" id="calNext" class="calendar_nav" aria-label="다음 달" data-i18n-attr="aria-label:a11y.nextMonth">&#8250;</button>
                         </div>
                         <div class="calendar_weekdays" id="calWeekdays"></div>
                         <div class="calendar_grid" id="calGrid"></div>
                     </section>
 
-                    <section class="join_daypanel" id="joinDayPanel" aria-label="선택한 날짜의 소모임">
+                    <section class="join_daypanel" id="joinDayPanel" aria-label="선택한 날짜의 소모임" data-i18n-attr="aria-label:join.dayPanelAria">
                         <div class="join_daypanel_header">
                             <h3 class="join_daypanel_date" id="joinDayPanelDate"></h3>
-                            <button type="button" class="join_btn_primary join_btn_small" id="joinCreateBtn">+ 새 소모임 만들기</button>
+                            <button type="button" class="join_btn_primary join_btn_small" id="joinCreateBtn" data-i18n="join.createBtn">+ 새 소모임 만들기</button>
                         </div>
                         <div class="join_event_list" id="joinEventList"></div>
                     </section>
@@ -90,7 +88,7 @@
 
             <!-- panel 2: 정보 (notice-style list) -->
             <div id="joinTabInfo" role="tabpanel" hidden>
-                <p class="notice_intro">소모임 신청에 관한 안내와 규칙을 확인하세요.</p>
+                <p class="notice_intro" data-i18n="join.infoIntro">소모임 신청에 관한 안내와 규칙을 확인하세요.</p>
                 <ul class="notice_list" id="joinInfoList"></ul>
             </div>
 
@@ -100,17 +98,17 @@
     <!-- 소모임 만들기 modal -->
     <div class="join_modal_overlay" id="createModalOverlay" role="dialog" aria-modal="true" aria-labelledby="createModalTitle">
         <div class="join_modal">
-            <button type="button" class="join_modal_close" data-close-modal="create" aria-label="닫기">&times;</button>
-            <h3 class="join_modal_title" id="createModalTitle">새 소모임 만들기</h3>
+            <button type="button" class="join_modal_close" data-close-modal="create" aria-label="닫기" data-i18n-attr="aria-label:a11y.close">&times;</button>
+            <h3 class="join_modal_title" id="createModalTitle" data-i18n="join.modal.createTitle">새 소모임 만들기</h3>
             <p class="join_modal_subtitle" id="createModalDate"></p>
             <form id="createEventForm" novalidate>
                 <div class="join_field">
-                    <label for="createTitle">소모임 이름 *</label>
-                    <input type="text" id="createTitle" maxlength="60" required placeholder="예: 저녁 다과회">
+                    <label for="createTitle" data-i18n="join.field.name">소모임 이름 *</label>
+                    <input type="text" id="createTitle" maxlength="60" required placeholder="예: 저녁 다과회" data-i18n-attr="placeholder:join.field.namePh">
                 </div>
                 <div class="join_field_row">
                     <div class="join_field">
-                        <label for="createHour">시간</label>
+                        <label for="createHour" data-i18n="join.field.time">시간</label>
                         <!-- Split hour + minute selects so neither list is long,
                              and the minute list is just :00 / :30 — that
                              hard-enforces 30-minute increments (the native
@@ -119,28 +117,28 @@
                              filled in by populateTimeOptions() in join.js;
                              getTimeValue() joins them back into "HH:MM". -->
                         <div class="join_time_selects">
-                            <select id="createHour" aria-label="시">
-                                <option value="">선택 안 함</option>
+                            <select id="createHour" aria-label="시" data-i18n-attr="aria-label:join.field.hourAria">
+                                <option value="" data-i18n="join.field.timeNone">선택 안 함</option>
                             </select>
-                            <select id="createMinute" aria-label="분"></select>
+                            <select id="createMinute" aria-label="분" data-i18n-attr="aria-label:join.field.minuteAria"></select>
                         </div>
                     </div>
                     <div class="join_field">
-                        <label for="createCapacity">정원 (본인 포함) *</label>
+                        <label for="createCapacity" data-i18n="join.field.capacity">정원 (본인 포함) *</label>
                         <input type="number" id="createCapacity" min="1" value="1" required>
                     </div>
                 </div>
                 <div class="join_field">
-                    <label for="createLocation">장소</label>
-                    <input type="text" id="createLocation" maxlength="60" placeholder="예: 학생회관 3층 동아리방">
+                    <label for="createLocation" data-i18n="join.field.location">장소</label>
+                    <input type="text" id="createLocation" maxlength="60" placeholder="예: 학생회관 3층 동아리방" data-i18n-attr="placeholder:join.field.locationPh">
                 </div>
                 <div class="join_field">
-                    <label for="createMapLink">지도 링크 (선택)</label>
-                    <input type="text" id="createMapLink" maxlength="300" placeholder="네이버 지도 공유 링크를 붙여넣으면 그 링크가 바로 열려요">
+                    <label for="createMapLink" data-i18n="join.field.mapLink">지도 링크 (선택)</label>
+                    <input type="text" id="createMapLink" maxlength="300" placeholder="네이버 지도 공유 링크를 붙여넣으면 그 링크가 바로 열려요" data-i18n-attr="placeholder:join.field.mapLinkPh">
                 </div>
                 <div class="join_field">
-                    <label for="createHost">주최자 이름 *</label>
-                    <input type="text" id="createHost" maxlength="30" required placeholder="닉네임도 좋아요">
+                    <label for="createHost" data-i18n="join.field.host">주최자 이름 *</label>
+                    <input type="text" id="createHost" maxlength="30" required placeholder="닉네임도 좋아요" data-i18n-attr="placeholder:join.field.hostPh">
                 </div>
                 <!-- real name: only collected at creation (like the password field
                      below) — it rides on the host's own signup row, which already
@@ -148,21 +146,21 @@
                      Never shown publicly; only the host/admin can see it (participant
                      contacts view) so the admin can confirm attendees' identities. -->
                 <div class="join_field" id="createHostRealNameField">
-                    <label for="createHostRealName">주최자 실명 *</label>
-                    <input type="text" id="createHostRealName" maxlength="30" required placeholder="관리자 확인용, 공개되지 않아요">
+                    <label for="createHostRealName" data-i18n="join.field.hostRealName">주최자 실명 *</label>
+                    <input type="text" id="createHostRealName" maxlength="30" required placeholder="관리자 확인용, 공개되지 않아요" data-i18n-attr="placeholder:join.field.hostRealNamePh">
                 </div>
                 <div class="join_field" id="createPasswordField">
-                    <label for="createPassword">비밀번호 *</label>
-                    <input type="password" id="createPassword" maxlength="60" required placeholder="나중에 수정/삭제할 때 필요해요">
+                    <label for="createPassword" data-i18n="join.field.password">비밀번호 *</label>
+                    <input type="password" id="createPassword" maxlength="60" required placeholder="나중에 수정/삭제할 때 필요해요" data-i18n-attr="placeholder:join.field.passwordPh">
                 </div>
                 <div class="join_field">
-                    <label for="createDesc">소개</label>
-                    <textarea id="createDesc" rows="3" maxlength="300" placeholder="어떤 자리인지 간단히 소개해주세요"></textarea>
+                    <label for="createDesc" data-i18n="join.field.desc">소개</label>
+                    <textarea id="createDesc" rows="3" maxlength="300" placeholder="어떤 자리인지 간단히 소개해주세요" data-i18n-attr="placeholder:join.field.descPh"></textarea>
                 </div>
                 <p class="join_form_error" id="createFormError" hidden></p>
                 <div class="join_form_actions">
-                    <button type="button" class="join_btn_secondary" data-close-modal="create">취소</button>
-                    <button type="submit" class="join_btn_primary" id="createSubmitBtn">만들기</button>
+                    <button type="button" class="join_btn_secondary" data-close-modal="create" data-i18n="join.btn.cancel">취소</button>
+                    <button type="submit" class="join_btn_primary" id="createSubmitBtn" data-i18n="join.btn.create">만들기</button>
                 </div>
             </form>
         </div>
@@ -171,7 +169,7 @@
     <!-- 소모임 상세/신청 modal -->
     <div class="join_modal_overlay" id="detailModalOverlay" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
         <div class="join_modal">
-            <button type="button" class="join_modal_close" data-close-modal="detail" aria-label="닫기">&times;</button>
+            <button type="button" class="join_modal_close" data-close-modal="detail" aria-label="닫기" data-i18n-attr="aria-label:a11y.close">&times;</button>
             <h3 class="join_modal_title" id="detailModalTitle"></h3>
 
             <div class="event_meta_badges" id="detailModalBadges"></div>
@@ -278,8 +276,8 @@
     <footer class="footer">
         <div class="layout_max footer_inner">
             <div class="footer_about">
-                <h2 class="footer_brand">설다연</h2>
-                <p class="footer_desc">서울대학교 중앙 차동아리 설다연에 오신 것을 환영합니다!</p>
+                <h2 class="footer_brand" data-i18n="footer.brand">설다연</h2>
+                <p class="footer_desc" data-i18n="footer.desc">서울대학교 중앙 차동아리 설다연에 오신 것을 환영합니다!</p>
             </div>
             <div class="footer_contact">
                 <a class="footer_link" href="https://www.instagram.com/snu_dado/" target="_blank" rel="noopener noreferrer">
@@ -303,7 +301,7 @@
             </div>
         </div>
         <div class="footer_bottom">
-            <p>&copy; 2026 설다연. All rights reserved.</p>
+            <p data-i18n="footer.rights">&copy; 2026 설다연. All rights reserved.</p>
         </div>
     </footer>
 

@@ -8,7 +8,7 @@
     function formatDateKo(iso) {
         const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
         if (!m) return String(iso || "");
-        return `${Number(m[1])}년 ${Number(m[2])}월 ${Number(m[3])}일`;
+        return I18N.formatDate(Number(m[1]), Number(m[2]), Number(m[3]));
     }
 
     function pinnedFirst(items) {
@@ -29,9 +29,12 @@
     // full title/date rows on info/index.html
     function renderList(listEl, items, prefix) {
         listEl.innerHTML = "";
+        // drop a placeholder left behind by a previous render
+        const stale = listEl.parentNode.querySelector(".notice_item_placeholder");
+        if (stale) stale.remove();
 
         if (items.length === 0) {
-            const empty = el("p", "notice_item_placeholder", "등록된 정보 글이 없어요.");
+            const empty = el("p", "notice_item_placeholder", I18N.t("info.empty"));
             listEl.parentNode.insertBefore(empty, listEl);
             return;
         }
@@ -40,8 +43,8 @@
             const li = el("li", "notice_item" + (n.pinned ? " is-pinned" : ""));
             const link = el("a", "notice_item_link");
             link.href = prefix + n.path;
-            if (n.pinned) link.appendChild(el("span", "notice_item_badge", "고정"));
-            link.appendChild(el("span", "notice_item_title", n.title));
+            if (n.pinned) link.appendChild(el("span", "notice_item_badge", I18N.t("common.pinned")));
+            link.appendChild(el("span", "notice_item_title", I18N.pick(n, "title")));
             link.appendChild(el("span", "notice_item_date", formatDateKo(n.date)));
             const arrowHolder = document.createElement("span");
             arrowHolder.innerHTML = ARROW_SVG;
@@ -54,9 +57,11 @@
     // card row on the main hub page
     function renderCards(trackEl, items, prefix) {
         trackEl.innerHTML = "";
+        const staleCard = trackEl.parentNode.querySelector(".info_carousel_empty");
+        if (staleCard) staleCard.remove();
 
         if (items.length === 0) {
-            const empty = el("p", "info_carousel_empty", "아직 등록된 정보 글이 없어요.");
+            const empty = el("p", "info_carousel_empty", I18N.t("info.emptyCarousel"));
             trackEl.parentNode.appendChild(empty);
             return;
         }
@@ -68,8 +73,8 @@
             const card = el("a", "carousel_card notice_card");
             card.href = prefix + n.path;
             const body = el("div", "notice_card_body");
-            if (n.pinned) body.appendChild(el("span", "notice_card_badge", "고정"));
-            body.appendChild(el("h4", "notice_card_title", n.title));
+            if (n.pinned) body.appendChild(el("span", "notice_card_badge", I18N.t("common.pinned")));
+            body.appendChild(el("h4", "notice_card_title", I18N.pick(n, "title")));
             body.appendChild(el("span", "notice_card_date", formatDateKo(n.date)));
             card.appendChild(body);
             trackEl.appendChild(card);
@@ -89,24 +94,33 @@
     function init() {
         if (typeof teaClubInfo === "undefined") return;
 
-        // info/index.html list
-        const listEl = document.getElementById("infoList");
-        if (listEl) {
-            renderList(listEl, teaClubInfo, listEl.dataset.infoPrefix || "");
+        const listEl = document.getElementById("infoList");        // info/index.html list
+        const trackEl = document.getElementById("infoCarouselTrack"); // main hub carousel
+        const section = document.getElementById("infoCarousel");
+
+        // only the rendering, so it can be re-run on a language change without
+        // re-attaching the carousel nav listeners below
+        function renderAll() {
+            if (listEl) {
+                renderList(listEl, teaClubInfo, listEl.dataset.infoPrefix || "");
+            }
+            if (trackEl) {
+                const prefix = (section && section.dataset.infoPrefix) || trackEl.dataset.infoPrefix || "";
+                renderCards(trackEl, teaClubInfo, prefix);
+            }
         }
 
-        // main hub carousel
-        const trackEl = document.getElementById("infoCarouselTrack");
+        renderAll();
+
         if (trackEl) {
-            const section = document.getElementById("infoCarousel");
-            const prefix = (section && section.dataset.infoPrefix) || trackEl.dataset.infoPrefix || "";
-            renderCards(trackEl, teaClubInfo, prefix);
             wireCarouselNav(
                 trackEl,
                 document.getElementById("infoCarouselPrev"),
                 document.getElementById("infoCarouselNext")
             );
         }
+
+        window.addEventListener("i18n:changed", renderAll);
     }
 
     if (document.readyState === "loading") {

@@ -12,7 +12,7 @@
     function formatDateKo(iso) {
         const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
         if (!m) return String(iso || "");
-        return `${Number(m[1])}년 ${Number(m[2])}월 ${Number(m[3])}일`;
+        return I18N.formatDate(Number(m[1]), Number(m[2]), Number(m[3]));
     }
 
     // pinned first; otherwise keep the authored array order (Array.sort is
@@ -39,8 +39,8 @@
             const li = el("li", "notice_item" + (n.pinned ? " is-pinned" : ""));
             const link = el("a", "notice_item_link");
             link.href = prefix + n.path;
-            if (n.pinned) link.appendChild(el("span", "notice_item_badge", "고정"));
-            link.appendChild(el("span", "notice_item_title", n.title));
+            if (n.pinned) link.appendChild(el("span", "notice_item_badge", I18N.t("common.pinned")));
+            link.appendChild(el("span", "notice_item_title", I18N.pick(n, "title")));
             link.appendChild(el("span", "notice_item_date", formatDateKo(n.date)));
             const arrowHolder = document.createElement("span");
             arrowHolder.innerHTML = ARROW_SVG;
@@ -61,8 +61,8 @@
             const card = el("a", "carousel_card notice_card");
             card.href = prefix + n.path;
             const body = el("div", "notice_card_body");
-            if (n.pinned) body.appendChild(el("span", "notice_card_badge", "고정"));
-            body.appendChild(el("h4", "notice_card_title", n.title));
+            if (n.pinned) body.appendChild(el("span", "notice_card_badge", I18N.t("common.pinned")));
+            body.appendChild(el("h4", "notice_card_title", I18N.pick(n, "title")));
             body.appendChild(el("span", "notice_card_date", formatDateKo(n.date)));
             card.appendChild(body);
             trackEl.appendChild(card);
@@ -83,17 +83,28 @@
         if (typeof teaClubNotices === "undefined") return;
 
         const listEl = document.getElementById("noticeList");
-        if (listEl) {
-            renderList(listEl, teaClubNotices, listEl.dataset.noticePrefix || "");
+        const trackEl = document.getElementById("noticeCarouselTrack");
+        const section = document.getElementById("noticeCarousel");
+
+        // only the rendering, so a language change can re-run it without
+        // re-attaching the carousel nav listeners below
+        function renderAll() {
+            if (listEl) {
+                renderList(listEl, teaClubNotices, listEl.dataset.noticePrefix || "");
+            }
+            if (trackEl) {
+                const prefix = (section && section.dataset.noticePrefix) || trackEl.dataset.noticePrefix || "";
+                renderCards(trackEl, teaClubNotices, prefix);
+            }
         }
 
-        const trackEl = document.getElementById("noticeCarouselTrack");
+        renderAll();
+
         if (trackEl) {
-            const section = document.getElementById("noticeCarousel");
-            const prefix = (section && section.dataset.noticePrefix) || trackEl.dataset.noticePrefix || "";
-            renderCards(trackEl, teaClubNotices, prefix);
             wireCarouselNav(trackEl, document.getElementById("noticeCarouselPrev"), document.getElementById("noticeCarouselNext"));
         }
+
+        window.addEventListener("i18n:changed", renderAll);
     }
 
     if (document.readyState === "loading") {
