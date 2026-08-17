@@ -63,6 +63,10 @@
             const body = el("div", "notice_card_body");
             if (n.pinned) body.appendChild(el("span", "notice_card_badge", I18N.t("common.pinned")));
             body.appendChild(el("h4", "notice_card_title", I18N.pick(n, "title")));
+            // optional preview line; cards without an excerpt just
+            // show title + date, and the CSS clamps long ones to 3 lines
+            const excerpt = I18N.pick(n, "excerpt");
+            if (excerpt) body.appendChild(el("p", "notice_card_excerpt", excerpt));
             body.appendChild(el("span", "notice_card_date", formatDateKo(n.date)));
             card.appendChild(body);
             trackEl.appendChild(card);

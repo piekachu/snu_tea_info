@@ -102,8 +102,8 @@
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    min-height: 150px;
-    padding: 22px 20px;
+    min-height: 230px;
+    padding: 24px 22px;
     box-sizing: border-box;
 }
 .notice_card_badge {
@@ -124,6 +124,21 @@
 }
 .notice_card:hover .notice_card_title {
     color: var(--osullocGreen);
+}
+/* preview line under the title. Clamped to 3 lines so a long excerpt still
+   fits the fixed card height; -webkit-line-clamp is well supported by
+   every browser we target and the standard `line-clamp` sits alongside it
+   for future engines. */
+.notice_card_excerpt {
+    margin: -2px 0 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--fontGray);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
 }
 .notice_card_date {
     margin-top: auto; /* pin the date to the bottom of the card */
