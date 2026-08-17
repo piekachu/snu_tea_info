@@ -93,17 +93,67 @@
 
 /* 주요 공지 (notice) cards — reuse the .carousel_card frame from
    carousel.css so the 공지사항 row reads as one system with the Events /
-   소모임 rows, but text-only (no thumbnail): badge, title, date. */
+   소모임 rows, but text-only (no thumbnail).
+
+   Layered on top of the plain frame:
+   - a green accent stripe along the left edge to anchor the card visually
+   - the 茶 character as a very faint watermark in the bottom-right, echoing
+     the SEOUL茶緣 logo
+   - pinned cards get a soft green gradient wash so the "important" ones
+     stand out from the flat plain cards
+   - hover lifts the card, tints the border, and deepens both watermarks */
 .notice_card {
     display: flex;
+    position: relative;
+    overflow: hidden; /* clip the watermark so it can be oversize */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform 0.22s ease, box-shadow 0.22s ease,
+                border-color 0.22s ease;
 }
+/* left accent stripe */
+.notice_card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--osullocGreen);
+    opacity: 0.75;
+    transition: opacity 0.22s ease, width 0.22s ease;
+}
+/* 茶 watermark, echoing the logo */
+.notice_card::after {
+    content: "茶";
+    position: absolute;
+    right: -18px;
+    bottom: -46px;
+    font-size: 168px;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--osullocGreen);
+    opacity: 0.055;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.4s ease;
+}
+.notice_card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(28, 102, 85, 0.14);
+    border-color: rgba(28, 102, 85, 0.28);
+}
+.notice_card:hover::before { opacity: 1; width: 5px; }
+.notice_card:hover::after {
+    opacity: 0.11;
+    transform: translate(-6px, -6px) rotate(-4deg);
+}
+
 .notice_card_body {
+    position: relative; /* stack above ::after */
+    z-index: 1;
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 100%;
     min-height: 230px;
-    padding: 24px 22px;
+    padding: 24px 22px 24px 26px; /* extra left padding for the accent stripe */
     box-sizing: border-box;
 }
 .notice_card_badge {
@@ -114,6 +164,7 @@
     font-size: 11.5px;
     font-weight: var(--font-weight-semibold);
     border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(28, 102, 85, 0.22);
 }
 .notice_card_title {
     margin: 0;
@@ -141,9 +192,39 @@
     overflow: hidden;
 }
 .notice_card_date {
-    margin-top: auto; /* pin the date to the bottom of the card */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto; /* pin the date row to the bottom */
     font-size: 12.5px;
     color: var(--fontGray);
+}
+/* small chevron that slides right on hover, signalling "there's more here" */
+.notice_card_date::after {
+    content: "→";
+    color: var(--osullocGreen);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    margin-left: auto;
+    padding-left: 12px;
+    font-weight: 700;
+}
+.notice_card:hover .notice_card_date::after {
+    opacity: 1;
+    transform: translateX(0);
+}
+/* keep the arrow anchored on the right regardless of date width */
+.notice_card_date { width: 100%; }
+
+/* pinned = soft green wash, so "important" reads at a glance */
+.notice_card.is-pinned,
+.notice_card:has(.notice_card_badge) {
+    background: linear-gradient(155deg, rgba(204, 220, 202, 0.32) 0%, #fff 55%);
+}
+.notice_card.is-pinned::before,
+.notice_card:has(.notice_card_badge)::before {
+    opacity: 1;
 }
 
 @media all and (max-width: 1024px) {
