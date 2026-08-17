@@ -23,4 +23,15 @@ const teaClubInfo = [
         path: "join/chatjip-info.html",
         pinned: false,
     },
+    // 새 정보 글을 위한 자리표시자 항목 — info/untitled-1.html이 실제 내용으로
+    // 채워지면 title/date/excerpt를 새 글 정보로 바꿔주세요.
+    {
+        title: "제목 미정",
+        titleEn: "Untitled",
+        date: "2026-08-17",
+        excerpt: "곧 게시될 새 정보 글입니다. 내용이 준비되는 대로 업데이트할게요.",
+        excerptEn: "A new info post — the details will be updated once the content is ready.",
+        path: "info/untitled-1.html",
+        pinned: false,
+    },
 ];
