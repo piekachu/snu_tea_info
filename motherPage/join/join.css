@@ -458,6 +458,19 @@ body.join-modal-open {
     background: rgba(0, 0, 0, 0.05);
     color: var(--fontGray);
 }
+/* pending admin approval — warm amber to read as "waiting", not "denied" */
+.join_signup_state.is-pending {
+    background: rgba(226, 168, 68, 0.10);
+    color: #7a4f10;
+    margin-top: 8px;
+}
+/* pending-approval pill (day panel + detail modal) */
+.join_event_card_badge.is-pending,
+.event_meta_badge.is-pending {
+    background: rgba(226, 168, 68, 0.18);
+    color: #7a4f10;
+    border: 1px solid rgba(226, 168, 68, 0.35);
+}
 .join_cancel_link {
     margin-top: 8px;
     padding: 0;

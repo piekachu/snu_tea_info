@@ -318,7 +318,10 @@
 
         /* errors (also produced by the demo-mode backend) */
         "join.err.required":       { ko: "제목, 날짜, 주최자 이름은 필수예요.", en: "Title, date and host name are required." },
-        "join.err.capacityMin":    { ko: "정원은 1 이상의 숫자여야 해요 (본인 포함).", en: "Capacity must be at least 1 (including you)." },
+        "join.err.capacityMin":    { ko: "정원은 3 이상의 숫자여야 해요 (본인 포함).", en: "Capacity must be at least 3 (including you)." },
+        "join.err.notApproved":    { ko: "아직 관리자 승인 대기 중인 소모임이에요.", en: "This meetup is still awaiting admin approval." },
+        "join.pendingApproval":    { ko: "관리자 승인 대기 중", en: "Pending admin approval" },
+        "join.pendingApprovalDesc":{ ko: "이 소모임은 관리자의 승인이 완료된 후부터 신청받을 수 있어요.", en: "Sign-ups open once an admin approves this meetup." },
         "join.err.capacityBelow":  { ko: "이미 {n}명이 참가 중이라 정원을 그보다 줄일 수 없어요.",
                                      en: "{n} people have already joined, so capacity can't go below that." },
         "join.err.needPassword":   { ko: "비밀번호를 설정해주세요. 나중에 수정/삭제할 때 필요해요.",

@@ -457,6 +457,39 @@
             padding: 2px 7px;
             border-radius: 10px;
         }
+        /* pending-approval controls on unapproved 소모임 cards */
+        .sm-pending-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 0 0 12px;
+            padding: 10px 12px;
+            background: rgba(226, 168, 68, 0.10);
+            border: 1px solid rgba(226, 168, 68, 0.32);
+            border-radius: 8px;
+            color: #7a4f10;
+            font-size: 12.5px;
+        }
+        .sm-pending-banner b { font-weight: 700; }
+        .sm-approve-btn {
+            padding: 6px 12px;
+            background: var(--green);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .sm-approve-btn:hover { opacity: .88; }
+        .sm-approve-btn:disabled { opacity: .5; cursor: not-allowed; }
+        .sm-approve-err {
+            margin: 6px 0 0;
+            font-size: 11.5px;
+            color: var(--red);
+        }
 
         /* participant chips */
         .sm-names {
@@ -1348,6 +1381,57 @@
         hostEl.className = "sm-card-host";
         hostEl.textContent = `주최: ${ev.host || "—"}`;
         body.appendChild(hostEl);
+
+        // ── admin approval banner ──
+        // Shown while approved_at is still NULL. Clicking 승인하기 prompts
+        // for the admin password (via window.prompt so the button works
+        // without opening the detail panel below). On success we flip the
+        // banner to a compact 승인 완료 stamp — no reload needed.
+        if (!ev.approvedAt) {
+            const pending = document.createElement("div");
+            pending.className = "sm-pending-banner";
+            const msg = document.createElement("span");
+            msg.innerHTML = "<b>관리자 승인 대기 중</b> · 승인 전에는 주최자 외 신청이 불가합니다.";
+            const approveBtn = document.createElement("button");
+            approveBtn.className = "sm-approve-btn";
+            approveBtn.type = "button";
+            approveBtn.textContent = "승인하기";
+            const err = document.createElement("p");
+            err.className = "sm-approve-err"; err.hidden = true;
+
+            approveBtn.addEventListener("click", async () => {
+                const adminPassword = window.prompt("관리자 비밀번호를 입력해주세요.");
+                if (adminPassword == null) return;               // cancelled
+                if (!adminPassword.trim()) { err.textContent = "비밀번호를 입력해주세요."; err.hidden = false; return; }
+                approveBtn.disabled = true; approveBtn.textContent = "승인 중…"; err.hidden = true;
+                try {
+                    const res = await fetch(JOIN_API, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ action: "approveEvent", id: ev.id, adminPassword: adminPassword.trim() }),
+                        cache: "no-store",
+                    });
+                    const data = await res.json();
+                    if (!data.ok) { err.textContent = data.error || "승인에 실패했습니다."; err.hidden = false; approveBtn.disabled = false; approveBtn.textContent = "승인하기"; return; }
+                    // reflect the new state locally without a full refresh
+                    ev.approvedAt = data.approvedAt || new Date().toISOString();
+                    pending.innerHTML = "<span>✓ 승인 완료 · 이제 신청을 받을 수 있어요.</span>";
+                    pending.style.background = "rgba(28, 102, 85, 0.08)";
+                    pending.style.borderColor = "rgba(28, 102, 85, 0.28)";
+                    pending.style.color = "#1c6655";
+                } catch {
+                    err.textContent = "네트워크 오류가 발생했습니다.";
+                    err.hidden = false;
+                    approveBtn.disabled = false;
+                    approveBtn.textContent = "승인하기";
+                }
+            });
+
+            pending.appendChild(msg);
+            pending.appendChild(approveBtn);
+            body.appendChild(pending);
+            body.appendChild(err);
+        }
 
         // capacity bar
         const capRow = document.createElement("div");

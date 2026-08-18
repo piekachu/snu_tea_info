@@ -1,6 +1,6 @@
 // Supabase Edge Function — 소모임 신청 backend
 // Replaces the old Google Apps Script / Code.gs backend.
-// Actions: list | createEvent | updateEvent | deleteEvent | signup | cancelSignup | eventParticipants | cancelSignupByPassword | adminListAll
+// Actions: list | createEvent | updateEvent | deleteEvent | signup | cancelSignup | eventParticipants | cancelSignupByPassword | adminListAll | approveEvent
 //
 // Required env vars (set in Supabase dashboard → Settings → Edge Functions):
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_PASSWORD
@@ -114,6 +114,9 @@ function mapEvent(ev: any) {
     description: ev.description ?? null,
     hostSignupId: ev.host_signup_id ?? null,
     createdAt: ev.created_at,
+    // Newly created events start with approved_at IS NULL. Only after an admin
+    // approves via the approveEvent action can non-host users sign up.
+    approvedAt: ev.approved_at ?? null,
   };
 }
 
@@ -144,7 +147,7 @@ Deno.serve(async (req: Request) => {
           supabase
             .from("join_events")
             .select(
-              "id, date, time, title, location, map_link, capacity, host, description, host_signup_id, created_at"
+              "id, date, time, title, location, map_link, capacity, host, description, host_signup_id, created_at, approved_at"
             )
             .order("date"),
           supabase
@@ -179,12 +182,15 @@ Deno.serve(async (req: Request) => {
         return json({ ok: false, error: "날짜 형식이 올바르지 않아요." });
 
       const cap = Number(capacity);
-      if (capacity == null || capacity === "" || !Number.isFinite(cap) || cap < 1)
-        return json({ ok: false, error: "정원은 1 이상의 숫자여야 해요 (본인 포함)." });
+      if (capacity == null || capacity === "" || !Number.isFinite(cap) || cap < 3)
+        return json({ ok: false, error: "정원은 3 이상의 숫자여야 해요 (본인 포함)." });
 
       const pwHash = await hashPassword(String(password));
       const editToken = crypto.randomUUID();
 
+      // New events start unapproved (approved_at NULL). The DB column default
+      // is null so we don't need to set anything here; the approveEvent
+      // action below is the only path to flip it to a real timestamp.
       const { data: ev, error: evErr } = await supabase
         .from("join_events")
         .insert({
@@ -200,7 +206,7 @@ Deno.serve(async (req: Request) => {
           edit_token: editToken,
         })
         .select(
-          "id, date, time, title, location, map_link, capacity, host, description, created_at"
+          "id, date, time, title, location, map_link, capacity, host, description, created_at, approved_at"
         )
         .single();
       if (evErr) throw evErr;
@@ -260,8 +266,8 @@ Deno.serve(async (req: Request) => {
         return json({ ok: false, error: "날짜 형식이 올바르지 않아요." });
 
       const cap = Number(capacity);
-      if (capacity == null || capacity === "" || !Number.isFinite(cap) || cap < 1)
-        return json({ ok: false, error: "정원은 1 이상의 숫자여야 해요 (본인 포함)." });
+      if (capacity == null || capacity === "" || !Number.isFinite(cap) || cap < 3)
+        return json({ ok: false, error: "정원은 3 이상의 숫자여야 해요 (본인 포함)." });
 
       // Don't let capacity drop below the current active headcount
       const { count: activeCount } = await supabase
@@ -350,10 +356,16 @@ Deno.serve(async (req: Request) => {
 
       const { data: ev, error: evErr } = await supabase
         .from("join_events")
-        .select("id, date, capacity")
+        .select("id, date, capacity, approved_at")
         .eq("id", eventId)
         .single();
       if (evErr || !ev) return json({ ok: false, error: "존재하지 않는 소모임이에요." });
+
+      // Signups from non-hosts are blocked until an admin approves.
+      // The host is auto-signed up inside createEvent above, so their
+      // participation never routes through this action and isn't affected.
+      if (ev.approved_at == null)
+        return json({ ok: false, error: "아직 관리자 승인 대기 중인 소모임이에요." });
 
       if (isPastDeadline(ev.date, SIGNUP_CLOSE_DAYS))
         return json({ ok: false, error: "신청이 마감되었어요. (행사 24시간 전 마감)" });
@@ -530,7 +542,7 @@ Deno.serve(async (req: Request) => {
       const [{ data: evs, error: evErr }, { data: sigs, error: sigErr }] = await Promise.all([
         supabase
           .from("join_events")
-          .select("id, date, time, title, location, capacity, host, host_signup_id, created_at")
+          .select("id, date, time, title, location, capacity, host, host_signup_id, created_at, approved_at")
           .order("date"),
         supabase
           .from("join_signups")
@@ -550,6 +562,7 @@ Deno.serve(async (req: Request) => {
         host: e.host,
         hostSignupId: e.host_signup_id,
         createdAt: e.created_at,
+        approvedAt: e.approved_at ?? null,
       }));
 
       const signups = (sigs ?? []).map((s) => ({
@@ -563,6 +576,38 @@ Deno.serve(async (req: Request) => {
       }));
 
       return json({ ok: true, events, signups });
+    }
+
+    // ── approveEvent (admin-only) ─────────────────────────────────────
+    // Flips approved_at from NULL to now(), unblocking signups. A no-op
+    // (still ok) if the event was already approved, so a double click on
+    // the admin button doesn't error.
+    if (action === "approveEvent") {
+      const { id, adminPassword } = body;
+      const isAdmin = ADMIN_PASSWORD !== "" && adminPassword === ADMIN_PASSWORD;
+      if (!isAdmin)
+        return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." });
+      if (!id) return json({ ok: false, error: "id가 필요해요." });
+
+      const { data: ev, error: evErr } = await supabase
+        .from("join_events")
+        .select("id, approved_at")
+        .eq("id", id)
+        .single();
+      if (evErr || !ev) return json({ ok: false, error: "존재하지 않는 소모임이에요." });
+
+      if (ev.approved_at != null) {
+        return json({ ok: true, alreadyApproved: true, approvedAt: ev.approved_at });
+      }
+
+      const nowIso = new Date().toISOString();
+      const { error: updErr } = await supabase
+        .from("join_events")
+        .update({ approved_at: nowIso })
+        .eq("id", id);
+      if (updErr) throw updErr;
+
+      return json({ ok: true, approvedAt: nowIso });
     }
 
     return json({ ok: false, error: "unknown action" }, 400);

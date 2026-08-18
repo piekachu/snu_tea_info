@@ -92,6 +92,7 @@
             description: e.description,
             hostSignupId: e.hostSignupId,
             createdAt: e.createdAt,
+            approvedAt: e.approvedAt || null,
         }));
         // canceled signups are excluded from the public list (soft-delete)
         const signups = d.signups
@@ -109,7 +110,7 @@
             return { error: I18N.t("join.err.required") };
         }
         const capacity = Number(body.capacity);
-        if (body.capacity === "" || body.capacity == null || !Number.isFinite(capacity) || capacity < 1) {
+        if (body.capacity === "" || body.capacity == null || !Number.isFinite(capacity) || capacity < 3) {
             return { error: I18N.t("join.err.capacityMin") };
         }
         if (existingSignupCount != null && capacity < existingSignupCount) {
@@ -148,7 +149,9 @@
         const hostSignupId = uid();
         d.signups.push({ id: hostSignupId, eventId: id, name: fields.host, realName: hostRealName, contact: "", createdAt, editToken: uid() });
 
-        const event = { id, date: fields.date, time: fields.time, title: fields.title, location: fields.location, mapLink: fields.mapLink, capacity: fields.capacity, host: fields.host, description: fields.description, password, hostSignupId, createdAt, editToken };
+        // Newly created events start unapproved (approvedAt null); an admin
+        // needs to run approveEvent before non-host users can sign up.
+        const event = { id, date: fields.date, time: fields.time, title: fields.title, location: fields.location, mapLink: fields.mapLink, capacity: fields.capacity, host: fields.host, description: fields.description, password, hostSignupId, createdAt, editToken, approvedAt: null };
         d.events.push(event);
         saveDemo(d);
         return { ok: true, event, editToken };
@@ -219,6 +222,8 @@
         const d = loadDemo();
         const event = d.events.find((e) => e.id === body.eventId);
         if (!event) return { ok: false, error: I18N.t("join.err.noEvent") };
+        // gate on admin approval — mirrors the Edge Function's signup check
+        if (event.approvedAt == null) return { ok: false, error: I18N.t("join.err.notApproved") };
         if (signupsClosed(event)) return { ok: false, error: I18N.t("join.err.signupClosed") };
         const name = String(body.name || "").trim();
         if (!name) return { ok: false, error: I18N.t("join.err.needName") };
@@ -318,6 +323,7 @@
             host: e.host,
             hostSignupId: e.hostSignupId || null,
             createdAt: e.createdAt,
+            approvedAt: e.approvedAt || null,
         }));
         const signups = d.signups.map((s) => ({
             id: s.id,
@@ -329,6 +335,21 @@
             canceledAt: s.canceledAt || null,
         }));
         return { ok: true, events, signups };
+    }
+
+    // Admin approval — flips approvedAt so non-host users can sign up.
+    // Mirrors the Edge Function's approveEvent action; idempotent so a
+    // double-click on the admin button doesn't error.
+    function demoApproveEvent(body) {
+        const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
+        if (!isAdmin) return { ok: false, error: I18N.t("join.err.badAdminPw") };
+        const d = loadDemo();
+        const ev = d.events.find((e) => e.id === body.id);
+        if (!ev) return { ok: false, error: I18N.t("join.err.noEvent") };
+        if (ev.approvedAt) return { ok: true, alreadyApproved: true, approvedAt: ev.approvedAt };
+        ev.approvedAt = new Date().toISOString();
+        saveDemo(d);
+        return { ok: true, approvedAt: ev.approvedAt };
     }
 
     // ---------- API layer ----------
@@ -381,6 +402,8 @@
                     return demoEventParticipants(payload);
                 case "adminListAll":
                     return demoAdminListAll(payload);
+                case "approveEvent":
+                    return demoApproveEvent(payload);
                 default:
                     return { ok: false, error: "unknown action" };
             }
@@ -714,6 +737,14 @@
             if (isFull(ev) || isPastEvent(ev)) badge.classList.add("is-full");
             card.appendChild(badge);
 
+            // subtle pending-approval hint next to the capacity badge so
+            // people scanning the day panel see which meetups aren't yet
+            // open for sign-ups
+            if (!ev.approvedAt && !isPastEvent(ev)) {
+                const pend = el("span", "join_event_card_badge is-pending", I18N.t("join.pendingApproval"));
+                card.appendChild(pend);
+            }
+
             card.addEventListener("click", () => openDetailModal(ev.id));
             els.eventList.appendChild(card);
         });
@@ -732,7 +763,7 @@
         editingEvent = null;
         populateTimeOptions();
         els.createForm.reset();
-        els.createCapacity.value = "1";
+        els.createCapacity.value = "3";
         els.createFormError.hidden = true;
         els.createModalTitle.textContent = I18N.t("join.modal.createTitle");
         els.createSubmitBtn.textContent = I18N.t("join.btn.create");
@@ -843,6 +874,10 @@
         const capacityBadge = el("span", "event_meta_badge", capacityLabel(ev));
         if (isFull(ev)) capacityBadge.classList.add("is-full");
         els.detailModalBadges.appendChild(capacityBadge);
+        if (!ev.approvedAt) {
+            const pending = el("span", "event_meta_badge is-pending", I18N.t("join.pendingApproval"));
+            els.detailModalBadges.appendChild(pending);
+        }
         els.detailModalBadges.appendChild(createShareButton(ev));
 
         els.detailModalMetaList.innerHTML = "";
@@ -895,11 +930,24 @@
         // instead, in the host area below)
         if (getEventAuth(ev)) {
             area.appendChild(el("div", "join_signup_state", I18N.t("join.hostParticipating")));
+            // let hosts know the meetup is still pending admin approval,
+            // so they understand why no one else can join yet
+            if (!ev.approvedAt) {
+                area.appendChild(el("p", "join_signup_state is-pending", I18N.t("join.pendingApprovalDesc")));
+            }
             return;
         }
 
         if (isPastEvent(ev)) {
             area.appendChild(el("div", "join_signup_state is-full", I18N.t("join.eventEnded")));
+            return;
+        }
+
+        // Non-hosts can't sign up until an admin approves. Show the pending
+        // state instead of the sign-up form (and skip the cross-device cancel
+        // section too — there's no signup for anyone to cancel yet).
+        if (!ev.approvedAt) {
+            area.appendChild(el("div", "join_signup_state is-pending", I18N.t("join.pendingApprovalDesc")));
             return;
         }
 
