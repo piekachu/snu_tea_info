@@ -21,24 +21,20 @@
     list-style: none;
 }
 
-/* Card grid on notice/index.html and info/index.html — same card DOM as
-   the home carousel (.carousel_card.notice_card), but laid out as a
-   responsive wrap instead of a horizontal scroll track. Auto-fit picks
-   the number of columns based on width: 1 on phones, 2 in most cases,
-   3 on wide monitors, gracefully wrapping to a column on narrow screens. */
+/* Card wrap on notice/index.html and info/index.html — same card DOM as
+   the home carousel (.carousel_card.notice_card). Uses flex-wrap so the
+   cards keep .carousel_card's 300px fixed width — identical shape to the
+   main page — and simply flow to a second row when there isn't room.
+   Falls back to a single column of full-width cards on narrow phones. */
 .notice_grid {
     max-width: 780px;
     margin: 0 auto 60px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
-/* .carousel_card sets flex: 0 0 300px for its scroll-track context —
-   inside the grid we let each track cell size the card instead */
-.notice_grid > .carousel_card {
-    flex: initial;
-    width: auto;
-    min-width: 0;
+@media all and (max-width: 640px) {
+    .notice_grid > .carousel_card { flex: 1 1 auto; }
 }
 
 .notice_item {
