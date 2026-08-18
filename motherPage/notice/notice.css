@@ -380,35 +380,6 @@
     letter-spacing: 0.02em;
 }
 
-/* activity step list — numberless bullet form. A quiet green dot in front
-   of each item keeps them scannable without the strong green counter tags
-   that were competing with the section titles. */
-.ot_steps {
-    list-style: none;
-    padding: 0;
-    margin: 12px 0 24px;
-    display: grid;
-    gap: 8px;
-}
-.ot_steps li {
-    display: grid;
-    grid-template-columns: 12px 1fr;
-    gap: 12px;
-    font-size: 14.5px;
-    line-height: 1.75;
-    color: #2a2a2a;
-}
-.ot_steps li::before {
-    content: "";
-    display: block;
-    width: 5px;
-    height: 5px;
-    margin-top: 0.75em;   /* aligns with the first line of copy */
-    background: var(--osullocGreen);
-    border-radius: 50%;
-    opacity: 0.7;
-}
-
 /* rules / cancellation-fee callouts — a warm amber to read as "attention" */
 .ot_rules {
     display: grid;
