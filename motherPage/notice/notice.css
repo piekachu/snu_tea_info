@@ -308,9 +308,15 @@
     aspect-ratio: 16 / 9;      /* deterministic height, lets object-fit crop */
     object-fit: cover;
     border-radius: 8px;
-    margin: 4px auto 20px;
+    /* default: left-aligned in the reading column, so images don't all
+       sit centered in a repetitive column */
+    margin: 4px auto 20px 0;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.ot_section_image_right {
+    margin-left: auto;
+    margin-right: 0;
 }
 
 /* two-image side-by-side row, same restrained treatment */
