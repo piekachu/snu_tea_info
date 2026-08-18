@@ -184,6 +184,9 @@ Deno.serve(async (req: Request) => {
         return json({ ok: false, error: "주최자 실명을 입력해주세요." });
       if (!password)
         return json({ ok: false, error: "비밀번호를 설정해주세요. 나중에 수정/삭제할 때 필요해요." });
+      // Time is required — 30-min grid enforced client-side, matched here.
+      if (!time || !/^\d{2}:\d{2}$/.test(String(time)))
+        return json({ ok: false, error: "시간을 선택해주세요." });
       if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date)))
         return json({ ok: false, error: "날짜 형식이 올바르지 않아요." });
 
@@ -271,6 +274,10 @@ Deno.serve(async (req: Request) => {
         return json({ ok: false, error: "제목, 날짜, 주최자 이름은 필수예요." });
       if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date)))
         return json({ ok: false, error: "날짜 형식이 올바르지 않아요." });
+      // Time is required on edit too — the create form and edit form share
+      // the same modal, so consistency matters.
+      if (!time || !/^\d{2}:\d{2}$/.test(String(time)))
+        return json({ ok: false, error: "시간을 선택해주세요." });
 
       const cap = Number(capacity);
       if (capacity == null || capacity === "" || !Number.isFinite(cap) || cap < 3)
@@ -373,6 +380,9 @@ Deno.serve(async (req: Request) => {
       const { eventId, name, realName, contact, cancelPassword } = body;
       if (!eventId || !name) return json({ ok: false, error: "이름을 입력해주세요." });
       if (!realName) return json({ ok: false, error: "실명을 입력해주세요." });
+      // Required so a signup made on one device can still be cancelled from
+      // another (see cancelSignupByPassword). Was optional; now mandatory.
+      if (!cancelPassword) return json({ ok: false, error: "취소 비밀번호를 설정해주세요." });
 
       const { data: ev, error: evErr } = await supabase
         .from("join_events")
@@ -635,7 +645,18 @@ Deno.serve(async (req: Request) => {
 
     return json({ ok: false, error: "unknown action" }, 400);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "서버 오류가 발생했습니다.";
+    // Supabase-JS returns a PostgrestError object that isn't an Error subclass,
+    // so the naive `err.message` check dropped useful info on the floor. Pull
+    // the message off whichever shape we got and always log the raw object to
+    // the function log so we can see it in the Supabase dashboard.
+    console.error("[join] handler error:", err);
+    // deno-lint-ignore no-explicit-any
+    const anyErr = err as any;
+    const msg =
+      (anyErr && typeof anyErr.message === "string" && anyErr.message) ||
+      (anyErr && typeof anyErr.details === "string" && anyErr.details) ||
+      (anyErr && typeof anyErr.hint === "string" && anyErr.hint) ||
+      "서버 오류가 발생했습니다.";
     return json({ ok: false, error: msg }, 500);
   }
 });

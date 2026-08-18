@@ -103,13 +103,20 @@
         return { ok: true, events, signups };
     }
 
-    // shared by demoCreateEvent/demoUpdateEvent — mirrors validateEventFields_ in Code.gs
+    // shared by demoCreateEvent/demoUpdateEvent — mirrors the Edge Function's
+    // validation on createEvent / updateEvent
     function validateDemoEventFields(body, existingSignupCount) {
         const title = String(body.title || "").trim();
         const date = String(body.date || "").trim();
         const host = String(body.host || "").trim();
+        const time = String(body.time || "").trim();
         if (!title || !date || !host) {
             return { error: I18N.t("join.err.required") };
+        }
+        // Time is required — matches the client-side pre-check and the
+        // Edge Function's create/update handlers.
+        if (!time || !/^\d{2}:\d{2}$/.test(time)) {
+            return { error: I18N.t("join.err.needTime") };
         }
         const capacity = Number(body.capacity);
         if (body.capacity === "" || body.capacity == null || !Number.isFinite(capacity) || capacity < 3) {
@@ -123,7 +130,7 @@
             date,
             host,
             capacity,
-            time: String(body.time || "").trim(),
+            time,
             location: String(body.location || "").trim(),
             mapLink: String(body.mapLink || "").trim(),
             description: String(body.description || "").trim(),
@@ -239,6 +246,10 @@
         if (!name) return { ok: false, error: I18N.t("join.err.needName") };
         const realName = String(body.realName || "").trim();
         if (!realName) return { ok: false, error: I18N.t("join.err.needRealName") };
+        // cancelPassword is required — same reason as the server: signups
+        // stranded on a dead device otherwise can't be canceled.
+        const cancelPasswordRaw = String(body.cancelPassword || "").trim();
+        if (!cancelPasswordRaw) return { ok: false, error: I18N.t("join.err.needCancelPw") };
         // only count active (non-canceled) signups against capacity and name-uniqueness
         const existing = d.signups.filter((s) => s.eventId === body.eventId && !s.canceledAt);
         if (event.capacity !== "" && existing.length >= Number(event.capacity)) {
@@ -250,9 +261,9 @@
         const id = uid();
         const editToken = uid();
         const createdAt = new Date().toISOString();
-        // cancelPassword stored as plain text in demo (no real backend to hash it)
-        const cancelPassword = String(body.cancelPassword || "").trim() || null;
-        d.signups.push({ id, eventId: body.eventId, name, realName, contact: String(body.contact || "").trim(), createdAt, editToken, cancelPassword });
+        // cancelPassword stored as plain text in demo (no real backend to hash it).
+        // Already validated non-empty above, so reuse cancelPasswordRaw.
+        d.signups.push({ id, eventId: body.eventId, name, realName, contact: String(body.contact || "").trim(), createdAt, editToken, cancelPassword: cancelPasswordRaw });
         saveDemo(d);
         return { ok: true, signup: { id, eventId: body.eventId, name, createdAt }, editToken };
     }
@@ -447,7 +458,11 @@
     // zero-padded "HH" / "MM"; getTimeValue() joins them into "HH:MM".
     function populateTimeOptions() {
         if (!els.createHour) return;
-        const hours = [`<option value="">${I18N.t("join.field.timeNone")}</option>`];
+        // First option is a placeholder that must be re-picked before submit;
+        // marking it disabled after page load means the native `required`
+        // validation on the <select> fires if the user leaves it as the
+        // default (see setupCreateForm below).
+        const hours = [`<option value="" disabled selected>${I18N.t("join.field.timeNone")}</option>`];
         for (let h = 0; h < 24; h += 1) {
             hours.push(`<option value="${pad2(h)}">${I18N.t("join.hourOpt", { h })}</option>`);
         }
@@ -455,9 +470,11 @@
         els.createMinute.innerHTML = ["00", "30"]
             .map((m) => `<option value="${m}">${I18N.t("join.minuteOpt", { m })}</option>`)
             .join("");
+        els.createHour.required = true;
     }
 
-    // "" when no hour is picked (time is optional); otherwise "HH:MM".
+    // "HH:MM" when the hour is picked. Empty string means no hour picked —
+    // callers now treat that as invalid because time became a required field.
     function getTimeValue() {
         if (!els.createHour.value) return "";
         return `${els.createHour.value}:${els.createMinute.value}`;
@@ -480,13 +497,12 @@
     // didn't paste an actual map link — there's no stored coordinate to
     // point at otherwise, since anyone can type any venue name here, unlike
     // the curated event pages
-    function naverSearchUrl(text) {
-        return `https://map.naver.com/p/search/${encodeURIComponent(text)}`;
-    }
-
     // one dt/dd row in the event-page-style info list (.event_meta_list,
     // shared with event subpages via subpage.css); `mapHref` adds a
-    // I18N.t("join.mapView") link next to the value, pointed wherever it says
+    // I18N.t("join.mapView") link next to the value, pointed wherever it says.
+    // Passing `showMapAffordance: true` with no `mapHref` renders a disabled
+    // 지도에서 보기 chip instead — so the user can see the affordance exists
+    // for this row but is inert because the host didn't supply a map link.
     function addMetaRow(list, label, value, opts) {
         if (!value) return;
         const row = el("div", "event_meta_row");
@@ -502,6 +518,14 @@
             link.className = "event_meta_link";
             link.textContent = I18N.t("join.mapView");
             dd.appendChild(link);
+        } else if (opts && opts.showMapAffordance) {
+            dd.appendChild(document.createTextNode(" · "));
+            const dis = document.createElement("span");
+            dis.className = "event_meta_link is-disabled";
+            dis.textContent = I18N.t("join.mapView");
+            dis.setAttribute("aria-disabled", "true");
+            dis.title = I18N.t("join.noMapLink");
+            dd.appendChild(dis);
         }
         row.appendChild(dd);
         list.appendChild(row);
@@ -818,12 +842,22 @@
         e.preventDefault();
         els.createFormError.hidden = true;
 
+        // time is required — client-side pre-check so the user sees the
+        // error before the request round-trips (server enforces this too)
+        const time = getTimeValue();
+        if (!time) {
+            els.createFormError.textContent = I18N.t("join.err.needTime");
+            els.createFormError.hidden = false;
+            els.createHour.focus();
+            return;
+        }
+
         const submitBtn = els.createForm.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
         try {
             const fields = {
                 title: els.createTitle.value,
-                time: getTimeValue(),
+                time: time,
                 capacity: els.createCapacity.value,
                 location: els.createLocation.value,
                 mapLink: els.createMapLink.value,
@@ -894,7 +928,11 @@
 
         els.detailModalMetaList.innerHTML = "";
         addMetaRow(els.detailModalMetaList, I18N.t("join.meta.when"), [formatDateLabel(ev.date), formatTime(ev.time)].filter(Boolean).join(" · "));
-        addMetaRow(els.detailModalMetaList, I18N.t("join.meta.where"), ev.location, { mapHref: ev.mapLink || (ev.location ? naverSearchUrl(ev.location) : null) });
+        // Only trust an explicit map link. A free-form 장소 like
+        // "역 근처에서 같이 정해봐요!" doesn't produce a useful Naver search,
+        // so we no longer fall back to one — instead we show the affordance
+        // as a disabled chip when no map link is set.
+        addMetaRow(els.detailModalMetaList, I18N.t("join.meta.where"), ev.location, { mapHref: ev.mapLink || null, showMapAffordance: true });
         addMetaRow(els.detailModalMetaList, I18N.t("join.meta.host"), ev.host);
         addMetaRow(els.detailModalMetaList, I18N.t("join.meta.capacity"), ev.capacity === "" || ev.capacity == null ? I18N.t("join.unlimited") : I18N.t("join.people", { n: ev.capacity }));
 
@@ -1012,7 +1050,9 @@
         contactField.appendChild(contactLabel);
         contactField.appendChild(contactInput);
 
-        // optional — lets the user cancel from a different device later
+        // required — lets the user cancel from a different device later.
+        // Was optional; now marked * because losing the browser session
+        // otherwise strands the signup with no way to cancel.
         const cancelPwField = el("div", "join_field");
         const cancelPwLabel = el("label", null, I18N.t("join.f.cancelPw"));
         cancelPwLabel.htmlFor = "signupCancelPw";
@@ -1021,6 +1061,7 @@
         cancelPwInput.type = "password";
         cancelPwInput.id = "signupCancelPw";
         cancelPwInput.maxLength = 60;
+        cancelPwInput.required = true;
         cancelPwInput.placeholder = I18N.t("join.f.cancelPwPh");
         cancelPwField.appendChild(cancelPwLabel);
         cancelPwField.appendChild(cancelPwHint);
@@ -1050,7 +1091,7 @@
                     name: nameInput.value,
                     realName: realNameInput.value,
                     contact: contactInput.value,
-                    cancelPassword: cancelPwInput.value || undefined,
+                    cancelPassword: cancelPwInput.value,
                 });
                 if (!result.ok) {
                     error.textContent = result.error || I18N.t("join.err.signupFailed");
@@ -1189,8 +1230,8 @@
     let unlockedEventPasswords = {};
 
     // {editToken} if this browser created the event, else {password} if the
-    // owner unlocked it this session, else null (not authorized — the
-    // "관리자 권한으로" path is separate, see handleAdminDelete)
+    // owner unlocked it this session, else null (not authorized). Admin
+    // deletion lives on the admin page now, not inline in this modal.
     function getEventAuth(ev) {
         const editToken = myEventToken(ev.id);
         if (editToken) return { editToken };
@@ -1246,13 +1287,11 @@
             area.appendChild(unlockBtn);
         }
 
-        // always available, to anyone — not just the creator — so an admin
-        // can remove a problem event (spam, duplicate, etc.) even with
-        // signups on it; the server is the one actually checking the password
-        const adminLink = el("button", "join_admin_link", I18N.t("join.h.adminDelete"));
-        adminLink.type = "button";
-        adminLink.addEventListener("click", () => handleAdminDelete(ev));
-        area.appendChild(adminLink);
+        // The "관리자 권한으로 삭제" escape hatch used to live here so an
+        // admin could remove a spam/duplicate event straight from the detail
+        // modal. It's removed now that the admin page hosts a dedicated
+        // deletion flow — one canonical place, no confusion about who the
+        // button is meant for.
     }
 
     function handleOwnerUnlock(ev) {
@@ -1338,12 +1377,6 @@
             console.error(err);
             window.alert(I18N.t("join.err.networkShort"));
         }
-    }
-
-    async function handleAdminDelete(ev) {
-        const password = window.prompt(I18N.t("join.h.promptAdminPw"));
-        if (password == null || password === "") return; // cancelled
-        await handleDeleteEvent(ev, { adminPassword: password });
     }
 
     // ---------- modal plumbing ----------

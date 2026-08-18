@@ -1133,6 +1133,14 @@ body.nav-open .magazine_lnb {
 .event_meta_link:hover {
     color: var(--osullocGreenV);
 }
+/* rendered as a <span> when there's no map link — grayed out and
+   non-interactive so the affordance is visible but inert */
+.event_meta_link.is-disabled {
+    color: var(--fontGray);
+    text-decoration: line-through;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 /* the event's one-line description — right end of the info section
    (see events-meta.js), not overlaid on the hero photo anymore */
 .event_meta_brief {
