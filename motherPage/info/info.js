@@ -26,31 +26,32 @@
         return node;
     }
 
-    // full title/date rows on info/index.html
-    function renderList(listEl, items, prefix) {
-        listEl.innerHTML = "";
+    // full grid on info/index.html — renders every item as a card
+    // (same DOM as the home carousel via renderCards, just laid out
+    // in a wrapping grid instead of a horizontal scroll track)
+    function renderGrid(gridEl, items, prefix) {
+        gridEl.innerHTML = "";
         // drop a placeholder left behind by a previous render
-        const stale = listEl.parentNode.querySelector(".notice_item_placeholder");
+        const stale = gridEl.parentNode.querySelector(".notice_item_placeholder");
         if (stale) stale.remove();
 
         if (items.length === 0) {
             const empty = el("p", "notice_item_placeholder", I18N.t("info.empty"));
-            listEl.parentNode.insertBefore(empty, listEl);
+            gridEl.parentNode.insertBefore(empty, gridEl);
             return;
         }
 
         pinnedFirst(items).forEach((n) => {
-            const li = el("li", "notice_item" + (n.pinned ? " is-pinned" : ""));
-            const link = el("a", "notice_item_link");
-            link.href = prefix + n.path;
-            if (n.pinned) link.appendChild(el("span", "notice_item_badge", I18N.t("common.pinned")));
-            link.appendChild(el("span", "notice_item_title", I18N.pick(n, "title")));
-            link.appendChild(el("span", "notice_item_date", formatDateKo(n.date)));
-            const arrowHolder = document.createElement("span");
-            arrowHolder.innerHTML = ARROW_SVG;
-            link.appendChild(arrowHolder.firstChild);
-            li.appendChild(link);
-            listEl.appendChild(li);
+            const card = el("a", "carousel_card notice_card");
+            card.href = prefix + n.path;
+            const body = el("div", "notice_card_body");
+            if (n.pinned) body.appendChild(el("span", "notice_card_badge", I18N.t("common.pinned")));
+            body.appendChild(el("h4", "notice_card_title", I18N.pick(n, "title")));
+            const excerpt = I18N.pick(n, "excerpt");
+            if (excerpt) body.appendChild(el("p", "notice_card_excerpt", excerpt));
+            body.appendChild(el("span", "notice_card_date", formatDateKo(n.date)));
+            card.appendChild(body);
+            gridEl.appendChild(card);
         });
     }
 
@@ -106,7 +107,7 @@
         // re-attaching the carousel nav listeners below
         function renderAll() {
             if (listEl) {
-                renderList(listEl, teaClubInfo, listEl.dataset.infoPrefix || "");
+                renderGrid(listEl, teaClubInfo, listEl.dataset.infoPrefix || "");
             }
             if (trackEl) {
                 const prefix = (section && section.dataset.infoPrefix) || trackEl.dataset.infoPrefix || "";

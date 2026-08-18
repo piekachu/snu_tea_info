@@ -21,6 +21,26 @@
     list-style: none;
 }
 
+/* Card grid on notice/index.html and info/index.html — same card DOM as
+   the home carousel (.carousel_card.notice_card), but laid out as a
+   responsive wrap instead of a horizontal scroll track. Auto-fit picks
+   the number of columns based on width: 1 on phones, 2 in most cases,
+   3 on wide monitors, gracefully wrapping to a column on narrow screens. */
+.notice_grid {
+    max-width: 780px;
+    margin: 0 auto 60px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+}
+/* .carousel_card sets flex: 0 0 300px for its scroll-track context —
+   inside the grid we let each track cell size the card instead */
+.notice_grid > .carousel_card {
+    flex: initial;
+    width: auto;
+    min-width: 0;
+}
+
 .notice_item {
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
