@@ -782,14 +782,148 @@
             .sm-grid { grid-template-columns: 1fr; }
             .hist-auth { flex-direction: column; align-items: stretch; }
         }
+
+        /* ── admin lock overlay ──────────────────────────────────────────
+           Full-screen gate rendered above everything else. The rest of the
+           page is invisible/inert until the admin password verifies against
+           the backend (via the existing adminListAll action, which rejects
+           the wrong password). A successful unlock stashes the password in
+           sessionStorage so within a single tab session the user isn't
+           re-prompted on refresh. sessionStorage (not localStorage) is a
+           deliberate call so a closed tab always re-locks.
+           Layered above modals via z-index. */
+        .adm-lock {
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(240, 240, 236, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .adm-lock[hidden] { display: none; }
+        .adm-lock-card {
+            width: 100%;
+            max-width: 380px;
+            padding: 30px 28px 26px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        .adm-lock-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            background: rgba(28, 102, 85, 0.10);
+            border-radius: 50%;
+            color: var(--green);
+        }
+        .adm-lock-icon svg { width: 22px; height: 22px; }
+        .adm-lock-title {
+            margin: 0 0 6px;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            color: #222;
+        }
+        .adm-lock-sub {
+            margin: 0 0 20px;
+            font-size: 12.5px;
+            text-align: center;
+            color: var(--gray);
+            line-height: 1.55;
+        }
+        .adm-lock-input {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid rgba(0, 0, 0, 0.14);
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .adm-lock-input:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(28, 102, 85, 0.12);
+        }
+        .adm-lock-input.is-error {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(178, 59, 59, 0.10);
+        }
+        .adm-lock-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 11px;
+            background: var(--green);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+        .adm-lock-btn:hover { opacity: .88; }
+        .adm-lock-btn:disabled { opacity: .5; cursor: not-allowed; }
+        .adm-lock-err {
+            margin: 10px 0 0;
+            font-size: 12.5px;
+            color: var(--red);
+            min-height: 1.1em;
+        }
+        /* small button in the header for stepping away from the machine */
+        .adm-lock-relock {
+            margin-left: 12px;
+            padding: 6px 12px;
+            background: transparent;
+            color: var(--gray);
+            border: 1px solid rgba(0, 0, 0, 0.14);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .adm-lock-relock:hover { color: var(--red); border-color: var(--red); }
     </style>
 </head>
 <body>
+
+<!-- password gate — hidden after adminListAll accepts the entered password.
+     Rendered first (and z-indexed above modals) so the page under it stays
+     invisible until the gate opens. -->
+<div class="adm-lock" id="adm-lock">
+    <div class="adm-lock-card">
+        <div class="adm-lock-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="10" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M8 10V7a4 4 0 118 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <p class="adm-lock-title">관리자 페이지</p>
+        <p class="adm-lock-sub">이 페이지는 설다연 임원진 전용입니다.<br>관리자 비밀번호를 입력해주세요.</p>
+        <form id="adm-lock-form" autocomplete="off">
+            <input class="adm-lock-input" id="adm-lock-input" type="password"
+                   placeholder="비밀번호 입력" autocomplete="current-password" required autofocus>
+            <button class="adm-lock-btn" id="adm-lock-btn" type="submit">확인</button>
+            <p class="adm-lock-err" id="adm-lock-err"></p>
+        </form>
+    </div>
+</div>
 
 <header class="adm-header">
     <h1>신청 관리</h1>
     <span class="adm-header-sub">설다연 행사</span>
     <div class="adm-header-spacer"></div>
+    <button class="adm-lock-relock" id="adm-relock-btn" type="button" hidden>잠금</button>
     <div class="adm-last-fetch" id="adm-last-fetch" hidden>
         <span class="adm-pulse" id="adm-pulse"></span>
         <span id="adm-last-fetch-text"></span>
@@ -1782,6 +1916,112 @@
 
     fetchBtn.addEventListener("click", loadHistory);
     pwInput.addEventListener("keydown", e => { if (e.key === "Enter") loadHistory(); });
+})();
+
+// ── admin lock overlay ─────────────────────────────────────────────────
+// Password gate that stays up until adminListAll accepts the entered
+// password. Successful unlock:
+//   1. stashes the password in sessionStorage (per-tab; clears on close)
+//   2. hides the overlay
+//   3. pre-fills the two downstream password inputs (adm-pw, hist-pw) so
+//      the user doesn't retype the same password for every tab
+// A small "잠금" button in the header re-locks manually.
+(function () {
+    "use strict";
+    const STORAGE_KEY = "snuTeaAdminPw_v1";
+    const JOIN_API = (typeof window.JOIN_APPS_SCRIPT_URL === "string" && window.JOIN_APPS_SCRIPT_URL.trim())
+        ? window.JOIN_APPS_SCRIPT_URL.trim() : "";
+
+    const overlay  = document.getElementById("adm-lock");
+    const form     = document.getElementById("adm-lock-form");
+    const input    = document.getElementById("adm-lock-input");
+    const btn      = document.getElementById("adm-lock-btn");
+    const err      = document.getElementById("adm-lock-err");
+    const relock   = document.getElementById("adm-relock-btn");
+    const admPw    = document.getElementById("adm-pw");
+    const histPw   = document.getElementById("hist-pw");
+
+    function showError(msg) {
+        err.textContent = msg;
+        input.classList.add("is-error");
+        input.select();
+    }
+    function clearError() {
+        err.textContent = "";
+        input.classList.remove("is-error");
+    }
+
+    async function verify(password) {
+        // adminListAll rejects a wrong password with { ok: false }, so this
+        // doubles as our credential check without needing a new endpoint
+        const res = await fetch(JOIN_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "adminListAll", adminPassword: password }),
+            cache: "no-store",
+        });
+        return await res.json();
+    }
+
+    function unlock(password) {
+        try { sessionStorage.setItem(STORAGE_KEY, password); } catch (e) { /* private mode */ }
+        // pre-fill the tab-level inputs so the user doesn't retype
+        if (admPw && !admPw.value) admPw.value = password;
+        if (histPw && !histPw.value) histPw.value = password;
+        overlay.hidden = true;
+        relock.hidden = false;
+        clearError();
+    }
+    function lock() {
+        try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        if (admPw)  admPw.value  = "";
+        if (histPw) histPw.value = "";
+        overlay.hidden = false;
+        relock.hidden = true;
+        input.value = "";
+        setTimeout(() => input.focus(), 50);
+    }
+
+    // Initial state: if JOIN_API is missing there's no way to verify, so we
+    // just show the gate with an explanatory error rather than opening it.
+    if (!JOIN_API) {
+        btn.disabled = true;
+        showError("관리자 API가 설정되지 않았습니다. join-config.js 확인이 필요해요.");
+        return;
+    }
+
+    // Try silent re-auth on load if we have a stashed password
+    const stashed = (() => { try { return sessionStorage.getItem(STORAGE_KEY); } catch (e) { return null; } })();
+    if (stashed) {
+        btn.disabled = true;
+        btn.textContent = "확인 중…";
+        verify(stashed).then((data) => {
+            if (data && data.ok) unlock(stashed);
+            else {
+                try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
+                // stay locked without a message — user just needs to re-enter
+            }
+        }).catch(() => { /* stay locked, no noisy error on silent try */ })
+          .finally(() => { btn.disabled = false; btn.textContent = "확인"; });
+    }
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const pw = input.value.trim();
+        if (!pw) { showError("비밀번호를 입력해주세요."); return; }
+        btn.disabled = true; btn.textContent = "확인 중…"; clearError();
+        try {
+            const data = await verify(pw);
+            if (data && data.ok) unlock(pw);
+            else showError(data && data.error ? data.error : "비밀번호가 올바르지 않습니다.");
+        } catch {
+            showError("네트워크 오류가 발생했습니다.");
+        } finally {
+            btn.disabled = false; btn.textContent = "확인";
+        }
+    });
+
+    relock.addEventListener("click", lock);
 })();
 </script>
 </body>
