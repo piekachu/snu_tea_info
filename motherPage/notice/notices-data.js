@@ -18,6 +18,15 @@
 // first — just keep this array in the order you want them shown.
 const teaClubNotices = [
     {
+        title: "소모임 신청 방법",
+        titleEn: "How to Sign Up for a Meetup",
+        date: "2026-08-18",
+        excerpt: "누구나 자유롭게 소모임을 만들거나 참여할 수 있어요. 날짜 선택부터 조 배정, 시음기 작성까지 신청 과정을 한 곳에서 안내드립니다.",
+        excerptEn: "Anyone can start or join a meetup. From picking a date through group assignment to writing up your tasting notes — the whole sign-up flow in one place.",
+        path: "notice/meetup-signup.html",
+        pinned: true,
+    },
+    {
         title: "FAQs",
         titleEn: "FAQs",
         date: "2026-08-17",
