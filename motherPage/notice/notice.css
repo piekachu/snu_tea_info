@@ -284,9 +284,9 @@
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 10px;
     display: block;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 .ot_split_caption {
     display: block;
@@ -295,6 +295,42 @@
     color: var(--fontGray);
     font-style: italic;
     text-align: center;
+}
+
+/* section-lead image (single photo below the section header, before steps).
+   Kept modest — a supporting visual next to the text, not a hero. Centered
+   with a max-width so it doesn't stretch on wide reads; short height so it
+   fits within the reading flow rather than interrupting it. */
+.ot_section_image {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 16 / 9;      /* deterministic height, lets object-fit crop */
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 4px auto 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* two-image side-by-side row, same restrained treatment */
+.ot_gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    max-width: 520px;
+    margin: 18px auto 24px;
+}
+.ot_gallery img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+@media all and (max-width: 640px) {
+    .ot_gallery { grid-template-columns: 1fr; }
 }
 
 /* activity card row — the six activities read as a grid of tiles instead
