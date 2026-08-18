@@ -725,6 +725,18 @@
             background: var(--green-pale);
             color: var(--green);
         }
+        .hist-chip.deleted {
+            background: var(--red-pale);
+            color: var(--red);
+        }
+        .hist-event-card.is-deleted {
+            border-color: rgba(178, 59, 59, 0.28);
+            background: rgba(178, 59, 59, 0.02);
+        }
+        .hist-event-card.is-deleted .hist-card-title {
+            text-decoration: line-through;
+            color: var(--gray);
+        }
         .hist-chip.canceled {
             background: var(--red-pale);
             color: var(--red);
@@ -1803,12 +1815,16 @@
             if (!data.ok) { setStatus(data.error || "오류가 발생했습니다.", true); return; }
 
             const today = todayStr();
-            const pastEvents = (data.events || [])
-                .filter(e => (e.date || "") < today)
+            // history = every past event PLUS every deleted event (regardless
+            // of date). Deleted future-dated events belong here too since
+            // there's nowhere else to see them after their calendar row is
+            // gone from the public list.
+            const histEvents = (data.events || [])
+                .filter(e => e.deletedAt || (e.date || "") < today)
                 .sort((a, b) => b.date.localeCompare(a.date) || (b.time||"").localeCompare(a.time||""));
             const allSignups = data.signups || [];
 
-            if (pastEvents.length === 0) {
+            if (histEvents.length === 0) {
                 const p = document.createElement("p");
                 p.className = "hist-no-events";
                 p.textContent = "지난 소모임이 없습니다.";
@@ -1817,8 +1833,11 @@
                 return;
             }
 
-            setStatus(`지난 소모임 ${pastEvents.length}개`);
-            pastEvents.forEach(ev => {
+            const deletedCount = histEvents.filter(e => e.deletedAt).length;
+            setStatus(deletedCount
+                ? `지난 소모임 ${histEvents.length}개 (삭제된 소모임 ${deletedCount}개 포함)`
+                : `지난 소모임 ${histEvents.length}개`);
+            histEvents.forEach(ev => {
                 const evSignups = allSignups.filter(s => s.eventId === ev.id);
                 listEl.appendChild(buildHistCard(ev, evSignups));
             });
@@ -1831,7 +1850,7 @@
         const canceledCount = signups.filter(s =>  s.canceledAt).length;
 
         const card = document.createElement("div");
-        card.className = "hist-event-card";
+        card.className = "hist-event-card" + (ev.deletedAt ? " is-deleted" : "");
 
         // ── header ──
         const head = document.createElement("div");
@@ -1854,6 +1873,14 @@
 
         const chips = document.createElement("div");
         chips.className = "hist-card-chips";
+        if (ev.deletedAt) {
+            // stand-out red chip so a scan of the history immediately
+            // separates deleted rows from just-past ones
+            const del = document.createElement("span");
+            del.className = "hist-chip deleted";
+            del.textContent = `삭제됨 · ${formatEventDate(ev.deletedAt.slice(0,10))}`;
+            chips.appendChild(del);
+        }
         const activeChip = document.createElement("span");
         activeChip.className = "hist-chip";
         activeChip.textContent = `신청 ${activeCount}명`;

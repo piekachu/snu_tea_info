@@ -22,7 +22,9 @@
 //     password_hash   TEXT        NOT NULL,
 //     host_signup_id  UUID,
 //     created_at      TIMESTAMPTZ DEFAULT now(),
-//     edit_token      UUID        NOT NULL
+//     edit_token      UUID        NOT NULL,
+//     approved_at     TIMESTAMPTZ,           -- NULL = pending admin approval
+//     deleted_at      TIMESTAMPTZ            -- NULL = live; non-NULL = soft-deleted
 //   );
 //
 //   CREATE TABLE IF NOT EXISTS join_signups (
@@ -117,6 +119,9 @@ function mapEvent(ev: any) {
     // Newly created events start with approved_at IS NULL. Only after an admin
     // approves via the approveEvent action can non-host users sign up.
     approvedAt: ev.approved_at ?? null,
+    // Soft-delete marker (see deleteEvent action). Deleted events are hidden
+    // from the public list but preserved for the admin 이력 view.
+    deletedAt: ev.deleted_at ?? null,
   };
 }
 
@@ -147,8 +152,9 @@ Deno.serve(async (req: Request) => {
           supabase
             .from("join_events")
             .select(
-              "id, date, time, title, location, map_link, capacity, host, description, host_signup_id, created_at, approved_at"
+              "id, date, time, title, location, map_link, capacity, host, description, host_signup_id, created_at, approved_at, deleted_at"
             )
+            .is("deleted_at", null)          // deleted events don't appear publicly
             .order("date"),
           supabase
             .from("join_signups")
@@ -248,10 +254,11 @@ Deno.serve(async (req: Request) => {
 
       const { data: ev, error: evErr } = await supabase
         .from("join_events")
-        .select("id, password_hash, edit_token, host, host_signup_id")
+        .select("id, password_hash, edit_token, host, host_signup_id, deleted_at")
         .eq("id", id)
         .single();
       if (evErr || !ev) return json({ ok: false, error: "존재하지 않는 소모임이에요." });
+      if (ev.deleted_at) return json({ ok: false, error: "삭제된 소모임이에요." });
 
       const isAdmin = ADMIN_PASSWORD !== "" && adminPassword === ADMIN_PASSWORD;
       const tokenOk = editToken && ev.edit_token === editToken;
@@ -318,10 +325,11 @@ Deno.serve(async (req: Request) => {
 
       const { data: ev, error: evErr } = await supabase
         .from("join_events")
-        .select("id, password_hash, edit_token, host_signup_id")
+        .select("id, password_hash, edit_token, host_signup_id, deleted_at")
         .eq("id", id)
         .single();
       if (evErr || !ev) return json({ ok: false, error: "존재하지 않는 소모임이에요." });
+      if (ev.deleted_at) return json({ ok: true, alreadyDeleted: true });
 
       const isAdmin = ADMIN_PASSWORD !== "" && adminPassword === ADMIN_PASSWORD;
       const tokenOk = editToken && ev.edit_token === editToken;
@@ -341,11 +349,23 @@ Deno.serve(async (req: Request) => {
       if ((otherCount ?? 0) > 0 && !isAdmin)
         return json({ ok: false, error: "다른 참가자가 있어 삭제할 수 없어요." });
 
-      // Delete all signups for this event, then the event itself
-      await supabase.from("join_signups").delete().eq("event_id", id);
-      await supabase.from("join_events").delete().eq("id", id);
+      // Soft-delete the event so the admin history panel can still see it.
+      // Also stamp canceled_at on every still-active signup so the roster
+      // reads consistently (an active signup on a deleted event would be
+      // misleading). Uses the same timestamp for both writes so an audit
+      // reader can pair them.
+      const nowIso = new Date().toISOString();
+      await supabase
+        .from("join_signups")
+        .update({ canceled_at: nowIso })
+        .eq("event_id", id)
+        .is("canceled_at", null);
+      await supabase
+        .from("join_events")
+        .update({ deleted_at: nowIso })
+        .eq("id", id);
 
-      return json({ ok: true });
+      return json({ ok: true, deletedAt: nowIso });
     }
 
     // ── signup ────────────────────────────────────────────────────────
@@ -356,10 +376,11 @@ Deno.serve(async (req: Request) => {
 
       const { data: ev, error: evErr } = await supabase
         .from("join_events")
-        .select("id, date, capacity, approved_at")
+        .select("id, date, capacity, approved_at, deleted_at")
         .eq("id", eventId)
         .single();
       if (evErr || !ev) return json({ ok: false, error: "존재하지 않는 소모임이에요." });
+      if (ev.deleted_at) return json({ ok: false, error: "삭제된 소모임이에요." });
 
       // Signups from non-hosts are blocked until an admin approves.
       // The host is auto-signed up inside createEvent above, so their
@@ -542,7 +563,7 @@ Deno.serve(async (req: Request) => {
       const [{ data: evs, error: evErr }, { data: sigs, error: sigErr }] = await Promise.all([
         supabase
           .from("join_events")
-          .select("id, date, time, title, location, capacity, host, host_signup_id, created_at, approved_at")
+          .select("id, date, time, title, location, capacity, host, host_signup_id, created_at, approved_at, deleted_at")
           .order("date"),
         supabase
           .from("join_signups")
@@ -563,6 +584,7 @@ Deno.serve(async (req: Request) => {
         hostSignupId: e.host_signup_id,
         createdAt: e.created_at,
         approvedAt: e.approved_at ?? null,
+        deletedAt: e.deleted_at ?? null,
       }));
 
       const signups = (sigs ?? []).map((s) => ({
@@ -591,10 +613,11 @@ Deno.serve(async (req: Request) => {
 
       const { data: ev, error: evErr } = await supabase
         .from("join_events")
-        .select("id, approved_at")
+        .select("id, approved_at, deleted_at")
         .eq("id", id)
         .single();
       if (evErr || !ev) return json({ ok: false, error: "존재하지 않는 소모임이에요." });
+      if (ev.deleted_at) return json({ ok: false, error: "삭제된 소모임이에요." });
 
       if (ev.approved_at != null) {
         return json({ ok: true, alreadyApproved: true, approvedAt: ev.approved_at });

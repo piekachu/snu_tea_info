@@ -80,7 +80,9 @@
         // mirrors publicEvents_/publicSignups_ in Code.gs — password/editToken
         // stay out of the array the rest of the page actually renders from,
         // even though it's all local anyway in demo mode
-        const events = d.events.map((e) => ({
+        // deleted events don't appear publicly (mirrors the Edge Function's
+        // deleted_at IS NULL filter on the list action)
+        const events = d.events.filter((e) => !e.deletedAt).map((e) => ({
             id: e.id,
             date: e.date,
             time: e.time,
@@ -162,6 +164,7 @@
         const idx = d.events.findIndex((e) => e.id === body.id);
         if (idx === -1) return { ok: false, error: I18N.t("join.err.noEvent") };
         const target = d.events[idx];
+        if (target.deletedAt) return { ok: false, error: I18N.t("join.err.noEvent") };
 
         const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
@@ -200,6 +203,7 @@
         const idx = d.events.findIndex((e) => e.id === body.id);
         if (idx === -1) return { ok: false, error: I18N.t("join.err.noEvent") };
         const target = d.events[idx];
+        if (target.deletedAt) return { ok: true, alreadyDeleted: true };
 
         const isOwner = (!!body.editToken && target.editToken === body.editToken) || (!!body.password && target.password === body.password);
         const isAdmin = !!body.adminPassword && body.adminPassword === DEMO_ADMIN_PASSWORD;
@@ -210,18 +214,24 @@
         const otherSignups = allSignups.filter((s) => s.id !== target.hostSignupId && !s.canceledAt);
         if (otherSignups.length > 0 && !isAdmin) return { ok: false, error: I18N.t("join.err.hasOthers") };
 
-        // safe to clear every signup tied to this event now — either it's
-        // just the creator's own auto-signup, or an admin is force-clearing
-        d.signups = d.signups.filter((s) => s.eventId !== body.id);
-        d.events.splice(idx, 1);
+        // Soft-delete: mark the event and every still-active signup so the
+        // admin 이력 view still surfaces both after deletion. Uses one
+        // timestamp for both writes so an audit reader can pair them.
+        // Mirrors the Edge Function's deleteEvent behavior.
+        const nowIso = new Date().toISOString();
+        d.signups.forEach((s) => {
+            if (s.eventId === body.id && !s.canceledAt) s.canceledAt = nowIso;
+        });
+        target.deletedAt = nowIso;
         saveDemo(d);
-        return { ok: true };
+        return { ok: true, deletedAt: nowIso };
     }
 
     function demoSignup(body) {
         const d = loadDemo();
         const event = d.events.find((e) => e.id === body.eventId);
         if (!event) return { ok: false, error: I18N.t("join.err.noEvent") };
+        if (event.deletedAt) return { ok: false, error: I18N.t("join.err.noEvent") };
         // gate on admin approval — mirrors the Edge Function's signup check
         if (event.approvedAt == null) return { ok: false, error: I18N.t("join.err.notApproved") };
         if (signupsClosed(event)) return { ok: false, error: I18N.t("join.err.signupClosed") };
@@ -324,6 +334,7 @@
             hostSignupId: e.hostSignupId || null,
             createdAt: e.createdAt,
             approvedAt: e.approvedAt || null,
+            deletedAt: e.deletedAt || null,
         }));
         const signups = d.signups.map((s) => ({
             id: s.id,
@@ -346,6 +357,7 @@
         const d = loadDemo();
         const ev = d.events.find((e) => e.id === body.id);
         if (!ev) return { ok: false, error: I18N.t("join.err.noEvent") };
+        if (ev.deletedAt) return { ok: false, error: I18N.t("join.err.noEvent") };
         if (ev.approvedAt) return { ok: true, alreadyApproved: true, approvedAt: ev.approvedAt };
         ev.approvedAt = new Date().toISOString();
         saveDemo(d);
