@@ -135,6 +135,7 @@ const teaClubEvents = [
         date: "2026-06-19",
         title: "26-1 종강다회",
         path: "2026springEOS/26springEOS_index.html",
+        thumbnail: "2026springEOS/images/0002.png",
         location: "https://naver.me/5pwsXu4f",
         fee: "[참가비를 입력해주세요]",
         인원: 20,
@@ -144,6 +145,7 @@ const teaClubEvents = [
         date: "2026-06-22",
         title: "26-2 개강다회",
         path: "2026summerSOS/26summerSOS_index.html",
+        thumbnail: "2026summerSOS/images/9901.png",
         location: "https://naver.me/xoH83gzf",
         fee: "[참가비를 입력해주세요]",
         인원: 20,
@@ -175,20 +177,6 @@ const teaClubEvents = [
         mapLink: "https://map.naver.com/p/entry/place/1752983758?c=15.00,0,0,0,dh&isCorrectAnswer=true&placePath=%2Fhome%3Ffrom%3Dmap%26fromPanelNum%3D1%26additionalHeight%3D76%26timestamp%3D202607232140%26locale%3Dko%26svcName%3Dmap_pcv5",
         fee: "10000원",
         인원: 40,
-        category: "regulars"
-    },
-    {
-        date: "2026-09-01",
-        time: "18:00",
-        title: "test_event",
-        path: "test_event/index.html",
-        thumbnail: "test_event/hero.jpg",
-        location: "서울 관악구 관악로12길 11 2층 반조",
-        lat: 37.478252,
-        lng: 126.953039,
-        mapLink: "https://naver.me/xwmq9Wk5",
-        fee: "10000원",
-        인원: 30,
         category: "regulars"
     }
 ];
