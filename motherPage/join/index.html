@@ -171,8 +171,51 @@
         </div>
     </div>
 
+    <!-- floating help button — opens the manual carousel below -->
+    <button type="button" id="joinHelpFab" class="join_help_fab"
+            aria-label="소모임 신청 방법 안내" title="소모임 신청 방법 안내">?</button>
+
+    <!-- ─── manual walkthrough modal (lightbox-style) ──────────────────── -->
+    <div class="join_help_overlay" id="joinHelpOverlay" role="dialog"
+         aria-modal="true" aria-labelledby="joinHelpTitle" hidden>
+        <div class="join_help_modal">
+            <div class="join_help_header">
+                <div class="join_help_tabs" role="tablist" aria-label="안내 섹션">
+                    <button type="button" class="join_help_tab is-active"
+                            role="tab" aria-selected="true"
+                            data-tab="create">새 소모임 만들기</button>
+                    <button type="button" class="join_help_tab"
+                            role="tab" aria-selected="false"
+                            data-tab="join">소모임에 신청하기</button>
+                </div>
+                <button type="button" class="join_help_close" aria-label="닫기">&times;</button>
+            </div>
+
+            <div class="join_help_stage">
+                <button type="button" class="join_help_nav join_help_prev"
+                        aria-label="이전">&#8249;</button>
+                <img class="join_help_img" src="" alt="" id="joinHelpTitle">
+                <button type="button" class="join_help_nav join_help_next"
+                        aria-label="다음">&#8250;</button>
+            </div>
+
+            <div class="join_help_footer">
+                <div class="join_help_meta">
+                    <div class="join_help_dots"></div>
+                    <span class="join_help_progress"></span>
+                </div>
+                <h4 class="join_help_slide_title"></h4>
+                <p class="join_help_slide_body"></p>
+                <p class="join_help_more">
+                    <a href="../notice/meetup-signup.html">전체 안내 페이지에서 자세히 보기 &rarr;</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
     <script src="join-config.js"></script>
     <script src="join.js"></script>
+    <script src="join-manual.js"></script>
 
     <!-- footer -->
     <footer class="footer">
