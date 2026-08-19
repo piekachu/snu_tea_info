@@ -93,20 +93,9 @@
         .adm-panel.is-active { display: block; }
 
         /* ── query bar ── */
-        .adm-query {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 18px 22px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            gap: 14px;
-            margin-bottom: 20px;
-        }
         .adm-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
         .adm-field label { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .05em; }
-        .adm-select, .adm-pw {
+        .adm-pw {
             padding: 8px 10px;
             border: 1px solid var(--border);
             border-radius: var(--radius);
@@ -117,7 +106,7 @@
             outline: none;
             transition: border-color .15s;
         }
-        .adm-select:focus, .adm-pw:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(28,102,85,.1); }
+        .adm-pw:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(28,102,85,.1); }
         .adm-btn {
             padding: 9px 22px;
             background: var(--green);
@@ -149,126 +138,6 @@
         .adm-btn-sm:hover { opacity: .88; }
         .adm-btn-sm:disabled { opacity: .45; cursor: not-allowed; }
 
-        .adm-refresh-toggle {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 13px;
-            color: var(--gray);
-            cursor: pointer;
-            white-space: nowrap;
-            user-select: none;
-        }
-        .adm-refresh-toggle input { accent-color: var(--green); width: 15px; height: 15px; cursor: pointer; }
-        .adm-refresh-badge {
-            font-size: 11px;
-            background: var(--green-pale);
-            color: var(--green);
-            font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 10px;
-            display: none;
-        }
-        .adm-refresh-badge.on { display: inline-block; }
-
-        /* ── status text ── */
-        .adm-status {
-            font-size: 13px;
-            color: var(--gray);
-            margin-bottom: 14px;
-            min-height: 18px;
-        }
-        .adm-status.err { color: var(--red); }
-
-        /* ── capacity card ── */
-        .adm-cap-card {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 18px 22px;
-            margin-bottom: 16px;
-        }
-        .adm-cap-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            margin-bottom: 16px;
-        }
-        .adm-cap-rows { display: flex; flex-direction: column; gap: 12px; }
-        .adm-cap-row { display: flex; align-items: center; gap: 12px; }
-        .adm-cap-lbl {
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-            width: 80px;
-            flex-shrink: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .adm-cap-row.is-full .adm-cap-lbl { color: var(--gray); }
-        .adm-cap-track {
-            flex: 1;
-            height: 7px;
-            background: #eee;
-            border-radius: 999px;
-            overflow: hidden;
-            min-width: 60px;
-        }
-        .adm-cap-fill {
-            height: 100%;
-            border-radius: 999px;
-            background: var(--green);
-            transition: width .4s cubic-bezier(.4,0,.2,1);
-        }
-        .adm-cap-row.is-full .adm-cap-fill { background: var(--red); }
-        .adm-cap-cnt {
-            font-size: 12.5px;
-            font-weight: 700;
-            color: #444;
-            width: 42px;
-            text-align: right;
-            flex-shrink: 0;
-            font-variant-numeric: tabular-nums;
-        }
-        .adm-cap-row.is-full .adm-cap-cnt { color: var(--red); }
-        .adm-cap-pills { display: flex; gap: 5px; flex-shrink: 0; }
-        .adm-pill {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 2px 7px;
-            border-radius: 10px;
-            white-space: nowrap;
-        }
-        .adm-pill.full { background: var(--red-pale); color: var(--red); }
-        .adm-pill.wait { background: var(--amber-pale); color: var(--amber); }
-
-        /* ── summary chips ── */
-        .adm-summary {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 14px;
-        }
-        .adm-chip {
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-        .adm-chip.confirmed { background: var(--green-pale); color: var(--green); }
-        .adm-chip.waiting   { background: var(--amber-pale); color: var(--amber); }
-        .adm-chip.total     { background: #efefed; color: #555; }
-
-        /* ── toolbar ── */
-        .adm-toolbar {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 8px;
-        }
         .adm-btn-sec {
             padding: 7px 16px;
             background: #fff;
@@ -284,90 +153,15 @@
         }
         .adm-btn-sec:hover { background: var(--green-pale); }
 
-        /* ── table ── */
-        .adm-table-wrap {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow-x: auto;
-        }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        thead th {
-            background: #f2f2f0;
-            padding: 9px 14px;
-            text-align: left;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .05em;
+        /* ── status text ── */
+        .adm-status {
+            font-size: 13px;
             color: var(--gray);
-            white-space: nowrap;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-        }
-        tbody tr { border-bottom: 1px solid #f0f0ee; }
-        tbody tr:last-child { border-bottom: none; }
-        tbody tr.wait-row { background: #fffdf0; }
-        tbody tr:hover { background: #f8f8f6; }
-        tbody tr.wait-row:hover { background: #fffbde; }
-        tbody td { padding: 10px 14px; vertical-align: middle; color: #333; }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 9px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-        .badge.ok   { background: var(--green-pale); color: var(--green); }
-        .badge.wait { background: var(--amber-pale); color: var(--amber); }
-        .wait-pos {
-            display: inline-block;
-            font-size: 10.5px;
-            font-weight: 700;
-            background: rgba(122,99,0,.15);
-            color: var(--amber);
-            border-radius: 8px;
-            padding: 1px 5px;
-            margin-left: 3px;
-            font-variant-numeric: tabular-nums;
-        }
-        .adm-empty { text-align: center; padding: 56px; color: var(--gray); font-size: 14px; }
-        .adm-num { font-variant-numeric: tabular-nums; color: var(--gray); font-size: 12px; }
-        .adm-ts  { font-variant-numeric: tabular-nums; color: var(--gray); font-size: 12px; }
-
-        /* ── view toggle (신청 중 / 취소 / 전체) ── */
-        .adm-view-toggle {
-            display: flex;
-            gap: 6px;
             margin-bottom: 14px;
+            min-height: 18px;
         }
-        .adm-view-btn {
-            padding: 5px 16px;
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            font-family: var(--font);
-            font-size: 12.5px;
-            font-weight: 600;
-            color: var(--gray);
-            background: #fff;
-            cursor: pointer;
-            transition: background .12s, color .12s, border-color .12s;
-        }
-        .adm-view-btn:hover { background: #f0f0ee; }
-        .adm-view-btn.is-active { background: var(--green); color: #fff; border-color: var(--green); }
-        .adm-view-btn.is-active.canceled { background: var(--red); border-color: var(--red); }
-
-        /* canceled rows */
-        tbody tr.canceled-row { background: #fdf5f5; }
-        tbody tr.canceled-row:hover { background: #faeaea; }
-        tbody tr.canceled-row td { color: #999; }
-        tbody tr.canceled-row td.adm-name-cell { text-decoration: line-through; }
-        .badge.canceled { background: rgba(178,59,59,.10); color: var(--red); }
+        .adm-status.err { color: var(--red); }
+        .adm-empty { text-align: center; padding: 56px; color: var(--gray); font-size: 14px; }
 
         /* ── 소모임 panel ── */
         .sm-toolbar {
@@ -790,7 +584,6 @@
             .adm-header { padding: 14px 16px; }
             .adm-tabs   { padding: 0 16px; }
             .adm-wrap   { padding: 16px 12px 40px; }
-            .adm-query, .adm-cap-card { padding: 14px 16px; }
             .sm-grid { grid-template-columns: 1fr; }
             .hist-auth { flex-direction: column; align-items: stretch; }
         }
@@ -943,61 +736,11 @@
 </header>
 
 <nav class="adm-tabs">
-    <button class="adm-tab is-active" data-panel="tab-signups">행사 신청</button>
-    <button class="adm-tab"           data-panel="tab-somori">소모임</button>
+    <button class="adm-tab is-active" data-panel="tab-somori">소모임</button>
     <button class="adm-tab"           data-panel="tab-history">소모임 이력</button>
 </nav>
 
 <div class="adm-wrap">
-
-    <!-- ══ 행사 신청 panel ══════════════════════════════════════════════ -->
-    <div class="adm-panel is-active" id="tab-signups">
-
-        <div class="adm-query">
-            <div class="adm-field">
-                <label for="adm-event-sel">행사 선택</label>
-                <select class="adm-select" id="adm-event-sel"></select>
-            </div>
-            <div class="adm-field" style="max-width:220px;">
-                <label for="adm-pw">관리자 비밀번호</label>
-                <input class="adm-pw" id="adm-pw" type="password" placeholder="비밀번호 입력" autocomplete="current-password">
-            </div>
-            <button class="adm-btn" id="adm-fetch-btn">조회</button>
-            <label class="adm-refresh-toggle">
-                <input type="checkbox" id="adm-auto-refresh">
-                자동 새로고침
-                <span class="adm-refresh-badge" id="adm-refresh-badge">30s</span>
-            </label>
-        </div>
-
-        <p class="adm-status" id="adm-status"></p>
-
-        <!-- view filter: active / canceled / all -->
-        <div class="adm-view-toggle" id="adm-view-toggle" hidden>
-            <button class="adm-view-btn is-active" data-view="active">신청 중</button>
-            <button class="adm-view-btn canceled"  data-view="canceled">취소</button>
-            <button class="adm-view-btn"            data-view="all">전체</button>
-        </div>
-
-        <div class="adm-cap-card" id="adm-cap-card" hidden>
-            <p class="adm-cap-title" id="adm-cap-title">찻집별 현황</p>
-            <div class="adm-cap-rows" id="adm-cap-rows"></div>
-        </div>
-
-        <div class="adm-summary" id="adm-summary" hidden></div>
-
-        <div class="adm-toolbar" id="adm-toolbar" hidden>
-            <button class="adm-btn-sec" id="adm-csv-btn">CSV 내보내기</button>
-        </div>
-
-        <div class="adm-table-wrap" id="adm-table-wrap" hidden>
-            <table>
-                <thead id="adm-thead"></thead>
-                <tbody id="adm-tbody"></tbody>
-            </table>
-        </div>
-
-    </div><!-- /tab-signups -->
 
     <!-- ══ 소모임 panel ═════════════════════════════════════════════════ -->
     <div class="adm-panel" id="tab-somori">
@@ -1065,333 +808,10 @@
 })();
 
 
-/* ══════════════════════════════════════════════════════════════════════
-   2. 행사 신청 admin
-   ══════════════════════════════════════════════════════════════════════ */
-(function () {
-    const API = "https://mzuxduxbzvaekuancotu.supabase.co/functions/v1/event-signup";
-
-    const sel           = document.getElementById("adm-event-sel");
-    const pwInput       = document.getElementById("adm-pw");
-    const fetchBtn      = document.getElementById("adm-fetch-btn");
-    const statusEl      = document.getElementById("adm-status");
-    const summaryEl     = document.getElementById("adm-summary");
-    const capCard       = document.getElementById("adm-cap-card");
-    const capTitle      = document.getElementById("adm-cap-title");
-    const capRows       = document.getElementById("adm-cap-rows");
-    const toolbar       = document.getElementById("adm-toolbar");
-    const tableWrap     = document.getElementById("adm-table-wrap");
-    const thead         = document.getElementById("adm-thead");
-    const tbody         = document.getElementById("adm-tbody");
-    const csvBtn        = document.getElementById("adm-csv-btn");
-    const autoRefCheck  = document.getElementById("adm-auto-refresh");
-    const refreshBadge  = document.getElementById("adm-refresh-badge");
-    const lastFetchEl   = document.getElementById("adm-last-fetch");
-    const lastFetchTxt  = document.getElementById("adm-last-fetch-text");
-    const pulseEl       = document.getElementById("adm-pulse");
-    const viewToggleWrap= document.getElementById("adm-view-toggle");
-    const viewBtns      = viewToggleWrap.querySelectorAll(".adm-view-btn");
-
-    // "active" | "canceled" | "all"
-    let currentView = "active";
-    let lastSignups = [], lastExtraCols = [], autoTimer = null, lastPw = "";
-
-    // ── helpers ─────────────────────────────────────────────────────
-    function isActive(s)   { return !s.canceled_at; }
-    function isCanceled(s) { return !!s.canceled_at; }
-
-    function viewFilter(signups) {
-        if (currentView === "active")   return signups.filter(isActive);
-        if (currentView === "canceled") return signups.filter(isCanceled);
-        return signups;
-    }
-
-    function getSelectedEvent() {
-        return (typeof teaClubEvents !== "undefined")
-            ? teaClubEvents.find(e => e.path === sel.value) || null : null;
-    }
-    function getGroupField(ev) {
-        if (!ev || !Array.isArray(ev.signupFields)) return null;
-        return ev.signupFields.find(
-            f => f.type === "select" && Array.isArray(f.options) && f.capacityPerOption != null
-        ) || null;
-    }
-    function formatDate(iso) {
-        if (!iso) return "—";
-        const d = new Date(iso), p = n => String(n).padStart(2,"0");
-        return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-    }
-    function nowTime() {
-        const d = new Date(), p = n => String(n).padStart(2,"0");
-        return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
-    }
-    function setStatus(msg, isErr = false) {
-        statusEl.textContent = msg;
-        statusEl.className = "adm-status" + (isErr ? " err" : "");
-    }
-    function hide() {
-        capCard.hidden = summaryEl.hidden = toolbar.hidden = tableWrap.hidden = true;
-        viewToggleWrap.hidden = true;
-    }
-    function flashPulse() {
-        pulseEl.classList.remove("on");
-        void pulseEl.offsetWidth;
-        pulseEl.classList.add("on");
-    }
-
-    // ── view toggle ──────────────────────────────────────────────────
-    viewBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-            currentView = btn.dataset.view;
-            viewBtns.forEach(b => b.classList.toggle("is-active", b === btn));
-            if (lastSignups.length) {
-                const ev = getSelectedEvent(), gf = getGroupField(ev);
-                renderTable(lastSignups, gf);
-            }
-        });
-    });
-
-    // ── dropdown ─────────────────────────────────────────────────────
-    if (typeof teaClubEvents !== "undefined") {
-        [...teaClubEvents].sort((a,b) => b.date.localeCompare(a.date)).forEach(ev => {
-            const o = document.createElement("option");
-            o.value = ev.path;
-            o.textContent = `${ev.date}  ${ev.title}`;
-            sel.appendChild(o);
-        });
-    } else {
-        sel.innerHTML = '<option>events-data.js 로드 실패</option>';
-    }
-
-    // ── fetch ────────────────────────────────────────────────────────
-    async function fetchSignups(isAuto = false) {
-        const eventPath = sel.value;
-        const password  = isAuto ? lastPw : pwInput.value;
-        if (!eventPath) { setStatus("행사를 선택해주세요.", true); return; }
-        if (!password)  { setStatus("비밀번호를 입력해주세요.", true); return; }
-        if (!isAuto) { setStatus("조회 중…"); fetchBtn.disabled = true; hide(); }
-        try {
-            const res  = await fetch(API, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "adminListSignups", eventPath, password }),
-            });
-            const data = await res.json();
-            if (data.error) { setStatus(data.error, true); return; }
-            lastSignups = data.signups || [];
-            lastPw = password;
-            const ev = getSelectedEvent(), gf = getGroupField(ev);
-            // capacity card and summary always reflect active signups only
-            renderCapacityCard(lastSignups.filter(isActive), gf);
-            renderSummary(lastSignups);
-            renderTable(lastSignups, gf);
-            viewToggleWrap.hidden = false;
-            const activeN   = lastSignups.filter(isActive).length;
-            const canceledN = lastSignups.filter(isCanceled).length;
-            setStatus(`신청 중 ${activeN}명 · 취소 ${canceledN}명`);
-            lastFetchTxt.textContent = `최종 조회 ${nowTime()}`;
-            lastFetchEl.hidden = false;
-            flashPulse();
-        } catch { setStatus("네트워크 오류가 발생했습니다.", true); }
-        finally { if (!isAuto) fetchBtn.disabled = false; }
-    }
-
-    fetchBtn.addEventListener("click", () => fetchSignups(false));
-    pwInput.addEventListener("keydown", e => { if (e.key === "Enter") fetchSignups(false); });
-    autoRefCheck.addEventListener("change", () => {
-        refreshBadge.classList.toggle("on", autoRefCheck.checked);
-        clearInterval(autoTimer);
-        if (autoRefCheck.checked)
-            autoTimer = setInterval(() => { if (lastPw) fetchSignups(true); }, 30_000);
-    });
-
-    // ── capacity card (active signups only) ──────────────────────────
-    function renderCapacityCard(activeSignups, gf) {
-        if (!gf) { capCard.hidden = true; return; }
-        capTitle.textContent = `${gf.label}별 현황`;
-        capRows.innerHTML = "";
-        gf.options.forEach(option => {
-            const conf = activeSignups.filter(s => !s.waitlisted && (s.metadata||{})[gf.name] === option).length;
-            const wait = activeSignups.filter(s =>  s.waitlisted && (s.metadata||{})[gf.name] === option).length;
-            const full = conf >= gf.capacityPerOption;
-            const pct  = Math.min(100, conf / gf.capacityPerOption * 100);
-            const row  = document.createElement("div");
-            row.className = "adm-cap-row" + (full ? " is-full" : "");
-            const lbl = document.createElement("span"); lbl.className = "adm-cap-lbl"; lbl.textContent = option;
-            const trk = document.createElement("div");  trk.className = "adm-cap-track";
-            const fil = document.createElement("div");  fil.className = "adm-cap-fill"; fil.style.width = `${pct}%`;
-            trk.appendChild(fil);
-            const cnt = document.createElement("span"); cnt.className = "adm-cap-cnt"; cnt.textContent = `${conf}/${gf.capacityPerOption}명`;
-            const pills = document.createElement("div"); pills.className = "adm-cap-pills";
-            if (full) { const p = document.createElement("span"); p.className="adm-pill full"; p.textContent="마감"; pills.appendChild(p); }
-            if (wait) { const p = document.createElement("span"); p.className="adm-pill wait"; p.textContent=`대기 ${wait}명`; pills.appendChild(p); }
-            [lbl,trk,cnt,pills].forEach(el => row.appendChild(el));
-            capRows.appendChild(row);
-        });
-        capCard.hidden = false;
-    }
-
-    // ── summary chips (all signups, split by status) ─────────────────
-    function renderSummary(signups) {
-        summaryEl.innerHTML = "";
-        const active    = signups.filter(isActive);
-        const canceled  = signups.filter(isCanceled);
-        const confirmed = active.filter(s => !s.waitlisted).length;
-        const waiting   = active.filter(s =>  s.waitlisted).length;
-
-        const chips = [
-            [`신청 중 ${active.length}명`, "confirmed"],
-            ...(waiting   ? [[`대기 ${waiting}명`, "waiting"]]  : []),
-            ...(canceled.length ? [[`취소 ${canceled.length}명`, "total"]] : []),
-        ];
-        chips.forEach(([txt, cls]) => {
-            const c = document.createElement("span");
-            c.className = `adm-chip ${cls}`; c.textContent = txt;
-            summaryEl.appendChild(c);
-        });
-        summaryEl.hidden = false;
-    }
-
-    // ── table ────────────────────────────────────────────────────────
-    function renderTable(signups, gf) {
-        thead.innerHTML = tbody.innerHTML = "";
-
-        const visible = viewFilter(signups);
-
-        // collect extra metadata column keys from active rows only (consistent columns)
-        const metaKeys = [];
-        signups.filter(isActive).forEach(s => Object.keys(s.metadata||{}).forEach(k => {
-            if (!metaKeys.includes(k) && k !== gf?.name) metaKeys.push(k);
-        }));
-        lastExtraCols = gf ? [gf.name, ...metaKeys] : metaKeys;
-
-        const cols = ["#", "닉네임", "실명", "상태", "신청 일시"];
-        if (gf) cols.push(gf.label);
-        metaKeys.forEach(k => cols.push(k));
-
-        const hr = document.createElement("tr");
-        cols.forEach(h => { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); });
-        thead.appendChild(hr);
-
-        // waitlist positions — only among active waitlisted
-        const waitPos = {};
-        const computePos = (list) => list
-            .sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
-            .forEach((s, i) => { waitPos[s.id] = i + 1; });
-        const activeWait = signups.filter(s => isActive(s) && s.waitlisted);
-        if (gf) {
-            gf.options.forEach(opt =>
-                computePos(activeWait.filter(s => (s.metadata||{})[gf.name] === opt))
-            );
-        } else {
-            computePos(activeWait);
-        }
-
-        if (!visible.length) {
-            const tr = document.createElement("tr");
-            const td = document.createElement("td");
-            td.colSpan = cols.length;
-            td.className = "adm-empty";
-            td.textContent = currentView === "canceled" ? "취소 내역이 없습니다." : "신청자가 없습니다.";
-            tr.appendChild(td); tbody.appendChild(tr);
-        } else {
-            visible.forEach((s, i) => {
-                const canceled = isCanceled(s);
-                const tr = document.createElement("tr");
-                if (canceled)   tr.classList.add("canceled-row");
-                else if (s.waitlisted) tr.classList.add("wait-row");
-
-                // # / 닉네임 / 실명
-                const tdNum  = document.createElement("td"); tdNum.className = "adm-num"; tdNum.textContent = i + 1;
-                const tdNick = document.createElement("td"); tdNick.className = "adm-name-cell"; tdNick.textContent = s.nickname;
-                const tdReal = document.createElement("td"); tdReal.textContent = s.real_name;
-                tr.appendChild(tdNum);
-                tr.appendChild(tdNick);
-                tr.appendChild(tdReal);
-
-                // status badge
-                const tdSt = document.createElement("td");
-                const badge = document.createElement("span");
-                if (canceled) {
-                    badge.className = "badge canceled";
-                    badge.textContent = "취소";
-                } else if (s.waitlisted) {
-                    badge.className = "badge wait";
-                    badge.textContent = "대기";
-                    if (waitPos[s.id]) {
-                        const pos = document.createElement("span"); pos.className = "wait-pos";
-                        pos.textContent = `#${waitPos[s.id]}`; badge.appendChild(pos);
-                    }
-                } else {
-                    badge.className = "badge ok";
-                    badge.textContent = "확정";
-                }
-                tdSt.appendChild(badge); tr.appendChild(tdSt);
-
-                // timestamp — show canceled_at when canceled, otherwise created_at
-                const tdTs = document.createElement("td"); tdTs.className = "adm-ts";
-                if (canceled) {
-                    tdTs.innerHTML = `${formatDate(s.created_at)}<br><span style="color:var(--red);font-size:11px;">취소 ${formatDate(s.canceled_at)}</span>`;
-                } else {
-                    tdTs.textContent = formatDate(s.created_at);
-                }
-                tr.appendChild(tdTs);
-
-                // group field
-                if (gf) { const td = document.createElement("td"); td.textContent = (s.metadata||{})[gf.name] ?? "—"; tr.appendChild(td); }
-                metaKeys.forEach(k => { const td = document.createElement("td"); td.textContent = (s.metadata||{})[k] ?? "—"; tr.appendChild(td); });
-
-                tbody.appendChild(tr);
-            });
-        }
-        toolbar.hidden = tableWrap.hidden = false;
-    }
-
-    // ── CSV export (respects current view) ───────────────────────────
-    csvBtn.addEventListener("click", () => {
-        if (!lastSignups.length) return;
-        const ev = getSelectedEvent(), gf = getGroupField(ev);
-        const visible = viewFilter(lastSignups);
-
-        const headers = ["번호", "닉네임", "실명", "상태", "대기순위", "신청 일시", "취소 일시"];
-        if (gf) headers.push(gf.label);
-        const plainMeta = lastExtraCols.filter(k => k !== gf?.name);
-        plainMeta.forEach(k => headers.push(k));
-
-        const waitPos = {};
-        const computePos = (list) => list
-            .sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
-            .forEach((s, i) => { waitPos[s.id] = i + 1; });
-        const activeWait = lastSignups.filter(s => isActive(s) && s.waitlisted);
-        if (gf) gf.options.forEach(opt => computePos(activeWait.filter(s => (s.metadata||{})[gf.name] === opt)));
-        else    computePos(activeWait);
-
-        const rows = visible.map((s, i) => {
-            const canceled  = isCanceled(s);
-            const statusStr = canceled ? "취소" : (s.waitlisted ? "대기" : "확정");
-            const waitRank  = (!canceled && s.waitlisted && waitPos[s.id]) ? waitPos[s.id] : "";
-            const r = [i+1, s.nickname, s.real_name, statusStr, waitRank,
-                       formatDate(s.created_at), canceled ? formatDate(s.canceled_at) : ""];
-            if (gf) r.push((s.metadata||{})[gf.name] ?? "");
-            plainMeta.forEach(k => r.push((s.metadata||{})[k] ?? ""));
-            return r;
-        });
-
-        const csv = [headers, ...rows]
-            .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
-            .join("\n");
-        const viewLabel = currentView === "canceled" ? "_취소" : currentView === "all" ? "_전체" : "";
-        const title = sel.options[sel.selectedIndex]?.textContent.trim() || "signups";
-        const a = document.createElement("a");
-        a.href = "data:text/csv;charset=utf-8,﻿" + encodeURIComponent(csv);
-        a.download = `신청명단${viewLabel}_${title}.csv`;
-        a.click();
-    });
-})();
 
 
 /* ══════════════════════════════════════════════════════════════════════
-   3. 소모임 viewer
+   2. 소모임 viewer
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
     const JOIN_API = (typeof window.JOIN_APPS_SCRIPT_URL === "string" && window.JOIN_APPS_SCRIPT_URL.trim())
@@ -1965,7 +1385,6 @@
     const btn      = document.getElementById("adm-lock-btn");
     const err      = document.getElementById("adm-lock-err");
     const relock   = document.getElementById("adm-relock-btn");
-    const admPw    = document.getElementById("adm-pw");
     const histPw   = document.getElementById("hist-pw");
 
     function showError(msg) {
@@ -1993,7 +1412,6 @@
     function unlock(password) {
         try { sessionStorage.setItem(STORAGE_KEY, password); } catch (e) { /* private mode */ }
         // pre-fill the tab-level inputs so the user doesn't retype
-        if (admPw && !admPw.value) admPw.value = password;
         if (histPw && !histPw.value) histPw.value = password;
         overlay.hidden = true;
         relock.hidden = false;
@@ -2001,7 +1419,6 @@
     }
     function lock() {
         try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
-        if (admPw)  admPw.value  = "";
         if (histPw) histPw.value = "";
         overlay.hidden = false;
         relock.hidden = true;

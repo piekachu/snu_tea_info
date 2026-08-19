@@ -24,19 +24,12 @@
 // as `path`) to an image for the upcoming-events carousel. Omit it and the
 // carousel shows a plain placeholder card instead of a broken image.
 //
-// `signupStart` is optional — the date on which sign-up opens (YYYY-MM-DD).
-// Defaults to the event page creation date (i.e. immediately open) if omitted.
-// Before this date the event shows as 모집예정.
-//
-// `signupEnd` is optional — the last date on which sign-up is accepted
-// (YYYY-MM-DD). Defaults to 3 days before `date` if omitted.
-// After this date the event shows as 마감.
-//
-// Status is computed automatically from signupStart/signupEnd — do NOT set
-// it manually. effectiveEventStatus() returns:
-//   recruiting — sign-up is open (between signupStart and signupEnd)
-//   upcoming   — sign-up has not opened yet (before signupStart)
-//   closed     — sign-up has ended, or the event date has passed
+// Status is computed automatically from `date` (and `endDate` if set) — do
+// NOT set it manually. effectiveEventStatus() returns:
+//   upcoming — the event hasn't happened yet
+//   closed   — the event date has passed
+// (Sign-up flows were removed; the badge now purely reflects whether the
+// event is in the past or the future.)
 //
 // `location` can be a plain address string, or a map link (e.g. a Naver Map
 // share URL) — events-meta.js auto-detects http(s) URLs and renders those
@@ -88,9 +81,8 @@ const eventCategories = {
 // status labels — used by the carousel and meta card for display only;
 // the actual status value is always computed by effectiveEventStatus()
 const eventStatuses = {
-    recruiting: { label: "모집중" },
-    upcoming: { label: "모집예정" },
-    closed: { label: "마감" }
+    upcoming: { label: "예정" },
+    closed: { label: "종료" }
 };
 
 const EVENT_WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -130,29 +122,12 @@ function isPastEvent(event, referenceDate) {
     return lastDay < now;
 }
 
-// returns the sign-up closing date; defaults to 3 days before event date
-function getSignupEnd(event) {
-    if (event.signupEnd) return event.signupEnd;
-    const [y, m, d] = event.date.split("-").map(Number);
-    const due = new Date(y, m - 1, d);
-    due.setDate(due.getDate() - 3);
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${due.getFullYear()}-${pad(due.getMonth() + 1)}-${pad(due.getDate())}`;
-}
-
-// computes status automatically from signupStart / signupEnd — never read
-// event.status directly; always call this instead
-//   closed     → event date has passed, OR signupEnd has passed
-//   upcoming   → today is before signupStart
-//   recruiting → sign-up is open
+// computes status purely from the event's date — never read event.status
+// directly; always call this instead.
+//   closed   → event date (or endDate for multi-day) has passed
+//   upcoming → event hasn't happened yet
 function effectiveEventStatus(event, referenceDate) {
-    const now = referenceDate || new Date();
-    if (isPastEvent(event, now)) return "closed";
-    const end = getSignupEnd(event);
-    if (new Date(`${end}T23:59:59`) < now) return "closed";
-    const start = event.signupStart || null;
-    if (start && new Date(`${start}T00:00:00`) > now) return "upcoming";
-    return "recruiting";
+    return isPastEvent(event, referenceDate) ? "closed" : "upcoming";
 }
 
 const teaClubEvents = [
@@ -243,11 +218,6 @@ const teaClubEvents = [
             { label: "라오상하이", lat: null, lng: null, mapLink: null },
             { label: "반조", lat: 37.478222, lng: 126.953033, mapLink: "https://map.naver.com/p/entry/place/1752983758?c=15.00,0,0,0,dh&isCorrectAnswer=true" },
             { label: "예평", lat: null, lng: null, mapLink: null }
-        ],
-        signupFields: [
-            { name: "venue", label: "희망 찻집", type: "select", required: true,
-              options: ["라오상하이", "반조", "예평"],
-              capacityPerOption: 3 }
         ]
     },
     {

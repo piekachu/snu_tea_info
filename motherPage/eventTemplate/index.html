@@ -15,10 +15,10 @@
          magazine_lnb nav below).
       4. Add one entry for this event to teaClubEvents in
          ../events/events-data.js: date, title, subtitle, path to this
-         file, location, fee, category (one of "teaClass" /
+         file, location, fee, and category (one of "teaClass" /
          "regulars" / "fieldTrip" / "special" — see eventCategories in
-         that file), and status (one of "recruiting" / "upcoming" /
-         "closed" — see eventStatuses in that file). That single edit is
+         that file). Status is derived from `date` automatically
+         (upcoming vs closed). That single edit is
          what makes the event show up on the Events calendar, in every
          event page's sidebar, AND fills in the info card below the hero
          on this page — nothing on this page needs those values typed in
@@ -72,7 +72,6 @@
     <script src="../subpage.js"></script>
     <script src="../events/events-data.js"></script>
     <script src="../events/events-meta.js"></script>
-    <script src="../events/events-signup.js"></script>
     <script src="../events/events-map.js"></script>
 
     <main id="container" class="magazine">
@@ -261,10 +260,6 @@
                             </div><!-- /#teaLineup -->
 
                             <!-- TODO: wire up the real signup flow, then remove `disabled` -->
-                            <div class="event_apply">
-                                <button type="button" class="event_apply_btn" disabled>신청하기</button>
-                            </div>
-
                         </div>
                     </article>
                 </section>
