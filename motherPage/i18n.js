@@ -90,8 +90,6 @@
         "chatjip.badge":       { ko: "61곳", en: "61 places" },
         "chatjip.subtitle":    { ko: "설다연 부원들이 추천하는 서울·경기권 찻집 목록입니다. 네이버 지도 링크로 위치를 바로 확인할 수 있어요.",
                                  en: "Tea houses around Seoul and Gyeonggi recommended by Seoldayeon members. Each entry links straight to Naver Maps. Names and addresses are kept in Korean so the map links work." },
-        "chatjip.tabMap":      { ko: "지도", en: "Map" },
-        "chatjip.tabList":     { ko: "목록", en: "List" },
         "chatjip.navAria":     { ko: "구별 지도 필터", en: "Filter map by district" },
         "chatjip.mapHintAll":  { ko: "전체 {n}곳 — 마커를 클릭하면 정보가 표시돼요",
                                  en: "All {n} places — click a marker for details" },
