@@ -43,14 +43,215 @@
             <div class="notice_detail">
                 <div class="notice_detail_meta">
                     <a class="notice_detail_back" href="index.html"><span data-i18n="nav.backToNotice">&larr; 목록으로</span></a>
-                    <span class="notice_detail_date">2026년 8월 18일</span>
+                    <span class="notice_detail_date">2026년 8월 19일</span>
                 </div>
 
-                <!-- Stub — waiting for the actual step-by-step guide. Kept the
-                     shared chrome (back link, footer) wired to i18n; the page
-                     title itself is plain so renaming/localising later is a
-                     one-line change per file. -->
-                <p class="notice_item_placeholder">소모임을 신청하는 자세한 방법을 곧 안내드릴 예정입니다. 조금만 기다려주세요.</p>
+                <!-- Step-by-step walkthrough for the 소모임 신청 page. Screenshots
+                     live in ../notice/images/meetup/ under the filenames referenced
+                     below (01-…, 02-…). Prose-first: each step reads on its own
+                     with or without its image, so a missing screenshot doesn't
+                     break comprehension. -->
+
+                <p class="man_intro">
+                    설다연에서는 누구나 자유롭게 소모임을 열거나 참여할 수 있어요.
+                    소모임 신청 페이지에서 <strong>새 소모임을 만드는 방법</strong>과
+                    <strong>이미 열려 있는 소모임에 신청하는 방법</strong>을 순서대로 안내드릴게요.
+                </p>
+
+                <!-- ══════════ 소모임 만들기 ══════════ -->
+                <div class="man_section_head">
+                    <span class="man_section_kicker">Part 1</span>
+                    <h3 class="man_section_title">새 소모임 만들기</h3>
+                </div>
+
+                <ol class="man_steps">
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">소모임 신청 페이지를 열어주세요.</h4>
+                        <p class="man_step_body">
+                            <a href="../join/index.html" style="color: var(--osullocGreen); font-weight: 600;">소모임 신청 페이지</a>에 들어가면 이번 달 캘린더가 보여요.
+                            이미 열린 소모임은 초록색 칩으로 날짜 아래에 표시되고, 오늘 날짜에는 진한 초록 원이 둘러져요.
+                            좌우의 <strong>&lt; &gt;</strong> 화살표로 다른 달을 살펴볼 수도 있고, 다른 달을 보다가 <strong>오늘</strong> 버튼을 누르면 오늘이 있는 달로 바로 돌아와요.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/01-calendar-view.png"
+                             alt="소모임 신청 페이지의 월간 캘린더 뷰">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">소모임을 열고 싶은 날짜를 골라주세요.</h4>
+                        <p class="man_step_body">
+                            달력에서 원하는 날짜를 클릭하면 그 셀에 연한 초록 배경이 씌워지고, 화면 아래쪽 패널에 그 날의 소모임 목록이 나타나요.
+                            아직 열린 소모임이 없다면 <em>"이 날짜에는 아직 소모임이 없어요. 첫 소모임을 만들어보세요!"</em>라는 안내와 함께
+                            오른쪽에 <strong>+ 새 소모임 만들기</strong> 버튼이 초록색으로 활성화됩니다. 
+                            소모임은 <strong>내일 이후 날짜</strong>부터 만들 수 있어요. 오늘이나 지난 날짜에는 <strong>+ 새 소모임 만들기</strong> 버튼이 비활성화됩니다.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/02-date-selection.png"
+                             alt="빈 날짜를 선택해 + 새 소모임 만들기 버튼이 활성화된 모습">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">소모임 정보를 입력해주세요.</h4>
+                        <p class="man_step_body">
+                            <strong>+ 새 소모임 만들기</strong>를 누르면 개설 창이 뜹니다.
+                            소모임 이름, 시간(시·분 각각 선택), 정원, 장소, 지도 링크, 주최자 이름과 실명, 편집 비밀번호, 그리고 간단한 소개를 채워주세요.
+                            <em>*</em> 표시가 있는 항목은 필수예요.
+                            정원은 <strong>본인을 포함해 3명 이상</strong>이어야 하고,
+                            지도 링크는 선택 사항이지만 <em>네이버 지도 공유 링크</em>를 붙여넣으면 다른 부원들이 바로 길찾기를 할 수 있어요.
+                            다 채웠다면 <strong>만들기</strong>를 누릅니다.
+                        </p>
+                        <p class="man_note">
+                            <strong>편집 비밀번호</strong>는 나중에 소모임을 수정·삭제하거나, 다른 기기에서 참가자 명단을 확인할 때 반드시 필요해요.
+                            잊어버리면 관리자만 처리할 수 있으니 안전한 곳에 꼭 적어두세요.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/03-fill-out-info.png"
+                             alt="소모임 만들기 창의 입력 폼">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">등록되면 '관리자 승인 대기 중' 상태가 돼요.</h4>
+                        <p class="man_step_body">
+                            방금 만든 소모임은 즉시 캘린더에 표시되지만, 상세 창 상단에 <em>1/3명</em> 옆으로 노란색 <strong>관리자 승인 대기 중</strong> 칩이 붙어요.
+                            아래쪽에는 <em>"이 소모임은 관리자의 승인이 완료된 후부터 신청받을 수 있어요."</em>라는 안내가 뜹니다.
+                        </p>
+                        <p class="man_note">
+                            <strong>승인 전에는 주최자 외에는 신청할 수 없어요.</strong> 링크를 공유해도 다른 부원들은 신청 버튼이 보이지 않아요.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/04-pending-approval.png"
+                             alt="관리자 승인 대기 중 배지가 붙은 소모임 상세 창">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">단체 카카오톡방에서 승인을 요청해주세요.</h4>
+                        <p class="man_step_body">
+                            상세 창 오른쪽 위의 <strong>공유 버튼(↑)</strong>을 누르면 소모임 정보와 신청 링크가 한 번에 정리된 텍스트가 클립보드에 복사돼요.
+                            이 내용을 그대로 <strong>설다연 잡담방</strong>에 붙여넣고, 공유해주시면 됩니다!
+                            관리자가 확인하는대로 승인만 처리되면 그 링크로 부원들이 바로 신청할 수 있어요.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/05-kakaotalk-request.png"
+                             alt="복사한 소모임 정보를 카카오톡방에 붙여넣은 모습">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">관리자가 승인하면 신청이 열려요.</h4>
+                        <p class="man_step_body">
+                            관리자가 승인하면 <em>관리자 승인 대기 중</em> 칩과 안내 문구가 사라지고, 상세 창은 일반 소모임과 같은 모습이 돼요.
+                            이제부터 부원들이 링크를 통해 신청할 수 있어요.
+                            소모임 카드에도 정원 인원 수(예: <em>1/3명</em>)만 남게 됩니다.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/06-meetup-approved.png"
+                             alt="승인이 완료돼 신청을 받을 수 있게 된 소모임 상세 창">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">신청이 들어오면 참가자 명단이 채워져요.</h4>
+                        <p class="man_step_body">
+                            누군가 신청할 때마다 <strong>참가자 (n/m명)</strong> 아래의 초록 칩 목록에 이름이 하나씩 추가돼요.
+                            정원이 모두 차면 상단 인원 칩이 <em>붉은 빛</em>으로 바뀌고, 캘린더 목록에서는 <em>마감</em> 표시가 뜹니다.
+                        </p>
+                        <p class="man_note">
+                            <strong>다른 참가자가 있으면 소모임을 삭제할 수 없어요.</strong> 부득이하게 취소해야 한다면 참가자들에게 먼저 안내한 뒤, 관리자에게 문의해주세요.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/07-people-signed-up.png"
+                             alt="정원이 모두 채워진 소모임 상세 창">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">주최자는 참가자 연락처를 확인할 수 있어요.</h4>
+                        <p class="man_step_body">
+                            상세 창 하단의 <strong>참가자 연락처 보기</strong>를 누르면 <em>참가자 연락처 (주최자 전용)</em> 박스가 열려요.
+                            여기에는 각 참가자의 <strong>실명</strong>과 <strong>연락처</strong>가 표시됩니다 (입력하지 않은 참가자는 <em>연락처 미입력</em>으로 보여요).
+                        </p>
+                        <p class="man_note">
+                            소모임 주최자는 이걸 확인해서 늦지 않게 소모임 참가자들과 <strong>꼭 톡방을 개설</strong>하고, 약속 장소나 시간 등을 협의하면 됩니다!
+                            혹시라도 인원이 생각한 만큼 많이 모이지 않았더라도, 신청자가 있다면 꼭 연락을 해서 모임 파투 여부를 알려주세요!
+                        </p>
+                        <img class="man_step_img" src="images/meetup/08-participant-contacts.png"
+                             alt="참가자 연락처 (주최자 전용) 박스가 열린 모습">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">소모임이 끝난 뒤에는 시음기를 공유해주세요.</h4>
+                        <p class="man_step_body">
+                            소모임을 마친 후에는 <strong>설다연 잡담방</strong>에 소모임을 함께한 분들의 시음기를 모아서 공유해주세요!
+                            <em>날짜 · 함께 방문한 찻집 · 참여 인원</em>과 함께 마셨던 차에 대한 시음기를 사진과 같이 공유해주시면,
+                            운영진 확인 이후 조원당 2500원의 지원금을 드립니다!
+                        </p>
+                        <img class="man_step_img" src="images/meetup/09-meetup-review.png"
+                             alt="소모임 후기를 단체 카톡방에 공유한 예시">
+                    </li>
+
+                </ol>
+
+                <!-- ══════════ 소모임 신청하기 ══════════ -->
+                <div class="man_section_head">
+                    <span class="man_section_kicker">Part 2</span>
+                    <h3 class="man_section_title">이미 열린 소모임에 신청하기</h3>
+                </div>
+
+                <ol class="man_steps">
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">관심 있는 날짜를 클릭해주세요.</h4>
+                        <p class="man_step_body">
+                            캘린더에서 소모임 표시(초록색 점 · 제목)가 있는 날짜를 클릭하면 그 날의 소모임 목록이 아래에 나타나요.
+                            여러 개가 열려 있다면 시간 순으로 정렬됩니다.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/06-day-with-events.jpg"
+                             alt="소모임이 여러 개 표시된 날짜 패널">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">참여하고 싶은 소모임 카드를 눌러주세요.</h4>
+                        <p class="man_step_body">
+                            카드를 누르면 상세 정보 창이 열립니다. 시간, 장소, 주최자, 정원, 현재 참가자 명단, 그리고 소개를 확인할 수 있어요.
+                            정원이 다 찼거나 신청이 마감된 소모임은 <em>마감</em> 표시가 뜹니다.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/07-detail-modal.jpg"
+                             alt="소모임 상세 정보 창">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">신청 정보를 입력해주세요.</h4>
+                        <p class="man_step_body">
+                            <strong>이름</strong>은 참가자 목록에 공개되는 이름이에요 (닉네임도 가능).
+                            <strong>실명</strong>과 <strong>연락처</strong>는 주최자와 관리자만 볼 수 있어요.
+                            <strong>취소 비밀번호</strong>는 다른 기기에서 신청을 취소할 때 반드시 필요하니
+                            기억할 수 있는 값으로 설정해주세요.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/08-signup-form.jpg"
+                             alt="신청 폼의 입력 필드들">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">"신청하기" 버튼을 누르면 완료!</h4>
+                        <p class="man_step_body">
+                            신청이 성공하면 <em>✅ (이름)님으로 신청 완료했어요</em> 메시지가 뜹니다.
+                            같은 기기에서는 <strong>신청 취소하기</strong> 버튼으로 바로 취소할 수 있어요.
+                            (단, 행사 2일 전부터는 취소 불가.)
+                        </p>
+                        <img class="man_step_img" src="images/meetup/09-signup-success.jpg"
+                             alt="신청 완료 메시지가 표시된 화면">
+                    </li>
+
+                    <li class="man_step">
+                        <h4 class="man_step_title">다른 기기에서 취소해야 한다면?</h4>
+                        <p class="man_step_body">
+                            휴대폰이나 다른 브라우저에서 신청한 뒤 취소하고 싶다면, 소모임 상세 창 하단의
+                            <strong>"다른 기기에서 신청하셨나요? 비밀번호로 취소하기"</strong> 링크를 눌러주세요.
+                            신청 때 입력한 <em>실명 + 취소 비밀번호</em>로 취소할 수 있어요.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/10-cancel-by-password.jpg"
+                             alt="비밀번호로 취소하기 폼">
+                    </li>
+
+                </ol>
+
+                <p class="man_closing">
+                    <strong>궁금한 점이 있다면?</strong>
+                    임원진에게 편하게 문의해주세요.
+                    이 페이지는 소모임 신청이 처음이신 분들을 위한 안내이며,
+                    실제 기능과 다르게 안내된 부분이 있다면 알려주세요.
+                </p>
             </div>
 
         </div>
