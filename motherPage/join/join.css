@@ -102,11 +102,16 @@ body.join-modal-open {
     border-radius: 10px;
     text-align: left;
     cursor: pointer;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    /* same lift/shadow/tint recipe used on .notice_card on the home page —
+       transform + box-shadow + border-color all easing together so the card
+       has the same "invited to be clicked" feel as the notice cards */
+    transition: transform 0.22s ease, box-shadow 0.22s ease,
+                border-color 0.22s ease;
 }
 .join_event_card:hover {
-    border-color: var(--osullocGreen);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transform: translateY(-3px);
+    border-color: rgba(28, 102, 85, 0.28);
+    box-shadow: 0 10px 28px rgba(28, 102, 85, 0.14);
 }
 .join_event_card_main {
     display: flex;
@@ -118,6 +123,10 @@ body.join-modal-open {
     font-size: 15px;
     font-weight: var(--font-weight-semibold);
     color: var(--fontColor);
+    transition: color 0.2s ease;
+}
+.join_event_card:hover .join_event_card_title {
+    color: var(--osullocGreen);
 }
 .join_event_card_meta {
     font-size: 13px;
