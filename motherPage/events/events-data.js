@@ -150,15 +150,6 @@ const teaClubEvents = [
         category: "regulars"
     },
     {
-        date: "2026-07-10",
-        title: "다과 만들기",
-        path: "2026julyTeaSnacks/index.html",
-        location: "[장소를 입력해주세요]",
-        fee: "[참가비를 입력해주세요]",
-        인원: 20,
-        category: "special"
-    },
-    {
         date: "2026-07-17",
         time: "18:00",
         title: "효월다회",
@@ -173,25 +164,6 @@ const teaClubEvents = [
         category: "specialTea"
     },
     {
-        date: "2026-07-25",
-        endDate: "2026-07-26",
-        title: "흥국사 템플스테이",
-        path: "2026julyTempleStay/index.html",
-        location: "[장소를 입력해주세요]",
-        fee: "[참가비를 입력해주세요]",
-        인원: 20,
-        category: "fieldTrip"
-    },
-    {
-        date: "2026-07-28",
-        title: "이도옥션",
-        path: "2026julyYidoAuction/index.html",
-        location: "[장소를 입력해주세요]",
-        fee: "[참가비를 입력해주세요]",
-        인원: 20,
-        category: "special"
-    },
-    {
         date: "2026-07-30",
         time: "19:00 - 21:00",
         title: "정기다회",
@@ -204,21 +176,6 @@ const teaClubEvents = [
         fee: "10000원",
         인원: 40,
         category: "regulars"
-    },
-    {
-        date: "2026-08-31",
-        title: "연합다회 test",
-        path: "2026augJointTea/index.html",
-        location: "라오상하이 / 반조 / 예평 (희망 찻집 선택)",
-        fee: "10000원",
-        인원: 9,
-        category: "special",
-        // venues: fill in lat/lng for each location (long-press in Naver Maps → "좌표 복사")
-        venues: [
-            { label: "라오상하이", lat: null, lng: null, mapLink: null },
-            { label: "반조", lat: 37.478222, lng: 126.953033, mapLink: "https://map.naver.com/p/entry/place/1752983758?c=15.00,0,0,0,dh&isCorrectAnswer=true" },
-            { label: "예평", lat: null, lng: null, mapLink: null }
-        ]
     },
     {
         date: "2026-09-01",
