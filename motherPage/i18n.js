@@ -43,9 +43,9 @@
         "common.loading":      { ko: "불러오는 중...", en: "Loading..." },
 
         /* ── home ─────────────────────────────────────────────────── */
-        "home.events.title":   { ko: "Events", en: "Events" },
-        "home.events.intro":   { ko: "설다연에서 주최하는 정기 행사와 특별 프로그램들을 만나보세요. 차 시음회부터 문화 체험까지, 다양한 행사를 통해 함께 성장하고 즐거운 추억을 만들 수 있습니다.",
-                                 en: "Discover the regular events and special programmes Seoldayeon hosts. From tea tastings to cultural experiences, there are plenty of ways to learn together and make good memories." },
+        "home.events.title":   { ko: "정기/특별다회", en: "Regular & Special Tea Sessions" },
+        "home.events.intro":   { ko: "매 학기 종강·개강마다 열리는 정기다회와, 특별한 차로 꾸리는 특별다회를 만나보세요. 임원진이 준비한 다구와 차로 함께 마시는 자리이니, 편하게 신청하고 즐기시면 됩니다.",
+                                 en: "Meet Seoldayeon's regular sessions (정기다회) — held at every semester's opening and closing — and its special-tea sessions (특별다회) built around a particular tea. The officers set up the tea and utensils, so all you need to do is show up." },
         "home.join.title":     { ko: "소모임 신청", en: "Meetups" },
         "home.join.intro":     { ko: "누구나 자유롭게 소모임을 만들고 참여할 수 있습니다. 차에 관심 있는 사람들이 모여 함께 취미를 나누고, 새로운 경험을 쌓을 수 있는 공간입니다. 원하는 날짜를 선택해 새로운 소모임을 시작하거나, 이미 만들어진 모임에 참가 신청을 해보세요!",
                                  en: "Anyone can start a meetup or join one. It's a space for people interested in tea to share the hobby and try something new. Pick a date to start your own, or sign up for one that's already been created." },
