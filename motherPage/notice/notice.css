@@ -159,10 +159,71 @@
 * ----------------------- */
 .man_intro {
     max-width: 720px;
-    margin: 0 auto 40px;
+    margin: 0 auto 32px;
     font-size: 14.5px;
     line-height: 1.75;
     color: #2a2a2a;
+}
+
+/* Tab bar for switching between "만들기" and "신청하기" panels.
+   Sits under the intro paragraph and above the first step list. */
+.man_tabs {
+    max-width: 720px;
+    margin: 0 auto 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 6px;
+    background: #f4f6f2;
+    border: 1px solid var(--osullocGreenS);
+    border-radius: 14px;
+}
+.man_tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-weight: var(--font-weight-semibold);
+    color: #5b6a55;
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.man_tab:hover { color: var(--osullocGreen); }
+.man_tab.is-active {
+    color: #fff;
+    background: var(--osullocGreen);
+    box-shadow: 0 2px 8px rgba(0, 87, 47, 0.18);
+}
+.man_tab_num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(0, 87, 47, 0.12);
+    color: var(--osullocGreen);
+    font-size: 12px;
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    transition: background 160ms ease, color 160ms ease;
+}
+.man_tab.is-active .man_tab_num {
+    background: rgba(255, 255, 255, 0.24);
+    color: #fff;
+}
+.man_tab_label { letter-spacing: -0.005em; }
+
+/* Panels — the [hidden] fallback matters when JS hasn't loaded yet. */
+.man_tab_panel[hidden] { display: none; }
+.man_tab_panel { animation: manPanelFade 220ms ease; }
+@keyframes manPanelFade {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0);   }
 }
 .man_section_head {
     max-width: 720px;
@@ -295,10 +356,25 @@
     margin-bottom: 4px;
 }
 @media (max-width: 640px) {
-    .man_intro, .man_section_head, .man_steps, .man_closing {
+    .man_intro, .man_section_head, .man_steps, .man_closing, .man_tabs {
         padding-left: 20px;
         padding-right: 20px;
     }
+    .man_tabs {
+        /* padding already handled above; keep grid but let text wrap tightly */
+        gap: 6px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+    .man_tab {
+        flex-direction: column;
+        gap: 4px;
+        padding: 10px 8px;
+        font-size: 12.5px;
+        line-height: 1.3;
+        text-align: center;
+    }
+    .man_tab_num { width: 20px; height: 20px; font-size: 11px; }
     .man_step { padding-left: 42px; }
     .man_step::before { width: 28px; height: 28px; font-size: 13px; }
 }

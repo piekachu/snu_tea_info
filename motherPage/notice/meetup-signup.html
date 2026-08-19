@@ -58,11 +58,33 @@
                     <strong>이미 열려 있는 소모임에 신청하는 방법</strong>을 순서대로 안내드릴게요.
                 </p>
 
-                <!-- ══════════ 소모임 만들기 ══════════ -->
-                <div class="man_section_head">
-                    <span class="man_section_kicker">Part 1</span>
-                    <h3 class="man_section_title">새 소모임 만들기</h3>
+                <!-- Tab bar — switches between 만들기 and 신청하기 panels -->
+                <div class="man_tabs" role="tablist" aria-label="소모임 신청 방법 섹션">
+                    <button type="button"
+                            class="man_tab is-active"
+                            role="tab"
+                            aria-selected="true"
+                            aria-controls="man-panel-create"
+                            data-panel="create">
+                        <span class="man_tab_num">1</span>
+                        <span class="man_tab_label">새 소모임 만들기</span>
+                    </button>
+                    <button type="button"
+                            class="man_tab"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="man-panel-join"
+                            data-panel="join">
+                        <span class="man_tab_num">2</span>
+                        <span class="man_tab_label">이미 열린 소모임에 신청하기</span>
+                    </button>
                 </div>
+
+                <!-- ══════════ Panel 1 — 소모임 만들기 ══════════ -->
+                <section class="man_tab_panel is-active"
+                         id="man-panel-create"
+                         role="tabpanel"
+                         aria-label="새 소모임 만들기">
 
                 <ol class="man_steps">
 
@@ -182,69 +204,84 @@
 
                 </ol>
 
-                <!-- ══════════ 소모임 신청하기 ══════════ -->
-                <div class="man_section_head">
-                    <span class="man_section_kicker">Part 2</span>
-                    <h3 class="man_section_title">이미 열린 소모임에 신청하기</h3>
-                </div>
+                </section>
+
+                <!-- ══════════ Panel 2 — 소모임 신청하기 ══════════ -->
+                <section class="man_tab_panel"
+                         id="man-panel-join"
+                         role="tabpanel"
+                         aria-label="이미 열린 소모임에 신청하기"
+                         hidden>
 
                 <ol class="man_steps">
 
                     <li class="man_step">
-                        <h4 class="man_step_title">관심 있는 날짜를 클릭해주세요.</h4>
+                        <h4 class="man_step_title">소모임 신청 페이지에서 캘린더를 살펴봐주세요.</h4>
                         <p class="man_step_body">
-                            캘린더에서 소모임 표시(초록색 점 · 제목)가 있는 날짜를 클릭하면 그 날의 소모임 목록이 아래에 나타나요.
-                            여러 개가 열려 있다면 시간 순으로 정렬됩니다.
+                            <a href="../join/index.html" style="color: var(--osullocGreen); font-weight: 600;">소모임 신청 페이지</a>에 들어가면 이번 달 캘린더가 뜹니다.
+                            열려 있는 소모임은 <strong>초록색 칩</strong>으로 날짜 아래에 이름이 표시돼요.
+                            좌우 <strong>&lt; &gt;</strong> 화살표로 다른 달을 살펴볼 수 있고, <strong>오늘</strong> 버튼으로 오늘이 있는 달로 바로 돌아올 수 있어요.
                         </p>
-                        <img class="man_step_img" src="images/meetup/06-day-with-events.jpg"
-                             alt="소모임이 여러 개 표시된 날짜 패널">
+                        <img class="man_step_img" src="images/meetup/join-01-calendar-view.png"
+                             alt="소모임 신청 페이지의 월간 캘린더 뷰">
                     </li>
 
                     <li class="man_step">
-                        <h4 class="man_step_title">참여하고 싶은 소모임 카드를 눌러주세요.</h4>
+                        <h4 class="man_step_title">관심 있는 소모임이 열린 날짜를 클릭해주세요.</h4>
                         <p class="man_step_body">
-                            카드를 누르면 상세 정보 창이 열립니다. 시간, 장소, 주최자, 정원, 현재 참가자 명단, 그리고 소개를 확인할 수 있어요.
-                            정원이 다 찼거나 신청이 마감된 소모임은 <em>마감</em> 표시가 뜹니다.
+                            소모임 이름이 붙어 있는 날짜를 누르면 그 셀에 연한 초록 배경이 씌워지고, 화면 아래쪽 패널에 그 날의 소모임 카드가 나타나요.
+                            카드에는 소모임 <em>이름 · 시간 · 장소 · 주최자</em>가 요약되고, 오른쪽에는 <em>현재 인원 / 정원</em>이 초록 칩으로 붙어요.
+                            정원이 모두 찼다면 그 자리에 <em>마감</em>이 표시됩니다.
                         </p>
-                        <img class="man_step_img" src="images/meetup/07-detail-modal.jpg"
-                             alt="소모임 상세 정보 창">
+                        <img class="man_step_img" src="images/meetup/join-02-date-selection.png"
+                             alt="소모임 카드가 표시된 날짜 패널">
                     </li>
 
                     <li class="man_step">
-                        <h4 class="man_step_title">신청 정보를 입력해주세요.</h4>
+                        <h4 class="man_step_title">소모임 카드를 눌러 상세 창을 열어주세요.</h4>
                         <p class="man_step_body">
-                            <strong>이름</strong>은 참가자 목록에 공개되는 이름이에요 (닉네임도 가능).
-                            <strong>실명</strong>과 <strong>연락처</strong>는 주최자와 관리자만 볼 수 있어요.
-                            <strong>취소 비밀번호</strong>는 다른 기기에서 신청을 취소할 때 반드시 필요하니
-                            기억할 수 있는 값으로 설정해주세요.
+                            카드를 누르면 상세 정보 창이 열려요. 상단에는 <strong>인원 칩</strong>과 <strong>공유 버튼(↑)</strong>이 있고,
+                            그 아래로 <em>일시 · 장소 · 주최자 · 정원 · 소개</em>가 정리됩니다.
+                            <strong>지도에서 보기</strong>가 있으면 눌러서 정확한 위치를 확인할 수 있고, <strong>참가자 (n/m명)</strong> 아래의 초록 칩으로 지금까지 신청한 사람들의 이름을 볼 수 있어요.
                         </p>
-                        <img class="man_step_img" src="images/meetup/08-signup-form.jpg"
-                             alt="신청 폼의 입력 필드들">
+                        <img class="man_step_img" src="images/meetup/join-03-open-event.png"
+                             alt="소모임 상세 창과 신청 폼">
                     </li>
 
                     <li class="man_step">
-                        <h4 class="man_step_title">"신청하기" 버튼을 누르면 완료!</h4>
+                        <h4 class="man_step_title">신청 폼을 채워주세요.</h4>
                         <p class="man_step_body">
-                            신청이 성공하면 <em>✅ (이름)님으로 신청 완료했어요</em> 메시지가 뜹니다.
-                            같은 기기에서는 <strong>신청 취소하기</strong> 버튼으로 바로 취소할 수 있어요.
-                            (단, 행사 2일 전부터는 취소 불가.)
+                            상세 창을 아래로 스크롤하면 신청 폼이 있어요.
+                            <strong>이름</strong>은 참가자 목록에 공개되는 이름이에요 (닉네임도 좋아요).
+                            <strong>실명</strong>은 관리자 확인용으로만 쓰이고 다른 참가자에게는 보이지 않아요.
+                            <strong>연락처</strong>는 선택 사항이지만, 카카오톡 ID나 전화번호를 남겨두면 주최자가 당일 위치 안내나 지각 연락을 줄 수 있어요 (주최자만 볼 수 있어요).
+                            마지막으로 <strong>취소 비밀번호</strong>를 정해주세요.
                         </p>
-                        <img class="man_step_img" src="images/meetup/09-signup-success.jpg"
-                             alt="신청 완료 메시지가 표시된 화면">
+                        <p class="man_note">
+                            <strong>취소 비밀번호</strong>는 다른 기기(휴대폰, 다른 브라우저 등)에서 신청을 취소할 때 반드시 필요해요.
+                            잊어버리면 취소하려면 주최자나 관리자에게 문의해야 하니, 기억할 수 있는 값으로 설정해주세요.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/join-04-signing-form.png"
+                             alt="이름·실명·연락처·취소 비밀번호를 채운 신청 폼">
                     </li>
 
                     <li class="man_step">
-                        <h4 class="man_step_title">다른 기기에서 취소해야 한다면?</h4>
+                        <h4 class="man_step_title">"신청하기"를 누르면 완료!</h4>
                         <p class="man_step_body">
-                            휴대폰이나 다른 브라우저에서 신청한 뒤 취소하고 싶다면, 소모임 상세 창 하단의
-                            <strong>"다른 기기에서 신청하셨나요? 비밀번호로 취소하기"</strong> 링크를 눌러주세요.
-                            신청 때 입력한 <em>실명 + 취소 비밀번호</em>로 취소할 수 있어요.
+                            신청이 성공하면 상단 인원 칩이 <em>2/4명</em>처럼 늘어나고, 참가자 목록에 방금 입력한 이름이 새 초록 칩으로 추가돼요.
+                            바로 아래에 <em>✅ (이름)님으로 신청 완료했어요.</em> 안내가 뜨고, 같은 기기에서는 <strong>신청 취소하기</strong> 링크로 바로 취소할 수 있어요.
                         </p>
-                        <img class="man_step_img" src="images/meetup/10-cancel-by-password.jpg"
-                             alt="비밀번호로 취소하기 폼">
+                        <p class="man_note">
+                            다른 기기에서 신청했거나 취소 링크가 보이지 않는다면, 상세 창 하단의 <strong>"다른 기기에서 신청하셨나요? 비밀번호로 취소하기"</strong>를 눌러
+                            <em>실명 + 취소 비밀번호</em>로 취소할 수 있어요.
+                        </p>
+                        <img class="man_step_img" src="images/meetup/join-05-completion.png"
+                             alt="신청이 완료된 소모임 상세 창">
                     </li>
 
                 </ol>
+
+                </section>
 
                 <p class="man_closing">
                     <strong>궁금한 점이 있다면?</strong>
@@ -289,6 +326,48 @@
             <p data-i18n="footer.rights">&copy; 2026 설다연. All rights reserved.</p>
         </div>
     </footer>
+
+    <script>
+        // Manual tab switcher — swaps between "만들기" and "신청하기" panels.
+        // Also honors ?tab=join / #join links, so external links can jump to Part 2.
+        (function () {
+            const tabs = document.querySelectorAll(".man_tab");
+            const panels = document.querySelectorAll(".man_tab_panel");
+            if (!tabs.length || !panels.length) return;
+
+            function activate(key) {
+                let matched = false;
+                tabs.forEach(function (tab) {
+                    const isActive = tab.dataset.panel === key;
+                    tab.classList.toggle("is-active", isActive);
+                    tab.setAttribute("aria-selected", isActive ? "true" : "false");
+                    if (isActive) matched = true;
+                });
+                panels.forEach(function (panel) {
+                    const isActive = panel.id === "man-panel-" + key;
+                    panel.classList.toggle("is-active", isActive);
+                    if (isActive) panel.removeAttribute("hidden");
+                    else panel.setAttribute("hidden", "");
+                });
+                return matched;
+            }
+
+            tabs.forEach(function (tab) {
+                tab.addEventListener("click", function () {
+                    activate(tab.dataset.panel);
+                    // Scroll the tab bar back into view on mobile so the newly
+                    // revealed panel starts from the top.
+                    tab.parentElement.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            });
+
+            // Initial state from URL (#join / ?tab=join). Defaults to "create".
+            const hash = (window.location.hash || "").replace("#", "");
+            const query = new URLSearchParams(window.location.search).get("tab");
+            const initial = hash || query;
+            if (initial) activate(initial);
+        })();
+    </script>
 
 </body>
 </html>
