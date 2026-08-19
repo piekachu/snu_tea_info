@@ -629,10 +629,10 @@ body.join-modal-open {
        Portrait screenshots (like the creation modal) and landscape ones
        (like the calendar) all live inside the same-sized stage; the footer
        has a fixed min-height so slides with 0, 1, or 2 note callouts sit
-       the same way. Below 720px viewport height the modal caps to the
-       viewport so nothing spills off-screen. */
-    width: min(720px, 100%);
-    height: min(720px, calc(100vh - 48px));
+       the same way. Below the fixed size the modal caps to the viewport
+       so nothing spills off-screen. */
+    width: min(1080px, 100%);
+    height: min(880px, calc(100vh - 48px));
     background: #fff;
     border-radius: 16px;
     display: flex;
@@ -697,7 +697,8 @@ body.join-modal-open {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 0 0 340px;
+    flex: 1 1 auto;    /* eat all leftover height above the footer */
+    min-height: 0;     /* required for flex:1 in a column flex parent */
 }
 .join_help_img {
     display: block;
@@ -739,7 +740,10 @@ body.join-modal-open {
    constant height); overflow-y:auto lets slides with long notes scroll
    internally instead of resizing the modal. */
 .join_help_footer {
-    flex: 1;
+    /* Fixed footer height keeps the modal size constant across slides —
+       the stage above absorbs any leftover space. Long note text scrolls
+       inside the footer instead of pushing the stage smaller. */
+    flex: 0 0 240px;
     padding: 14px 20px 20px;
     overflow-y: auto;
     display: flex;
@@ -843,7 +847,8 @@ body.join-modal-open {
         border-radius: 12px;
         height: calc(100vh - 24px);
     }
-    .join_help_stage { margin: 8px 10px 0; flex-basis: 260px; }
+    .join_help_stage { margin: 8px 10px 0; }
+    .join_help_footer { flex-basis: 200px; }
     .join_help_nav {
         width: 34px; height: 34px;
         font-size: 18px;
