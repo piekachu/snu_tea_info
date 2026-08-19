@@ -48,9 +48,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // ── config ────────────────────────────────────────────────────────────────────
 
 // New signups close this many days before the event (day-level, KST).
-// Equivalent to ~24 h before: you can sign up on the day before the event
-// but not on the event day itself.
-const SIGNUP_CLOSE_DAYS = 1;
+// 0 = signups stay open through the entire day before the meetup and only
+// close when the meetup's day begins (KST 00:00 of the event date).
+const SIGNUP_CLOSE_DAYS = 0;
 
 // Signup withdrawals are blocked this many days before the event (day-level).
 const CANCEL_DEADLINE_DAYS = 2;

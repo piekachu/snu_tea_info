@@ -602,23 +602,28 @@
         return Date.now() > eventEnd.getTime();
     }
 
-    const SIGNUP_CLOSE_BEFORE_MS = 24 * 60 * 60 * 1000; // signups close 24h before the event starts
     const CANCEL_DEADLINE_BEFORE_MS = 2 * 24 * 60 * 60 * 1000; // can't withdraw within 2 days of event
 
     // the event's start as a Date in the viewer's local time — the whole app
     // treats these stored date/time strings as Korea wall-clock (the club's
     // local time), and Korean visitors' browsers are in that same zone, so
-    // parsing them locally matches. The server re-checks in the sheet's
-    // timezone anyway (signupsClosed_ in Code.gs), so this is only the UI hint.
+    // parsing them locally matches. The server re-checks in KST anyway
+    // (SIGNUP_CLOSE_DAYS in supabase/functions/join/index.ts), so this is only
+    // the UI hint.
     function eventStartDate(event) {
         if (!event || !event.date) return null;
         const d = new Date(`${event.date}T${event.time || "00:00"}:00`);
         return isNaN(d.getTime()) ? null : d;
     }
+    // Signups stay open through all of the day before the meetup and only
+    // close when the meetup's day itself begins (midnight, local time — which
+    // for Korean users is KST, matching the server-side rule).
     function signupsClosed(event) {
         const start = eventStartDate(event);
         if (!start) return false;
-        return Date.now() >= start.getTime() - SIGNUP_CLOSE_BEFORE_MS;
+        const eventDayStart = new Date(start);
+        eventDayStart.setHours(0, 0, 0, 0);
+        return Date.now() >= eventDayStart.getTime();
     }
     // returns true if the user can still withdraw their signup (i.e. still
     // more than 2 days before the event). Unknown/unparseable dates return true
