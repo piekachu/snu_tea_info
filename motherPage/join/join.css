@@ -47,61 +47,6 @@ body.join-modal-open {
 }
 
 /* -----------------------
-*  section tabs (소모임 신청 | 정보)
-* -----------------------*/
-.join_tabs {
-    display: flex;
-    max-width: 780px;
-    margin: 0 auto 32px;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.08);
-}
-
-.join_tab {
-    position: relative;
-    padding: 10px 22px 12px;
-    border: none;
-    background: none;
-    font-size: 15px;
-    font-weight: var(--font-weight-semibold);
-    color: var(--fontGray);
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-.join_tab::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--osullocGreen);
-    transform: scaleX(0);
-    transition: transform 0.2s ease;
-}
-.join_tab.is-active {
-    color: var(--fontColor);
-}
-.join_tab.is-active::after {
-    transform: scaleX(1);
-}
-.join_tab:hover:not(.is-active) {
-    color: var(--fontColor);
-}
-
-/* notice_item_nolink: same layout as notice_item_link but non-interactive */
-.notice_item_nolink {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 22px 4px;
-    color: inherit;
-    cursor: default;
-}
-.notice_item:first-child .notice_item_nolink {
-    padding-top: 0;
-}
-
-/* -----------------------
 *  calendar cells — interactive, clickable additions on top of calendar.css
 * -----------------------*/
 .calendar_cell {
@@ -590,14 +535,6 @@ body.join-modal-open {
     /* .layout_max has no side padding, so give the content a gutter on
        mobile instead of letting the calendar / day panel sit flush to the
        screen edges */
-    .join_tabs {
-        margin-left: 16px;
-        margin-right: 16px;
-    }
-    .join_tab {
-        padding: 9px 16px 11px;
-        font-size: 14px;
-    }
     #joinContent {
         padding-left: 16px;
         padding-right: 16px;
