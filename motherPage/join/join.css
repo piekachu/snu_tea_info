@@ -576,30 +576,39 @@ body.join-modal-open {
 }
 
 /* -----------------------
-*  floating "?" help button + lightbox-style manual modal
+*  inline "?" help button + lightbox-style manual modal
 * -----------------------*/
-.join_help_fab {
-    position: fixed;
-    right: 24px;
-    bottom: 24px;
-    width: 52px;
-    height: 52px;
+/* Small gray pill that sits inline at the end of the intro paragraph.
+   `vertical-align: -3px` visually anchors it to the baseline of the
+   surrounding text so it doesn't push the line height. */
+.join_help_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-left: 6px;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 50%;
-    border: none;
-    background: var(--osullocGreen);
-    color: #fff;
-    font-size: 22px;
+    background: #ececec;
+    color: #4a4a4a;
+    font-size: 13px;
     font-weight: var(--font-weight-bold);
+    line-height: 1;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(0, 87, 47, 0.28), 0 2px 6px rgba(0, 0, 0, 0.12);
-    transition: transform 160ms ease, box-shadow 160ms ease;
-    z-index: 900;
+    vertical-align: -3px;
+    transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
 }
-.join_help_fab:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 87, 47, 0.34), 0 3px 8px rgba(0, 0, 0, 0.14);
+.join_help_btn:hover {
+    background: #dcdcdc;
+    color: #000;
+    border-color: rgba(0, 0, 0, 0.18);
 }
-.join_help_fab:active { transform: translateY(0); }
+.join_help_btn:focus-visible {
+    outline: 2px solid var(--osullocGreen);
+    outline-offset: 2px;
+}
 
 .join_help_overlay {
     position: fixed;
@@ -616,8 +625,14 @@ body.join-modal-open {
 @keyframes joinHelpFade { from { opacity: 0; } to { opacity: 1; } }
 
 .join_help_modal {
+    /* Fixed dimensions so the modal doesn't jump size between slides.
+       Portrait screenshots (like the creation modal) and landscape ones
+       (like the calendar) all live inside the same-sized stage; the footer
+       has a fixed min-height so slides with 0, 1, or 2 note callouts sit
+       the same way. Below 720px viewport height the modal caps to the
+       viewport so nothing spills off-screen. */
     width: min(720px, 100%);
-    max-height: calc(100vh - 48px);
+    height: min(720px, calc(100vh - 48px));
     background: #fff;
     border-radius: 16px;
     display: flex;
@@ -670,7 +685,9 @@ body.join-modal-open {
 }
 .join_help_close:hover { background: rgba(0, 0, 0, 0.06); color: #000; }
 
-/* stage: big screenshot in the middle with prev/next arrows floating on the sides */
+/* stage: big screenshot in the middle with prev/next arrows floating on the sides.
+   Fixed height so every slide looks the same regardless of its screenshot's
+   aspect ratio — the <img> uses object-fit:contain to letterbox inside. */
 .join_help_stage {
     position: relative;
     background: #f7f7f5;
@@ -680,13 +697,13 @@ body.join-modal-open {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 240px;
+    flex: 0 0 340px;
 }
 .join_help_img {
     display: block;
-    max-width: 100%;
-    max-height: 46vh;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     cursor: pointer;
     user-select: none;
     -webkit-user-drag: none;
@@ -717,9 +734,16 @@ body.join-modal-open {
 .join_help_prev { left: 12px; }
 .join_help_next { right: 12px; }
 
-/* footer: progress + caption + link to the full manual */
+/* footer: progress + caption + notes + link to the full manual.
+   flex:1 makes it eat the remaining vertical space (so the modal is a
+   constant height); overflow-y:auto lets slides with long notes scroll
+   internally instead of resizing the modal. */
 .join_help_footer {
+    flex: 1;
     padding: 14px 20px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 .join_help_meta {
     display: flex;
@@ -760,13 +784,47 @@ body.join-modal-open {
     letter-spacing: -0.005em;
 }
 .join_help_slide_body {
-    margin: 0 0 12px;
+    margin: 0 0 10px;
     font-size: 13.5px;
     line-height: 1.65;
     color: #3a3a3a;
 }
-.join_help_more {
+/* Container for 0..n yellow "!" note callouts — same visual language as
+   .man_note on the notice manual page. */
+.join_help_notes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.join_help_note {
     margin: 0;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(226, 168, 68, 0.09) 0%,
+                                        rgba(226, 168, 68, 0.03) 100%);
+    border: 1px solid rgba(226, 168, 68, 0.28);
+    border-left: 4px solid #cd8b30;
+    border-radius: 8px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #453b1e;
+}
+.join_help_note::before {
+    content: "!";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px; height: 16px;
+    margin-right: 7px;
+    vertical-align: -3px;
+    background: #cd8b30;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+}
+.join_help_more {
+    margin: auto 0 0;   /* push to the bottom of the flex footer */
     padding-top: 10px;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
     font-size: 12.5px;
@@ -780,17 +838,12 @@ body.join-modal-open {
 .join_help_more a:hover { text-decoration: underline; }
 
 @media (max-width: 640px) {
-    .join_help_fab {
-        right: 16px;
-        bottom: 16px;
-        width: 48px;
-        height: 48px;
-        font-size: 20px;
-    }
     .join_help_overlay { padding: 12px; }
-    .join_help_modal { border-radius: 12px; }
-    .join_help_stage { margin: 8px 10px 0; }
-    .join_help_img { max-height: 40vh; }
+    .join_help_modal {
+        border-radius: 12px;
+        height: calc(100vh - 24px);
+    }
+    .join_help_stage { margin: 8px 10px 0; flex-basis: 260px; }
     .join_help_nav {
         width: 34px; height: 34px;
         font-size: 18px;

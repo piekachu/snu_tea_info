@@ -19,6 +19,8 @@
     // exactly one place to update if a UI change requires new captures.
     const IMG_BASE = "../notice/images/meetup/";
 
+    // Each slide can carry a `notes` array — rendered as yellow "!" callouts
+    // below the body, matching the .man_note style on the full manual page.
     const SLIDES = {
         create: [
             {
@@ -29,17 +31,20 @@
             {
                 img: "02-date-selection.png",
                 title: "소모임을 열고 싶은 날짜를 골라주세요.",
-                body: "빈 날짜를 클릭하면 아래 패널이 열리고 오른쪽에 “+ 새 소모임 만들기” 버튼이 초록색으로 활성화됩니다. 소모임은 내일 이후 날짜부터 만들 수 있어요.",
+                body: "빈 날짜를 클릭하면 아래 패널이 열리고 오른쪽에 “+ 새 소모임 만들기” 버튼이 초록색으로 활성화됩니다.",
+                notes: ["소모임은 내일 이후 날짜부터 만들 수 있어요. 오늘이나 지난 날짜에는 버튼이 비활성화됩니다."],
             },
             {
                 img: "03-fill-out-info.png",
                 title: "소모임 정보를 입력해주세요.",
-                body: "이름·시간·정원·장소·주최자·비밀번호·소개를 채워주세요. 편집 비밀번호는 나중에 수정/삭제나 참가자 연락처 확인에 꼭 필요하니 안전한 곳에 적어두세요.",
+                body: "이름·시간·정원·장소·주최자·비밀번호·소개를 채워주세요. * 표시 항목은 필수예요. 정원은 본인을 포함해 3명 이상이어야 해요.",
+                notes: ["편집 비밀번호는 나중에 수정/삭제하거나 다른 기기에서 참가자 명단을 확인할 때 반드시 필요해요. 안전한 곳에 꼭 적어두세요."],
             },
             {
                 img: "04-pending-approval.png",
                 title: "'관리자 승인 대기 중' 상태가 돼요.",
-                body: "등록된 소모임은 즉시 캘린더에 뜨지만, 관리자가 승인하기 전까지는 주최자 외에는 신청할 수 없어요.",
+                body: "등록된 소모임은 즉시 캘린더에 뜨지만, 상세 창 상단에 노란색 '관리자 승인 대기 중' 칩이 붙어요.",
+                notes: ["승인 전에는 주최자 외에는 신청할 수 없어요. 링크를 공유해도 다른 부원들은 신청 버튼이 보이지 않아요."],
             },
             {
                 img: "05-kakaotalk-request.png",
@@ -54,12 +59,14 @@
             {
                 img: "07-people-signed-up.png",
                 title: "신청이 들어오면 참가자 명단이 채워져요.",
-                body: "누군가 신청하면 초록 칩으로 이름이 추가돼요. 다른 참가자가 있으면 소모임을 삭제할 수 없으니, 취소해야 한다면 먼저 안내해주세요.",
+                body: "누군가 신청하면 초록 칩으로 이름이 추가돼요. 정원이 다 차면 상단 인원 칩이 붉은 빛으로 바뀌고 목록에는 '마감'이 붙어요.",
+                notes: ["다른 참가자가 있으면 소모임을 삭제할 수 없어요. 부득이하게 취소해야 한다면 참가자들에게 먼저 안내해주세요."],
             },
             {
                 img: "08-participant-contacts.png",
                 title: "주최자는 참가자 연락처를 확인할 수 있어요.",
-                body: "‘참가자 연락처 보기’를 누르면 실명과 연락처가 표시돼요. 다른 기기에서는 편집 비밀번호를 한 번 입력해야 볼 수 있어요.",
+                body: "‘참가자 연락처 보기’를 누르면 실명과 연락처가 표시돼요. 당일 위치 안내나 지각 연락이 필요할 때 사용해주세요.",
+                notes: ["다른 기기(휴대폰 등)에서는 연락처를 확인하기 전에 편집 비밀번호를 한 번 입력해야 해요."],
             },
             {
                 img: "09-meetup-review.png",
@@ -71,27 +78,30 @@
             {
                 img: "join-01-calendar-view.png",
                 title: "소모임 신청 페이지에서 캘린더를 살펴봐주세요.",
-                body: "열려 있는 소모임은 초록색 칩으로 날짜 아래에 이름이 표시돼요.",
+                body: "열려 있는 소모임은 초록색 칩으로 날짜 아래에 이름이 표시돼요. 좌우 화살표로 다른 달을 살펴보고, '오늘' 버튼으로 오늘이 있는 달로 바로 돌아올 수 있어요.",
             },
             {
                 img: "join-02-date-selection.png",
                 title: "관심 있는 소모임이 열린 날짜를 클릭해주세요.",
-                body: "화면 아래 패널에 그 날의 소모임 카드가 뜹니다. 오른쪽에는 현재 인원/정원이 초록 칩으로 붙어요.",
+                body: "화면 아래 패널에 그 날의 소모임 카드가 뜹니다. 카드에는 이름·시간·장소·주최자가 요약되고, 오른쪽에는 현재 인원/정원 칩이 붙어요. 마감된 소모임은 그 자리에 '마감'이 표시됩니다.",
             },
             {
                 img: "join-03-open-event.png",
                 title: "소모임 카드를 눌러 상세 창을 열어주세요.",
-                body: "일시·장소·주최자·정원·소개와 참가자 목록을 확인할 수 있어요. 신청은 소모임 전날까지만 받을 수 있어요.",
+                body: "일시·장소·주최자·정원·소개와 참가자 목록을 확인할 수 있어요. '지도에서 보기'가 있으면 눌러서 정확한 위치를 확인할 수 있어요.",
+                notes: ["신청은 소모임 전날까지만 받을 수 있어요. 소모임 당일에는 신청 폼이 사라지고 마감 안내만 뜹니다."],
             },
             {
                 img: "join-04-signing-form.png",
                 title: "신청 폼을 채워주세요.",
-                body: "이름(공개), 실명(관리자 전용), 연락처(주최자 전용, 선택), 취소 비밀번호를 입력합니다. 취소 비밀번호는 다른 기기에서 취소할 때 반드시 필요해요.",
+                body: "이름(참가자 목록에 공개, 닉네임 가능), 실명(관리자 확인용), 연락처(주최자만, 선택), 취소 비밀번호를 입력해주세요.",
+                notes: ["취소 비밀번호는 다른 기기에서 취소할 때 반드시 필요해요. 잊어버리지 않을 값으로 설정해주세요."],
             },
             {
                 img: "join-05-completion.png",
                 title: "'신청하기'를 누르면 완료!",
-                body: "인원 칩이 늘어나고 참가자 목록에 이름이 추가돼요. 같은 기기에서는 신청 취소하기 링크로 바로 취소할 수 있고, 다른 기기에서 신청했다면 하단의 ‘비밀번호로 취소하기’를 눌러주세요. 취소는 소모임 2일 전까지만 가능해요.",
+                body: "인원 칩이 늘어나고 참가자 목록에 이름이 추가돼요. 같은 기기에서는 '신청 취소하기' 링크로 바로 취소할 수 있고, 다른 기기에서 신청했다면 하단의 '비밀번호로 취소하기'를 눌러주세요.",
+                notes: ["취소는 소모임 2일 전까지만 가능해요. 그 이후로는 취소 링크가 비활성화되니 주최자에게 직접 연락해주세요."],
             },
         ],
     };
@@ -101,7 +111,7 @@
     let idx = 0;
 
     // ---- DOM refs (filled once on init) ---------------------------------
-    let overlay, tabsEl, imgEl, titleEl, bodyEl, dotsEl, progressEl,
+    let overlay, tabsEl, imgEl, titleEl, bodyEl, notesEl, dotsEl, progressEl,
         prevBtn, nextBtn, closeBtn;
 
     function currentSlides() { return SLIDES[activeTab]; }
@@ -116,6 +126,15 @@
         titleEl.textContent = slide.title;
         bodyEl.textContent = slide.body;
         progressEl.textContent = (idx + 1) + " / " + slides.length;
+
+        // yellow "!" callouts (0..n) — one <p class="join_help_note"> per note
+        notesEl.innerHTML = "";
+        (slide.notes || []).forEach(function (text) {
+            const p = document.createElement("p");
+            p.className = "join_help_note";
+            p.textContent = text;
+            notesEl.appendChild(p);
+        });
 
         // rebuild dots — cheap, only 5–9 of them
         dotsEl.innerHTML = "";
@@ -183,6 +202,7 @@
         imgEl      = overlay.querySelector(".join_help_img");
         titleEl    = overlay.querySelector(".join_help_slide_title");
         bodyEl     = overlay.querySelector(".join_help_slide_body");
+        notesEl    = overlay.querySelector(".join_help_notes");
         dotsEl     = overlay.querySelector(".join_help_dots");
         progressEl = overlay.querySelector(".join_help_progress");
         prevBtn    = overlay.querySelector(".join_help_prev");
