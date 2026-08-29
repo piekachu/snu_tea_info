@@ -83,13 +83,16 @@
         "teaInfo.title":       { ko: "Tea Info", en: "Tea Info" },
         "teaInfo.subtitle":    { ko: "Select a tea lineup to view:", en: "Select a tea lineup to view:" },
 
-        /* ── 찻집 정보 (venue names and addresses deliberately stay Korean so
-              they keep matching the Naver Maps links) ─────────────── */
+        /* ── 찻집 정보 ─────────────────────────────────────────────────
+              Venue NAMES translate (see the nameEn field on each entry
+              in chatjip-info.html's VENUES data, picked via I18N.pick).
+              Addresses and the Naver Maps search query stay Korean on
+              purpose — that's what actually resolves on the map. */
         "chatjip.pageTitle":   { ko: "찻집 정보 — 설다연", en: "Tea Houses — Seoldayeon" },
         "chatjip.title":       { ko: "찻집 정보", en: "Tea Houses" },
         "chatjip.badge":       { ko: "61곳", en: "61 places" },
         "chatjip.subtitle":    { ko: "설다연 부원들이 추천하는 서울·경기권 찻집 목록입니다. 네이버 지도 링크로 위치를 바로 확인할 수 있어요.",
-                                 en: "Tea houses around Seoul and Gyeonggi recommended by Seoldayeon members. Each entry links straight to Naver Maps. Names and addresses are kept in Korean so the map links work." },
+                                 en: "Tea houses around Seoul and Gyeonggi recommended by Seoldayeon members. Each entry links straight to Naver Maps. Addresses stay in Korean so the map links keep working." },
         "chatjip.navAria":     { ko: "구별 지도 필터", en: "Filter map by district" },
         "chatjip.mapHintAll":  { ko: "전체 {n}곳 — 마커를 클릭하면 정보가 표시돼요",
                                  en: "All {n} places — click a marker for details" },
@@ -100,6 +103,111 @@
         "chatjip.viewOnNaver": { ko: "네이버 지도에서 보기 →", en: "View on Naver Map →" },
         "chatjip.summary":     { ko: "총 <strong>61곳</strong>의 찻집 · <strong>17개</strong> 지역 수록 · 네이버 지도 링크로 바로 길찾기 가능",
                                  en: "<strong>61</strong> tea houses across <strong>17</strong> districts · directions via Naver Maps" },
+
+        /* ── 소모임 신청 방법 (meetup sign-up manual) ─────────────────
+              notice/meetup-signup.html. data-i18n-html is used wherever
+              the Korean fallback contains inline tags (<strong>/<em>/<a>) —
+              keep the English value's tags in sync if the Korean changes. */
+        "meetup.pageTitle":     { ko: "소모임 신청 방법 — 공지사항", en: "How to Sign Up for a Meetup — Notices" },
+        "meetup.title":         { ko: "소모임 신청 방법", en: "How to Sign Up for a Meetup" },
+        "meetup.intro":         { ko: "설다연에서는 누구나 자유롭게 소모임을 열거나 참여할 수 있어요. 소모임 신청 페이지에서 <strong>새 소모임을 만드는 방법</strong>과 <strong>이미 열려 있는 소모임에 신청하는 방법</strong>을 순서대로 안내드릴게요.",
+                                  en: "At Seoldayeon, anyone is free to start a meetup or join one. On the meetup sign-up page, we'll walk you through <strong>how to create a new meetup</strong> and <strong>how to sign up for one that's already open</strong>, step by step." },
+        "meetup.tabsAria":      { ko: "소모임 신청 방법 섹션", en: "Meetup sign-up guide sections" },
+        "meetup.tab.create":    { ko: "새 소모임 만들기", en: "Create a New Meetup" },
+        "meetup.tab.join":      { ko: "이미 열린 소모임에 신청하기", en: "Sign Up for an Open Meetup" },
+
+        "meetup.create.ariaLabel": { ko: "새 소모임 만들기", en: "Create a new meetup" },
+
+        "meetup.create.step1.title": { ko: "소모임 신청 페이지를 열어주세요.", en: "Open the meetup sign-up page." },
+        "meetup.create.step1.body":  { ko: "<a href=\"../join/index.html\" style=\"color: var(--osullocGreen); font-weight: 600;\">소모임 신청 페이지</a>에 들어가면 이번 달 캘린더가 보여요. 이미 열린 소모임은 초록색 칩으로 날짜 아래에 표시되고, 오늘 날짜에는 진한 초록 원이 둘러져요. 좌우의 <strong>&lt; &gt;</strong> 화살표로 다른 달을 살펴볼 수도 있고, 다른 달을 보다가 <strong>오늘</strong> 버튼을 누르면 오늘이 있는 달로 바로 돌아와요.",
+                                       en: "Head over to the <a href=\"../join/index.html\" style=\"color: var(--osullocGreen); font-weight: 600;\">meetup sign-up page</a> and you'll see this month's calendar. Meetups that are already open show up as green chips under their date, and today's date gets a solid green circle. Use the <strong>&lt; &gt;</strong> arrows to browse other months, or tap <strong>Today</strong> to jump straight back to the current month." },
+        "meetup.create.step1.imgAlt": { ko: "소모임 신청 페이지의 월간 캘린더 뷰", en: "Monthly calendar view of the meetup sign-up page" },
+
+        "meetup.create.step2.title": { ko: "소모임을 열고 싶은 날짜를 골라주세요.", en: "Pick the date you'd like to open a meetup on." },
+        "meetup.create.step2.body":  { ko: "달력에서 원하는 날짜를 클릭하면 그 셀에 연한 초록 배경이 씌워지고, 화면 아래쪽 패널에 그 날의 소모임 목록이 나타나요. 아직 열린 소모임이 없다면 <em>\"이 날짜에는 아직 소모임이 없어요. 첫 소모임을 만들어보세요!\"</em>라는 안내와 함께 오른쪽에 <strong>+ 새 소모임 만들기</strong> 버튼이 초록색으로 활성화됩니다. 소모임은 <strong>내일 이후 날짜</strong>부터 만들 수 있어요. 오늘이나 지난 날짜에는 <strong>+ 새 소모임 만들기</strong> 버튼이 비활성화됩니다.",
+                                       en: "Click a date on the calendar and it gets a light green highlight, with that day's meetup list showing up in the panel below. If nothing's open yet, you'll see <em>\"No meetups on this day yet. Why not start the first one?\"</em> along with a green <strong>+ New Meetup</strong> button on the right. Meetups can only be created for <strong>tomorrow or later</strong> — the button stays disabled for today or any past date." },
+        "meetup.create.step2.imgAlt": { ko: "빈 날짜를 선택해 + 새 소모임 만들기 버튼이 활성화된 모습", en: "An empty date selected, with the + New Meetup button now active" },
+
+        "meetup.create.step3.title": { ko: "소모임 정보를 입력해주세요.", en: "Fill in the meetup details." },
+        "meetup.create.step3.body":  { ko: "<strong>+ 새 소모임 만들기</strong>를 누르면 개설 창이 뜹니다. 소모임 이름, 시간(시·분 각각 선택), 정원, 장소, 지도 링크, 주최자 이름과 실명, 편집 비밀번호, 그리고 간단한 소개를 채워주세요. <em>*</em> 표시가 있는 항목은 필수예요. 정원은 <strong>본인을 포함해 3명 이상</strong>이어야 하고, 지도 링크는 선택 사항이지만 <em>네이버 지도 공유 링크</em>를 붙여넣으면 다른 부원들이 바로 길찾기를 할 수 있어요. 다 채웠다면 <strong>만들기</strong>를 누릅니다.",
+                                       en: "Tapping <strong>+ New Meetup</strong> opens the creation form. Fill in the meetup name, time (hour and minute), capacity, location, a map link, your name and real name as host, an edit password, and a short description. <em>*</em> marks a required field. Capacity must be <strong>at least 3, including yourself</strong>, and while the map link is optional, pasting a <em>Naver Map share link</em> lets other members get directions instantly. Once everything's filled in, tap <strong>Create</strong>." },
+        "meetup.create.step3.note":  { ko: "<strong>편집 비밀번호</strong>는 나중에 소모임을 수정·삭제하거나, 다른 기기에서 참가자 명단을 확인할 때 반드시 필요해요. 잊어버리면 관리자만 처리할 수 있으니 안전한 곳에 꼭 적어두세요.",
+                                       en: "Your <strong>edit password</strong> is required later to edit or delete the meetup, or to view the participant list from another device. If you forget it, only an admin can help — so write it down somewhere safe." },
+        "meetup.create.step3.imgAlt": { ko: "소모임 만들기 창의 입력 폼", en: "The meetup creation form" },
+
+        "meetup.create.step4.title": { ko: "등록되면 '관리자 승인 대기 중' 상태가 돼요.", en: "Once created, it starts out “Pending admin approval.”" },
+        "meetup.create.step4.body":  { ko: "방금 만든 소모임은 즉시 캘린더에 표시되지만, 상세 창 상단에 <em>1/3명</em> 옆으로 노란색 <strong>관리자 승인 대기 중</strong> 칩이 붙어요. 아래쪽에는 <em>\"이 소모임은 관리자의 승인이 완료된 후부터 신청받을 수 있어요.\"</em>라는 안내가 뜹니다.",
+                                       en: "The moment you create it, your meetup shows up on the calendar — but a yellow <strong>Pending admin approval</strong> chip appears next to <em>1/3</em> at the top of the detail window. Below it you'll see <em>\"Sign-ups open once an admin approves this meetup.\"</em>" },
+        "meetup.create.step4.note":  { ko: "<strong>승인 전에는 주최자 외에는 신청할 수 없어요.</strong> 링크를 공유해도 다른 부원들은 신청 버튼이 보이지 않아요.",
+                                       en: "<strong>Until it's approved, only the host can join.</strong> Even if you share the link, other members won't see a sign-up button yet." },
+        "meetup.create.step4.imgAlt": { ko: "관리자 승인 대기 중 배지가 붙은 소모임 상세 창", en: "Meetup detail window with the pending-approval badge" },
+
+        "meetup.create.step5.title": { ko: "단체 카카오톡방에서 승인을 요청해주세요.", en: "Request approval in the group KakaoTalk chat." },
+        "meetup.create.step5.body":  { ko: "상세 창 오른쪽 위의 <strong>공유 버튼(↑)</strong>을 누르면 소모임 정보와 신청 링크가 한 번에 정리된 텍스트가 클립보드에 복사돼요. 이 내용을 그대로 <strong>설다연 잡담방</strong>에 붙여넣고, 공유해주시면 됩니다! 관리자가 확인하는대로 승인만 처리되면 그 링크로 부원들이 바로 신청할 수 있어요.",
+                                       en: "Tap the <strong>share button (↑)</strong> at the top right of the detail window and a ready-made summary of the meetup — plus the sign-up link — gets copied to your clipboard. Paste it straight into the <strong>Seoldayeon group chat</strong> to share it! As soon as an admin checks it and approves, members can sign up right through that link." },
+        "meetup.create.step5.imgAlt": { ko: "복사한 소모임 정보를 카카오톡방에 붙여넣은 모습", en: "Copied meetup details pasted into the KakaoTalk group chat" },
+
+        "meetup.create.step6.title": { ko: "관리자가 승인하면 신청이 열려요.", en: "Once an admin approves it, sign-ups open." },
+        "meetup.create.step6.body":  { ko: "관리자가 승인하면 <em>관리자 승인 대기 중</em> 칩과 안내 문구가 사라지고, 상세 창은 일반 소모임과 같은 모습이 돼요. 이제부터 부원들이 링크를 통해 신청할 수 있어요. 소모임 카드에도 정원 인원 수(예: <em>1/3명</em>)만 남게 됩니다.",
+                                       en: "Once approved, the <em>pending admin approval</em> chip and its notice disappear, and the detail window looks just like any other meetup. Members can now sign up through the link, and the meetup card just shows the headcount (e.g. <em>1/3</em>)." },
+        "meetup.create.step6.imgAlt": { ko: "승인이 완료돼 신청을 받을 수 있게 된 소모임 상세 창", en: "Approved meetup detail window, now open for sign-ups" },
+
+        "meetup.create.step7.title": { ko: "신청이 들어오면 참가자 명단이 채워져요.", en: "As sign-ups come in, the participant list fills up." },
+        "meetup.create.step7.body":  { ko: "누군가 신청할 때마다 <strong>참가자 (n/m명)</strong> 아래의 초록 칩 목록에 이름이 하나씩 추가돼요. 정원이 모두 차면 상단 인원 칩이 <em>붉은 빛</em>으로 바뀌고, 캘린더 목록에서는 <em>마감</em> 표시가 뜹니다.",
+                                       en: "Every time someone signs up, their name is added as a new green chip under <strong>Participants (n/m)</strong>. Once it's full, the headcount chip at the top turns <em>red</em>, and the calendar listing shows <em>Full</em>." },
+        "meetup.create.step7.note":  { ko: "<strong>다른 참가자가 있으면 소모임을 삭제할 수 없어요.</strong> 부득이하게 취소해야 한다면 참가자들에게 먼저 안내한 뒤, 관리자에게 문의해주세요.",
+                                       en: "<strong>You can't delete a meetup once other people have signed up.</strong> If you really need to cancel it, let the participants know first, then reach out to an admin." },
+        "meetup.create.step7.imgAlt": { ko: "정원이 모두 채워진 소모임 상세 창", en: "Meetup detail window with a full participant list" },
+
+        "meetup.create.step8.title": { ko: "주최자는 참가자 연락처를 확인할 수 있어요.", en: "As host, you can view participants' contact info." },
+        "meetup.create.step8.body":  { ko: "상세 창 하단의 <strong>참가자 연락처 보기</strong>를 누르면 <em>참가자 연락처 (주최자 전용)</em> 박스가 열려요. 여기에는 각 참가자의 <strong>실명</strong>과 <strong>연락처</strong>가 표시됩니다 (입력하지 않은 참가자는 <em>연락처 미입력</em>으로 보여요).",
+                                       en: "Tap <strong>View participant contacts</strong> at the bottom of the detail window to open the <em>Participant contacts (host only)</em> box. It shows each participant's <strong>real name</strong> and <strong>contact info</strong> (anyone who didn't provide one shows up as <em>No contact given</em>)." },
+        "meetup.create.step8.note":  { ko: "소모임 주최자는 이걸 확인해서 늦지 않게 소모임 참가자들과 <strong>꼭 톡방을 개설</strong>하고, 약속 장소나 시간 등을 협의하면 됩니다! 혹시라도 인원이 생각한 만큼 많이 모이지 않았더라도, 신청자가 있다면 꼭 연락을 해서 모임 파투 여부를 알려주세요!",
+                                       en: "As host, use this to <strong>set up a group chat</strong> with your participants in good time, and sort out the meeting spot and time together! And even if fewer people signed up than you'd hoped, please reach out to let them know whether the meetup is still happening." },
+        "meetup.create.step8.imgAlt": { ko: "참가자 연락처 (주최자 전용) 박스가 열린 모습", en: "Open participant contacts (host only) box" },
+
+        "meetup.create.step9.title": { ko: "소모임이 끝난 뒤에는 시음기를 공유해주세요.", en: "After the meetup, please share a tasting note." },
+        "meetup.create.step9.body":  { ko: "소모임을 마친 후에는 <strong>설다연 잡담방</strong>에 소모임을 함께한 분들의 시음기를 모아서 공유해주세요! <em>날짜 · 함께 방문한 찻집 · 참여 인원</em>과 함께 마셨던 차에 대한 시음기를 사진과 같이 공유해주시면, 운영진 확인 이후 조원당 2500원의 지원금을 드립니다!",
+                                       en: "Once your meetup wraps up, gather everyone's tasting notes and share them in the <strong>Seoldayeon group chat</strong>! Share the <em>date · tea house you visited · number of participants</em> along with a tasting note and photos of the tea, and once an officer confirms it, each participant gets a <strong>₩2,500</strong> stipend!" },
+        "meetup.create.step9.imgAlt": { ko: "소모임 후기를 단체 카톡방에 공유한 예시", en: "Example of a meetup review shared in the group chat" },
+
+        "meetup.join.ariaLabel": { ko: "이미 열린 소모임에 신청하기", en: "Sign up for an open meetup" },
+
+        "meetup.join.step1.title": { ko: "소모임 신청 페이지에서 캘린더를 살펴봐주세요.", en: "Browse the calendar on the meetup sign-up page." },
+        "meetup.join.step1.body":  { ko: "<a href=\"../join/index.html\" style=\"color: var(--osullocGreen); font-weight: 600;\">소모임 신청 페이지</a>에 들어가면 이번 달 캘린더가 뜹니다. 열려 있는 소모임은 <strong>초록색 칩</strong>으로 날짜 아래에 이름이 표시돼요. 좌우 <strong>&lt; &gt;</strong> 화살표로 다른 달을 살펴볼 수 있고, <strong>오늘</strong> 버튼으로 오늘이 있는 달로 바로 돌아올 수 있어요.",
+                                     en: "Head over to the <a href=\"../join/index.html\" style=\"color: var(--osullocGreen); font-weight: 600;\">meetup sign-up page</a> and you'll see this month's calendar. Open meetups show up as <strong>green chips</strong> with their name under the date. Use the <strong>&lt; &gt;</strong> arrows to browse other months, or tap <strong>Today</strong> to jump straight back to the current month." },
+        "meetup.join.step1.imgAlt": { ko: "소모임 신청 페이지의 월간 캘린더 뷰", en: "Monthly calendar view of the meetup sign-up page" },
+
+        "meetup.join.step2.title": { ko: "관심 있는 소모임이 열린 날짜를 클릭해주세요.", en: "Click the date of the meetup you're interested in." },
+        "meetup.join.step2.body":  { ko: "소모임 이름이 붙어 있는 날짜를 누르면 그 셀에 연한 초록 배경이 씌워지고, 화면 아래쪽 패널에 그 날의 소모임 카드가 나타나요. 카드에는 소모임 <em>이름 · 시간 · 장소 · 주최자</em>가 요약되고, 오른쪽에는 <em>현재 인원 / 정원</em>이 초록 칩으로 붙어요. 정원이 모두 찼다면 그 자리에 <em>마감</em>이 표시됩니다.",
+                                     en: "Clicking a date that has a meetup on it shows that day's meetup card in the panel below. Each card summarizes the <em>name · time · location · host</em>, with the <em>current headcount / capacity</em> shown as a green chip on the right. If it's full, that spot shows <em>Full</em> instead." },
+        "meetup.join.step2.imgAlt": { ko: "소모임 카드가 표시된 날짜 패널", en: "Date panel showing a meetup card" },
+
+        "meetup.join.step3.title": { ko: "소모임 카드를 눌러 상세 창을 열어주세요.", en: "Tap the meetup card to open its details." },
+        "meetup.join.step3.body":  { ko: "카드를 누르면 상세 정보 창이 열려요. 상단에는 <strong>인원 칩</strong>과 <strong>공유 버튼(↑)</strong>이 있고, 그 아래로 <em>일시 · 장소 · 주최자 · 정원 · 소개</em>가 정리됩니다. <strong>지도에서 보기</strong>가 있으면 눌러서 정확한 위치를 확인할 수 있고, <strong>참가자 (n/m명)</strong> 아래의 초록 칩으로 지금까지 신청한 사람들의 이름을 볼 수 있어요.",
+                                     en: "Tapping the card opens the detail window. Up top you'll find a <strong>headcount chip</strong> and a <strong>share button (↑)</strong>, and below that the <em>date/time · location · host · capacity · description</em>. If there's a <strong>View on map</strong> link, tap it to see the exact location, and the green chips under <strong>Participants (n/m)</strong> show who's signed up so far." },
+        "meetup.join.step3.note":  { ko: "<strong>신청은 소모임 전날까지</strong>만 받을 수 있어요. 소모임 당일에는 신청 폼이 사라지고 마감 안내만 뜹니다. 뒤늦게 참여하고 싶다면 주최자에게 직접 연락해주세요.",
+                                     en: "<strong>Sign-ups are only open through the day before the meetup.</strong> On the day of the meetup itself, the sign-up form disappears and only a closed notice remains. If you'd like to join at the last minute, please reach out to the host directly." },
+        "meetup.join.step3.imgAlt": { ko: "소모임 상세 창과 신청 폼", en: "Meetup detail window with the sign-up form" },
+
+        "meetup.join.step4.title": { ko: "신청 폼을 채워주세요.", en: "Fill out the sign-up form." },
+        "meetup.join.step4.body":  { ko: "상세 창을 아래로 스크롤하면 신청 폼이 있어요. <strong>이름</strong>은 참가자 목록에 공개되는 이름이에요 (닉네임도 좋아요). <strong>실명</strong>은 관리자 확인용으로만 쓰이고 다른 참가자에게는 보이지 않아요. <strong>연락처</strong>는 선택 사항이지만, 카카오톡 ID나 전화번호를 남겨두면 주최자가 당일 위치 안내나 지각 연락을 줄 수 있어요 (주최자만 볼 수 있어요). 마지막으로 <strong>취소 비밀번호</strong>를 정해주세요.",
+                                     en: "Scroll down in the detail window to find the sign-up form. <strong>Name</strong> is shown publicly in the participant list (a nickname is fine). <strong>Real name</strong> is for admin verification only and isn't shown to other participants. <strong>Contact info</strong> is optional, but leaving a KakaoTalk ID or phone number lets the host reach you about the location or a late arrival on the day (only the host can see it). Finally, set a <strong>cancellation password</strong>." },
+        "meetup.join.step4.note":  { ko: "<strong>취소 비밀번호</strong>는 다른 기기(휴대폰, 다른 브라우저 등)에서 신청을 취소할 때 반드시 필요해요. 잊어버리면 취소하려면 주최자나 관리자에게 문의해야 하니, 기억할 수 있는 값으로 설정해주세요.",
+                                     en: "Your <strong>cancellation password</strong> is required if you ever cancel from a different device (phone, another browser, etc.). If you forget it, you'll need to contact the host or an admin to cancel — so pick something memorable." },
+        "meetup.join.step4.imgAlt": { ko: "이름·실명·연락처·취소 비밀번호를 채운 신청 폼", en: "Sign-up form filled in with name, real name, contact info, and cancellation password" },
+
+        "meetup.join.step5.title": { ko: "\"신청하기\"를 누르면 완료!", en: "Tap “Sign up” and you're done!" },
+        "meetup.join.step5.body":  { ko: "신청이 성공하면 상단 인원 칩이 <em>2/4명</em>처럼 늘어나고, 참가자 목록에 방금 입력한 이름이 새 초록 칩으로 추가돼요. 바로 아래에 <em>✅ (이름)님으로 신청 완료했어요.</em> 안내가 뜨고, 같은 기기에서는 <strong>신청 취소하기</strong> 링크로 바로 취소할 수 있어요.",
+                                     en: "Once your sign-up goes through, the headcount chip at the top increases (e.g. to <em>2/4</em>), and your name is added to the participant list as a new green chip. Right below that you'll see <em>✅ You're signed up as (name).</em>, and on the same device you can cancel right away with the <strong>Cancel my sign-up</strong> link." },
+        "meetup.join.step5.note1": { ko: "다른 기기에서 신청했거나 취소 링크가 보이지 않는다면, 상세 창 하단의 <strong>\"다른 기기에서 신청하셨나요? 비밀번호로 취소하기\"</strong>를 눌러 <em>실명 + 취소 비밀번호</em>로 취소할 수 있어요.",
+                                     en: "Signed up on a different device, or don't see a cancel link? Tap <strong>“Did you sign up on a different device? Cancel with your password”</strong> at the bottom of the detail window to cancel using your <em>real name + cancellation password</em>." },
+        "meetup.join.step5.note2": { ko: "<strong>취소는 소모임 2일 전까지</strong>만 가능해요. 그 이후에는 취소 링크가 비활성화되니, 부득이하게 못 가게 됐다면 주최자에게 직접 알려주세요.",
+                                     en: "<strong>Cancellations are only open through 2 days before the meetup.</strong> After that the cancel link is disabled, so if something comes up, please let the host know directly." },
+        "meetup.join.step5.imgAlt": { ko: "신청이 완료된 소모임 상세 창", en: "Meetup detail window after a completed sign-up" },
+
+        "meetup.closing":       { ko: "<strong>궁금한 점이 있다면?</strong> 임원진에게 편하게 문의해주세요. 이 페이지는 소모임 신청이 처음이신 분들을 위한 안내이며, 실제 기능과 다르게 안내된 부분이 있다면 알려주세요.",
+                                  en: "<strong>Have a question?</strong> Feel free to ask any officer. This page is meant as a guide for members signing up for a meetup for the first time — if anything here doesn't match how it actually works, please let us know." },
 
         /* ── 신입부원 OT ──────────────────────────────────────────── */
         "ot.pageTitle":        { ko: "신입부원 OT 자료 — 공지사항", en: "New Member Orientation — Notices" },
