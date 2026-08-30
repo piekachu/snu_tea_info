@@ -147,16 +147,14 @@
         }
     }
 
-    // ── Entry point ──────────────────────────────────────────────────────────
-    function init() {
-        if (typeof teaClubEvents === "undefined") return;
-
-        var mapEl = document.getElementById("eventMap");
-        if (!mapEl) return;
-
-        var here = currentRelPath();
-        var event = teaClubEvents.find(function (e) { return e.path === here; });
-        if (!event) { mapEl.style.display = "none"; return; }
+    // ── shared entry point ──────────────────────────────────────────────────
+    // Renders into mapEl for a single event object. Used both by this file's
+    // own init() below (hand-authored pages, event looked up by pathname)
+    // and by events/view.html (admin-created events, looked up by ?id= —
+    // events-map.js's own path-matching doesn't apply there since every
+    // dynamic event shares the same "events/view.html" pathname).
+    function render(mapEl, event) {
+        if (!mapEl || !event) return;
 
         // multi-venue path: event.venues array takes priority
         var hasVenues = Array.isArray(event.venues) && event.venues.length > 0;
@@ -176,6 +174,22 @@
             }
         });
     }
+
+    // ── Entry point (hand-authored event subpages) ──────────────────────────
+    function init() {
+        if (typeof teaClubEvents === "undefined") return;
+
+        var mapEl = document.getElementById("eventMap");
+        if (!mapEl) return;
+
+        var here = currentRelPath();
+        var event = teaClubEvents.find(function (e) { return e.path === here; });
+        if (!event) { mapEl.style.display = "none"; return; }
+
+        render(mapEl, event);
+    }
+
+    window.EventsMap = { render: render };
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);

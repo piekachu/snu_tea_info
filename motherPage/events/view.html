@@ -20,6 +20,7 @@
     <script src="../content-config.js"></script>
     <script src="../content-api.js"></script>
     <script src="events-data.js"></script>
+    <script src="events-map.js"></script>
 
     <title id="pageTitle">정기다회</title>
 
@@ -85,6 +86,18 @@
                                     </div>
                                 </div>
 
+                                <!-- 다회 정보 / 차 정보 toggle — same markup/behavior as
+                                     events-meta.js's #infoToggle on the hand-authored pages,
+                                     re-wired below since this page has no single teaClubEvents
+                                     entry to key off of. Hidden entirely when the event has no
+                                     tea sections (nothing to switch to). -->
+                                <div id="infoToggle" class="info_toggle" hidden>
+                                    <button type="button" class="info_toggle_btn" data-panel="event">다회 정보</button>
+                                    <button type="button" class="info_toggle_btn" data-panel="tea">차 정보</button>
+                                </div>
+
+                                <div id="eventInfoPanel">
+
                                 <!-- intro -->
                                 <div class="magazine_block txt_block top_txt_block" id="introBlock" hidden>
                                     <div class="block_cont">
@@ -103,7 +116,14 @@
                                      instead of matching teaClubEvents by pathname. -->
                                 <div id="eventMeta" class="event_meta"></div>
 
+                                <!-- embedded map, populated by events-map.js (EventsMap.render)
+                                     when this event has lat/lng — same script the hand-authored
+                                     pages use for #eventMap. -->
+                                <div id="eventMap" class="event_map"></div>
+
                                 <hr class="article_hr hr_dashed">
+
+                                </div><!-- /#eventInfoPanel -->
 
                                 <!-- tea lineup — only shown when the event has at least one -->
                                 <div id="teaSection" hidden>
@@ -162,10 +182,27 @@
         const introTitleEl    = document.getElementById("introTitleEl");
         const introBodyEl     = document.getElementById("introBodyEl");
         const metaEl          = document.getElementById("eventMeta");
+        const mapEl            = document.getElementById("eventMap");
+        const infoToggle       = document.getElementById("infoToggle");
+        const eventInfoPanel  = document.getElementById("eventInfoPanel");
         const teaSection      = document.getElementById("teaSection");
         const teaList          = document.getElementById("teaList");
 
         let event = null;
+        let mapRendered = false; // guards against re-creating the map canvas on every i18n:changed re-render
+
+        // switches between "다회 정보" and "차 정보" — same behavior as
+        // events-meta.js's toggle on the hand-authored pages
+        function showPanel(panel) {
+            eventInfoPanel.style.display = panel === "event" ? "" : "none";
+            teaSection.style.display = panel === "tea" ? "" : "none";
+            infoToggle.querySelectorAll(".info_toggle_btn").forEach((btn) => {
+                btn.classList.toggle("active", btn.dataset.panel === panel);
+            });
+        }
+        infoToggle.querySelectorAll(".info_toggle_btn").forEach((btn) => {
+            btn.addEventListener("click", () => showPanel(btn.dataset.panel));
+        });
 
         // paragraphs separated by a blank line become <p>; single newlines
         // become <br> — same convention as a plain textarea, no markup needed
@@ -314,12 +351,18 @@
             renderMeta();
 
             const teas = Array.isArray(event.teas) ? event.teas.filter((t) => t && t.name) : [];
-            if (teas.length > 0) {
-                teaSection.hidden = false;
-                teaList.innerHTML = "";
-                teas.forEach((tea, i) => teaList.appendChild(renderTea(tea, i)));
+            teaList.innerHTML = "";
+            teas.forEach((tea, i) => teaList.appendChild(renderTea(tea, i)));
+
+            // toggle only makes sense (and only shows) when there's a tea
+            // lineup to switch to — otherwise just show the info panel alone
+            const hasTeas = teas.length > 0;
+            teaSection.hidden = !hasTeas;
+            infoToggle.hidden = !hasTeas;
+            if (hasTeas) {
+                showPanel("event");
             } else {
-                teaSection.hidden = true;
+                eventInfoPanel.style.display = "";
             }
         }
 
@@ -339,6 +382,14 @@
             loadingEl.hidden = true;
             contentEl.hidden = false;
             render();
+
+            // rendered once, outside render() — EventsMap.render() appends a
+            // fresh map canvas each call, so re-running it on every
+            // i18n:changed re-render would stack duplicate maps
+            if (!mapRendered && typeof EventsMap !== "undefined") {
+                mapRendered = true;
+                EventsMap.render(mapEl, event);
+            }
         }
 
         window.addEventListener("i18n:changed", render);
