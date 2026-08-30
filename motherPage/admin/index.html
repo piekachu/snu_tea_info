@@ -900,6 +900,34 @@
             margin-bottom: 10px;
         }
         .evt-tea-num { font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .05em; }
+
+        /* maps to the hexagon/radar chart events/view.html draws from these
+           six 0–5 values (see FLAVOR_AXES / renderFlavorChart) */
+        .evt-flavor-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .evt-flavor-item { display: flex; flex-direction: column; gap: 4px; }
+        .evt-flavor-item label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+        }
+        .evt-flavor-item input {
+            width: 100%;
+            padding: 7px 9px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 13px;
+            color: #222;
+        }
+        .evt-flavor-item input:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(28,102,85,.1);
+        }
         .cnt-pin-check {
             display: flex;
             align-items: center;
@@ -2406,6 +2434,19 @@
     }
     locationInput.addEventListener("blur", geocodeLocation);
 
+    // six-axis flavor profile, shown as a hexagon/radar chart on the public
+    // page (events/view.html's renderFlavorChart) — kept in sync with the
+    // key order there. 0–5 scale, all optional; a tea with none of these
+    // filled in just skips the chart on the public page.
+    const FLAVOR_AXES = [
+        ["sweetness", "단맛"],
+        ["bitterness", "쓴맛"],
+        ["umami", "감칠맛"],
+        ["astringency", "떫은맛"],
+        ["aroma", "향"],
+        ["body", "바디감"],
+    ];
+
     let editingId = null;
     let heroUpload = makeImageUpload(null);
     heroUploadHost.appendChild(heroUpload.el);
@@ -2459,10 +2500,37 @@
         noteInput.rows = 2; noteInput.value = data.brewNote || "";
         card.appendChild(labeled("우림법 설명 (선택)", noteInput));
 
+        const flavorField = el("div", "cnt-field");
+        flavorField.appendChild(el("label", "", "맛 프로필 (선택, 0~5)"));
+        const flavorGrid = el("div", "evt-flavor-grid");
+        const flavorInputs = {};
+        FLAVOR_AXES.forEach(([key, label]) => {
+            const item = el("div", "evt-flavor-item");
+            item.appendChild(el("label", "", label));
+            const input = document.createElement("input");
+            input.type = "number"; input.min = "0"; input.max = "5"; input.step = "1";
+            input.value = (data.flavor && data.flavor[key] != null) ? data.flavor[key] : "";
+            item.appendChild(input);
+            flavorGrid.appendChild(item);
+            flavorInputs[key] = input;
+        });
+        flavorField.appendChild(flavorGrid);
+        card.appendChild(flavorField);
+
         const entry = {
             el: card,
             setNum(n) { numLabel.textContent = "차 " + n; },
             getData() {
+                const flavor = {};
+                let hasFlavor = false;
+                FLAVOR_AXES.forEach(([key]) => {
+                    const raw = flavorInputs[key].value.trim();
+                    if (raw === "") return;
+                    const n = Number(raw);
+                    if (!Number.isFinite(n)) return;
+                    flavor[key] = Math.max(0, Math.min(5, Math.round(n)));
+                    hasFlavor = true;
+                });
                 return {
                     name: nameInput.value.trim(),
                     subtitle: subtitleInput.value.trim() || undefined,
@@ -2472,6 +2540,7 @@
                     brewVolume: volInput.value.trim() || undefined,
                     brewTime: timeInput2.value.trim() || undefined,
                     brewNote: noteInput.value.trim() || undefined,
+                    flavor: hasFlavor ? flavor : undefined,
                 };
             },
         };

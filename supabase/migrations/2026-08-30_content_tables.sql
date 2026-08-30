@@ -64,7 +64,17 @@ CREATE TABLE IF NOT EXISTS content_events (
   --   { name, nameEn, subtitle, subtitleEn, photoUrl, detailPhotoUrl,
   --     description, descriptionEn, highlightTitle, highlightTitleEn,
   --     highlightQuote, highlightQuoteEn, highlightBody, highlightBodyEn,
-  --     brewTemp, brewVolume, brewTime, brewNote, brewNoteEn }
+  --     brewTemp, brewVolume, brewTime, brewNote, brewNoteEn,
+  --     flavor: { sweetness, bitterness, umami, astringency, aroma, body } }
+  -- (the admin form only actually collects a subset of the above —
+  -- name/subtitle/photoUrl/description/brewTemp/brewVolume/brewTime/
+  -- brewNote/flavor, no *En variants or highlight* fields — see
+  -- admin/index.html's createTeaCard(); this comment documents the full
+  -- shape the JSONB column can hold, not what every writer populates)
+  --
+  -- `flavor` is optional, 0–5 per axis, and renders as a hexagon/radar
+  -- chart on events/view.html (see FLAVOR_AXES there and in admin/
+  -- index.html) — a feature the hand-authored pages don't have.
   -- Mirrors the recipe_wrap/recipe_list_col + brew_stats markup used by the
   -- existing hand-authored event pages (see eventTemplate/index.html), so
   -- the dynamic view page can reproduce the same layout exactly.

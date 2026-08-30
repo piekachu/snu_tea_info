@@ -40,6 +40,31 @@
         #evtBack:hover { color: var(--green, #1c6655); }
         #detailLoading, #detailError { max-width: 970px; margin: 0 auto; }
         .evt_tea_hr { margin-top: 0; }
+
+        /* flavor-profile hexagon chart (see renderFlavorChart) — a feature
+           the hand-authored pages don't have, so there's no subpage.css
+           counterpart to reuse; kept scoped here. */
+        .evt-flavor-block {
+            max-width: 970px;
+            margin: 0 auto 40px;
+            text-align: center;
+        }
+        .evt-flavor-title {
+            font-weight: var(--font-weight-bold, 700);
+            font-size: 15px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .evt-flavor-svg {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+        }
+        .evt-flavor-label {
+            font-size: 11px;
+            font-family: var(--font);
+            fill: #555;
+        }
     </style>
 </head>
 <body>
@@ -171,7 +196,11 @@
                                         </div>
                                     </div>
 
+                                    <hr class="article_hr hr_dashed">
+
                                     <div id="teaList"></div>
+
+                                    <hr class="article_hr hr_dashed w_view">
                                 </div>
 
                             </div>
@@ -341,6 +370,67 @@
             metaEl.appendChild(main);
         }
 
+        // six-axis flavor profile — kept in sync with admin/index.html's
+        // FLAVOR_AXES (same keys, same order, same 0–5 scale)
+        const FLAVOR_AXES = [
+            ["sweetness", "단맛"],
+            ["bitterness", "쓴맛"],
+            ["umami", "감칠맛"],
+            ["astringency", "떫은맛"],
+            ["aroma", "향"],
+            ["body", "바디감"],
+        ];
+        const FLAVOR_MAX = 5;
+
+        // point on a regular hexagon, axis 0 at the top, going clockwise
+        function hexPoint(cx, cy, r, axisIndex, fraction) {
+            const angle = (Math.PI / 180) * (-90 + axisIndex * 60);
+            return {
+                x: cx + r * fraction * Math.cos(angle),
+                y: cy + r * fraction * Math.sin(angle),
+            };
+        }
+
+        // builds the hexagon/radar chart SVG for one tea's flavor profile —
+        // a light grid (rings for each 0–5 level + spokes) behind a filled
+        // polygon for the actual values, with a label + number at each axis
+        function renderFlavorChart(flavor) {
+            const cx = 130, cy = 118, r = 86;
+
+            let gridHtml = "";
+            for (let level = 1; level <= FLAVOR_MAX; level++) {
+                const pts = FLAVOR_AXES.map((_, i) => {
+                    const p = hexPoint(cx, cy, r, i, level / FLAVOR_MAX);
+                    return p.x.toFixed(1) + "," + p.y.toFixed(1);
+                }).join(" ");
+                gridHtml += '<polygon points="' + pts + '" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>';
+            }
+
+            const spokesHtml = FLAVOR_AXES.map((_, i) => {
+                const p = hexPoint(cx, cy, r, i, 1);
+                return '<line x1="' + cx + '" y1="' + cy + '" x2="' + p.x.toFixed(1) + '" y2="' + p.y.toFixed(1) + '" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>';
+            }).join("");
+
+            const dataPts = FLAVOR_AXES.map(([key], i) => {
+                const v = Math.max(0, Math.min(FLAVOR_MAX, Number(flavor[key]) || 0));
+                const p = hexPoint(cx, cy, r, i, v / FLAVOR_MAX);
+                return p.x.toFixed(1) + "," + p.y.toFixed(1);
+            }).join(" ");
+
+            const labelsHtml = FLAVOR_AXES.map(([key, label], i) => {
+                const p = hexPoint(cx, cy, r + 26, i, 1);
+                const v = flavor[key];
+                const text = v != null ? label + " " + v : label;
+                return '<text x="' + p.x.toFixed(1) + '" y="' + p.y.toFixed(1) + '" text-anchor="middle" dominant-baseline="middle" class="evt-flavor-label">' + escapeHtml(text) + '</text>';
+            }).join("");
+
+            return '<svg viewBox="0 0 260 236" class="evt-flavor-svg" role="img" aria-label="맛 프로필 그래프">'
+                + gridHtml + spokesHtml
+                + '<polygon points="' + dataPts + '" fill="var(--osullocGreen)" fill-opacity="0.28" stroke="var(--osullocGreen)" stroke-width="2"/>'
+                + labelsHtml
+                + '</svg>';
+        }
+
         function renderTea(tea, index) {
             const wrap = document.createElement("div");
             wrap.className = "magazine_block_wrap cont_970";
@@ -376,6 +466,14 @@
                     html += '<div class="txt_block"><div class="cont_para"><div class="article_txt"><strong>차 우림법</strong><br>' + textToHtml(tea.brewNote).replace(/^<p>|<\/p>$/g, "") + '</div></div></div>';
                 }
                 html += '</div></div>';
+            }
+
+            const hasFlavor = tea.flavor && FLAVOR_AXES.some(([key]) => typeof tea.flavor[key] === "number");
+            if (hasFlavor) {
+                html += '<div class="evt-flavor-block">'
+                    + '<h5 class="evt-flavor-title">맛 프로필</h5>'
+                    + renderFlavorChart(tea.flavor)
+                    + '</div>';
             }
 
             wrap.innerHTML = html;
