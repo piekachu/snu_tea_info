@@ -268,7 +268,11 @@
             list.className = "event_meta_list";
             const dateTime = typeof formatEventDateTimeKo === "function" ? formatEventDateTimeKo(event) : event.date;
             addMetaRow(list, "일시", dateTime);
-            addMetaRow(list, "장소", event.location);
+            // venueName is what's shown publicly; the raw address in
+            // event.location is only ever used server-side to auto-geocode
+            // lat/lng (see admin/index.html's geocodeLocation()) and never
+            // displayed here.
+            addMetaRow(list, "장소", event.venueName);
             if (event.mapLink) addMetaRow(list, "길찾기", event.mapLink, "directions");
             addMetaRow(list, "참가비", event.fee);
             addMetaRow(list, "인원", event.capacity != null ? `${event.capacity}명` : null);

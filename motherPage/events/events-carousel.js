@@ -93,7 +93,10 @@
             subtitle: e.introTitle || undefined,
             path: "events/view.html?id=" + encodeURIComponent(e.id),
             thumbnail: e.heroImageUrl || undefined,
-            location: e.location || undefined,
+            // the shared shape's `location` is what gets displayed (see
+            // events-meta.js's addRow) — map it to the venue name, not the
+            // raw geocoding address, which is never shown publicly
+            location: e.venueName || undefined,
             lat: e.lat != null ? e.lat : undefined,
             lng: e.lng != null ? e.lng : undefined,
             mapLink: e.mapLink || undefined,

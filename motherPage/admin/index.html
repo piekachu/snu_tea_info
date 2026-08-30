@@ -1219,10 +1219,14 @@
                     <option value="specialTea">특별다회</option>
                 </select>
             </div>
+            <div class="cnt-field">
+                <label for="evt-venue-name">장소 이름 *</label>
+                <input type="text" id="evt-venue-name" maxlength="80" placeholder="예: 반조, 티앤커피토브 — 방문자에게 이렇게 보여요" required>
+            </div>
             <div class="cnt-field-row">
                 <div class="cnt-field">
-                    <label for="evt-location">장소 *</label>
-                    <input type="text" id="evt-location" maxlength="160" placeholder="주소를 입력하면 좌표를 자동으로 찾아요" required>
+                    <label for="evt-location">주소 (좌표 검색용, 비공개, 선택)</label>
+                    <input type="text" id="evt-location" maxlength="160" placeholder="주소를 입력하면 좌표를 자동으로 찾아요">
                 </div>
                 <div class="cnt-field">
                     <label for="evt-map-link">길찾기 링크 (선택)</label>
@@ -2282,7 +2286,7 @@
         top.appendChild(el("span", "cnt-pin-badge", item.category === "specialTea" ? "특별다회" : "정기다회"));
         card.appendChild(top);
         card.appendChild(el("h4", "cnt-card-title", item.title));
-        if (item.location) card.appendChild(el("p", "cnt-card-excerpt", item.location));
+        if (item.venueName) card.appendChild(el("p", "cnt-card-excerpt", item.venueName));
 
         const actions = el("div", "cnt-card-actions");
         const editBtn = el("button", "adm-btn-sm", "수정");
@@ -2335,6 +2339,7 @@
     const dateInput        = document.getElementById("evt-date");
     const timeInput        = document.getElementById("evt-time");
     const categorySelect  = document.getElementById("evt-category");
+    const venueNameInput  = document.getElementById("evt-venue-name");
     const locationInput   = document.getElementById("evt-location");
     const mapLinkInput    = document.getElementById("evt-map-link");
     const geoStatusEl      = document.getElementById("evt-geo-status");
@@ -2499,6 +2504,7 @@
         dateInput.value = item ? (item.date || "") : new Date().toISOString().slice(0, 10);
         timeInput.value = item ? (item.time || "") : "";
         categorySelect.value = item && item.category === "specialTea" ? "specialTea" : "regulars";
+        venueNameInput.value = item ? (item.venueName || "") : "";
         locationInput.value = item ? (item.location || "") : "";
         mapLinkInput.value = item ? (item.mapLink || "") : "";
         latInput.value = item && item.lat != null ? item.lat : "";
@@ -2550,10 +2556,10 @@
         const title = titleInput.value.trim();
         const date = dateInput.value;
         const time = timeInput.value.trim();
-        const location = locationInput.value.trim();
+        const venueName = venueNameInput.value.trim();
         const capacity = numOrNull(capacityInput);
-        if (!title || !date || !time || !location || capacity == null) {
-            showError("제목, 날짜, 시간, 장소, 인원은 필수예요.");
+        if (!title || !date || !time || !venueName || capacity == null) {
+            showError("제목, 날짜, 시간, 장소 이름, 인원은 필수예요.");
             return;
         }
 
@@ -2563,7 +2569,8 @@
             date,
             time,
             category: categorySelect.value === "specialTea" ? "specialTea" : "regulars",
-            location,
+            venueName,
+            location: locationInput.value.trim() || null,
             mapLink: mapLinkInput.value.trim() || null,
             lat: numOrNull(latInput),
             lng: numOrNull(lngInput),

@@ -1,0 +1,21 @@
+-- Adds a separate "venue name" field to content_events, distinct from the
+-- existing `location` column.
+--
+-- Until now `location` did double duty: it was shown publicly as the 장소
+-- line AND typed into the auto-geocode lookup (see admin/index.html's
+-- geocodeAddress()). That meant the admin had to type a full street address
+-- to get coordinates, and that same raw address is what visitors saw —
+-- not the venue's actual name (e.g. a café name).
+--
+-- Going forward:
+--   venue_name — shown publicly as the 장소 line (required going forward,
+--                enforced in the Edge Function, not at the DB level so
+--                existing rows aren't broken by this migration)
+--   location   — kept as the geocoding input only; no longer shown to
+--                visitors. Optional (an admin can skip it and enter
+--                lat/lng by hand instead).
+--
+-- Run this once in the Supabase SQL editor, same as the original
+-- 2026-08-30_content_tables.sql.
+
+ALTER TABLE content_events ADD COLUMN IF NOT EXISTS venue_name TEXT;

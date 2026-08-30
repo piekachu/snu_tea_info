@@ -70,6 +70,7 @@ function mapEvent(r: any) {
     title: r.title,
     titleEn: r.title_en ?? null,
     category: r.category ?? "regulars",
+    venueName: r.venue_name ?? null,
     location: r.location ?? null,
     mapLink: r.map_link ?? null,
     lat: r.lat ?? null,
@@ -277,9 +278,9 @@ Deno.serve(async (req: Request) => {
       const title = String(body.title || "").trim();
       const date = String(body.date || "").trim();
       const time = String(body.time || "").trim();
-      const location = String(body.location || "").trim();
+      const venueName = String(body.venueName || "").trim();
       const hasCapacity = typeof body.capacity === "number" && Number.isFinite(body.capacity);
-      if (!title || !date || !time || !location || !hasCapacity)
+      if (!title || !date || !time || !venueName || !hasCapacity)
         return json({ ok: false, error: "제목, 날짜, 시간, 장소, 인원은 필수예요." }, 400);
 
       const teas = Array.isArray(body.teas) ? body.teas : [];
@@ -291,7 +292,9 @@ Deno.serve(async (req: Request) => {
         title,
         title_en: body.titleEn ? String(body.titleEn) : null,
         category: body.category === "specialTea" ? "specialTea" : "regulars",
-        location,
+        venue_name: venueName,
+        // 실제 주소 — 좌표 자동 검색에만 쓰이고 방문자에게는 보이지 않음 (선택)
+        location: body.location ? String(body.location).trim() : null,
         map_link: body.mapLink ? String(body.mapLink) : null,
         lat: typeof body.lat === "number" ? body.lat : null,
         lng: typeof body.lng === "number" ? body.lng : null,
