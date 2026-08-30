@@ -46,7 +46,8 @@
             <p class="join_intro">
                 <span data-i18n="join.intro">원하는 날짜를 골라 새로운 소모임을 열거나, 이미 열린 소모임에 참가 신청을 해보세요. 누구나 자유롭게 만들고 신청할 수 있어요.</span>
                 <button type="button" id="joinHelpFab" class="join_help_btn"
-                        aria-label="소모임 신청 방법 안내" title="소모임 신청 방법 안내">?</button>
+                        aria-label="소모임 신청 방법 안내" title="소모임 신청 방법 안내"
+                        data-i18n-attr="aria-label:join.help.fabAria|title:join.help.fabAria">?</button>
             </p>
 
             <div id="joinDemoBanner" class="join_demo_banner" data-i18n-html="join.demoBanner" hidden>
@@ -180,23 +181,23 @@
          aria-modal="true" aria-labelledby="joinHelpTitle" hidden>
         <div class="join_help_modal">
             <div class="join_help_header">
-                <div class="join_help_tabs" role="tablist" aria-label="안내 섹션">
+                <div class="join_help_tabs" role="tablist" aria-label="안내 섹션" data-i18n-attr="aria-label:join.help.tabsAria">
                     <button type="button" class="join_help_tab is-active"
                             role="tab" aria-selected="true"
-                            data-tab="create">새 소모임 만들기</button>
+                            data-tab="create" data-i18n="join.help.tabCreate">새 소모임 만들기</button>
                     <button type="button" class="join_help_tab"
                             role="tab" aria-selected="false"
-                            data-tab="join">소모임에 신청하기</button>
+                            data-tab="join" data-i18n="join.help.tabJoin">소모임에 신청하기</button>
                 </div>
-                <button type="button" class="join_help_close" aria-label="닫기">&times;</button>
+                <button type="button" class="join_help_close" aria-label="닫기" data-i18n-attr="aria-label:a11y.close">&times;</button>
             </div>
 
             <div class="join_help_stage">
                 <button type="button" class="join_help_nav join_help_prev"
-                        aria-label="이전">&#8249;</button>
+                        aria-label="이전" data-i18n-attr="aria-label:a11y.prev">&#8249;</button>
                 <img class="join_help_img" src="" alt="" id="joinHelpTitle">
                 <button type="button" class="join_help_nav join_help_next"
-                        aria-label="다음">&#8250;</button>
+                        aria-label="다음" data-i18n-attr="aria-label:a11y.next">&#8250;</button>
             </div>
 
             <div class="join_help_footer">
@@ -208,7 +209,7 @@
                 <p class="join_help_slide_body"></p>
                 <div class="join_help_notes"></div>
                 <p class="join_help_more">
-                    <a href="../notice/meetup-signup.html">전체 안내 페이지에서 자세히 보기 &rarr;</a>
+                    <a href="../notice/meetup-signup.html" data-i18n="join.help.moreLink">전체 안내 페이지에서 자세히 보기 &rarr;</a>
                 </p>
             </div>
         </div>

@@ -442,6 +442,18 @@
         "join.calendarAria":   { ko: "소모임 일정", en: "Meetup schedule" },
         "join.dayPanelAria":   { ko: "선택한 날짜의 소모임", en: "Meetups on the selected day" },
 
+        /* "?" quick-reference lightbox (join-manual.js) — static chrome only;
+           the slide content itself (title/body/notes per screenshot) lives
+           in join-manual.js's own SLIDES data as {ko, en} pairs, since it's
+           a condensed rewrite of the full meetup-signup.html manual rather
+           than a verbatim reuse of that page's copy. */
+        "join.help.fabAria":   { ko: "소모임 신청 방법 안내", en: "How to sign up for a meetup" },
+        "join.help.tabsAria":  { ko: "안내 섹션", en: "Guide sections" },
+        "join.help.tabCreate": { ko: "새 소모임 만들기", en: "Create a New Meetup" },
+        "join.help.tabJoin":   { ko: "소모임에 신청하기", en: "Sign Up for a Meetup" },
+        "join.help.moreLink":  { ko: "전체 안내 페이지에서 자세히 보기 →", en: "See the full guide →" },
+        "join.help.slideAria": { ko: "슬라이드 {n}", en: "Slide {n}" },
+
         /* create modal */
         "join.modal.createTitle":   { ko: "새 소모임 만들기", en: "Create a meetup" },
         "join.field.name":          { ko: "소모임 이름 *", en: "Meetup name *" },
