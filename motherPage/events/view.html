@@ -273,7 +273,9 @@
             // lat/lng (see admin/index.html's geocodeLocation()) and never
             // displayed here.
             addMetaRow(list, "장소", event.venueName);
-            if (event.mapLink) addMetaRow(list, "길찾기", event.mapLink, "directions");
+            // no separate "길찾기" meta row — the embedded map (below, via
+            // EventsMap.render) already shows its own 길찾기 button when
+            // mapLink is set, so a second one here just duplicated it.
             addMetaRow(list, "참가비", event.fee);
             addMetaRow(list, "인원", event.capacity != null ? `${event.capacity}명` : null);
             main.appendChild(list);
