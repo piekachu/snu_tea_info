@@ -668,7 +668,11 @@ body.page-home .header_logo .logo_img {
     width: 280px;
     max-width: calc(100vw - 24px);
     padding: 16px 34px 16px 18px;
-    background: linear-gradient(135deg, rgba(226, 168, 68, 0.1) 0%, rgba(226, 168, 68, 0.03) 100%);
+    /* solid (non-alpha) colors — unlike .ot_rule/.man_note this floats over
+       arbitrary page content instead of sitting inline on a white page
+       background, so a low-alpha tint would let whatever's underneath
+       show through and read as "transparent" */
+    background: linear-gradient(135deg, #fcf6ec 0%, #fffdf9 100%);
     border: 1px solid rgba(226, 168, 68, 0.35);
     border-radius: 12px;
     box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
