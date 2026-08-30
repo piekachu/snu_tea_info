@@ -27,15 +27,6 @@ const teaClubNotices = [
         pinned: true,
     },
     {
-        title: "FAQs",
-        titleEn: "FAQs",
-        date: "2026-08-17",
-        excerpt: "설다연에 관해 자주 묻는 질문을 모아둔 페이지입니다. 가입, 활동, 회비 등 궁금한 점을 한곳에서 확인하세요.",
-        excerptEn: "Answers to the questions we hear most often — joining, activities, fees, and everything in between.",
-        path: "notice/faqs.html",
-        pinned: true,
-    },
-    {
         title: "신입부원 OT 자료",
         titleEn: "New Member Orientation",
         date: "2026-08-05",
