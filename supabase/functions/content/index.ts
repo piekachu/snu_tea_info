@@ -276,24 +276,27 @@ Deno.serve(async (req: Request) => {
 
       const title = String(body.title || "").trim();
       const date = String(body.date || "").trim();
-      if (!title || !date)
-        return json({ ok: false, error: "제목과 날짜는 필수예요." }, 400);
+      const time = String(body.time || "").trim();
+      const location = String(body.location || "").trim();
+      const hasCapacity = typeof body.capacity === "number" && Number.isFinite(body.capacity);
+      if (!title || !date || !time || !location || !hasCapacity)
+        return json({ ok: false, error: "제목, 날짜, 시간, 장소, 인원은 필수예요." }, 400);
 
       const teas = Array.isArray(body.teas) ? body.teas : [];
 
       const row = {
         date,
-        end_date: body.endDate ? String(body.endDate) : null,
-        time: body.time ? String(body.time) : null,
+        end_date: null, // 종료일 입력은 admin UI에서 제거됨 — 컬럼은 남겨두되 항상 비워둠
+        time,
         title,
         title_en: body.titleEn ? String(body.titleEn) : null,
         category: body.category === "specialTea" ? "specialTea" : "regulars",
-        location: body.location ? String(body.location) : null,
+        location,
         map_link: body.mapLink ? String(body.mapLink) : null,
         lat: typeof body.lat === "number" ? body.lat : null,
         lng: typeof body.lng === "number" ? body.lng : null,
         fee: body.fee ? String(body.fee) : null,
-        capacity: typeof body.capacity === "number" ? body.capacity : null,
+        capacity: body.capacity,
         hero_image_url: body.heroImageUrl ? String(body.heroImageUrl) : null,
         intro_title: body.introTitle ? String(body.introTitle) : null,
         intro_title_en: body.introTitleEn ? String(body.introTitleEn) : null,

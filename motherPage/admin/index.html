@@ -864,6 +864,17 @@
             box-shadow: 0 0 0 3px rgba(28,102,85,.1);
         }
 
+        /* status line under 장소/길찾기 링크 showing the auto-geocode result
+           (see geocodeAddress() — only resolves on the deployed origin,
+           the NCP key is domain-whitelisted) */
+        .evt-geo-status {
+            font-size: 12px;
+            color: var(--gray);
+            margin: -6px 0 14px;
+        }
+        .evt-geo-status.is-ok { color: var(--green); }
+        .evt-geo-status.is-err { color: var(--red); }
+
         /* ── image upload row (event hero photo + per-tea photo) ── */
         .evt-img-upload { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .evt-img-thumb {
@@ -1191,18 +1202,14 @@
                 <label for="evt-title-en">영문 제목 (선택)</label>
                 <input type="text" id="evt-title-en" maxlength="160">
             </div>
-            <div class="cnt-field-row-3">
+            <div class="cnt-field-row">
                 <div class="cnt-field">
                     <label for="evt-date">날짜 *</label>
                     <input type="date" id="evt-date" required>
                 </div>
                 <div class="cnt-field">
-                    <label for="evt-end-date">종료일 (선택)</label>
-                    <input type="date" id="evt-end-date">
-                </div>
-                <div class="cnt-field">
-                    <label for="evt-time">시간 (선택)</label>
-                    <input type="text" id="evt-time" placeholder="18:00" maxlength="30">
+                    <label for="evt-time">시간 *</label>
+                    <input type="text" id="evt-time" placeholder="18:00" maxlength="30" required>
                 </div>
             </div>
             <div class="cnt-field">
@@ -1214,31 +1221,34 @@
             </div>
             <div class="cnt-field-row">
                 <div class="cnt-field">
-                    <label for="evt-location">장소 (선택)</label>
-                    <input type="text" id="evt-location" maxlength="160" placeholder="주소 또는 지도 링크">
+                    <label for="evt-location">장소 *</label>
+                    <input type="text" id="evt-location" maxlength="160" placeholder="주소를 입력하면 좌표를 자동으로 찾아요" required>
                 </div>
                 <div class="cnt-field">
                     <label for="evt-map-link">길찾기 링크 (선택)</label>
                     <input type="text" id="evt-map-link" maxlength="300" placeholder="https://naver.me/...">
                 </div>
             </div>
-            <div class="cnt-field-row-3">
+            <p class="evt-geo-status" id="evt-geo-status" hidden></p>
+            <div class="cnt-field-row">
                 <div class="cnt-field">
-                    <label for="evt-lat">위도 (선택)</label>
+                    <label for="evt-lat">위도 (자동/선택)</label>
                     <input type="text" id="evt-lat" inputmode="decimal" maxlength="20">
                 </div>
                 <div class="cnt-field">
-                    <label for="evt-lng">경도 (선택)</label>
+                    <label for="evt-lng">경도 (자동/선택)</label>
                     <input type="text" id="evt-lng" inputmode="decimal" maxlength="20">
                 </div>
-                <div class="cnt-field">
-                    <label for="evt-capacity">인원 (선택)</label>
-                    <input type="text" id="evt-capacity" inputmode="numeric" maxlength="6">
-                </div>
             </div>
-            <div class="cnt-field">
-                <label for="evt-fee">참가비 (선택)</label>
-                <input type="text" id="evt-fee" maxlength="60">
+            <div class="cnt-field-row">
+                <div class="cnt-field">
+                    <label for="evt-capacity">인원 *</label>
+                    <input type="text" id="evt-capacity" inputmode="numeric" maxlength="6" required>
+                </div>
+                <div class="cnt-field">
+                    <label for="evt-fee">참가비 (선택)</label>
+                    <input type="text" id="evt-fee" maxlength="60">
+                </div>
             </div>
             <div class="cnt-field">
                 <label>대표 사진 (선택)</label>
@@ -2268,10 +2278,7 @@
     function renderCard(item) {
         const card = el("div", "cnt-card");
         const top = el("div", "cnt-card-top");
-        const dateLabel = item.endDate && item.endDate !== item.date
-            ? `${formatDateKo(item.date)} ~ ${formatDateKo(item.endDate)}`
-            : formatDateKo(item.date);
-        top.appendChild(el("span", "cnt-card-date", dateLabel));
+        top.appendChild(el("span", "cnt-card-date", formatDateKo(item.date)));
         top.appendChild(el("span", "cnt-pin-badge", item.category === "specialTea" ? "특별다회" : "정기다회"));
         card.appendChild(top);
         card.appendChild(el("h4", "cnt-card-title", item.title));
@@ -2326,11 +2333,11 @@
     const titleInput      = document.getElementById("evt-title");
     const titleEnInput    = document.getElementById("evt-title-en");
     const dateInput        = document.getElementById("evt-date");
-    const endDateInput    = document.getElementById("evt-end-date");
     const timeInput        = document.getElementById("evt-time");
     const categorySelect  = document.getElementById("evt-category");
     const locationInput   = document.getElementById("evt-location");
     const mapLinkInput    = document.getElementById("evt-map-link");
+    const geoStatusEl      = document.getElementById("evt-geo-status");
     const latInput         = document.getElementById("evt-lat");
     const lngInput         = document.getElementById("evt-lng");
     const capacityInput   = document.getElementById("evt-capacity");
@@ -2344,6 +2351,55 @@
     const saveBtn           = document.getElementById("evt-save-btn");
     const cancelBtn        = document.getElementById("evt-cancel-btn");
     const closeBtn          = document.getElementById("evt-modal-close");
+
+    // ── auto-geocode 장소 → 위도/경도 ──
+    // Uses the same NAVER Cloud Platform Maps key as events-map.js
+    // (domain-whitelisted — only authenticates on the deployed
+    // https://piekachu.github.io origin, never on a local preview or
+    // file://; see the "Naver geocoding workflow" project note). Runs when
+    // 장소 loses focus, so admins never have to look up coordinates by hand
+    // — lat/lng stay editable afterwards in case a lookup is wrong or the
+    // admin wants to nudge the pin.
+    const NCP_KEY_ID = "7x2r5r252m";
+    function loadGeocoder() {
+        return new Promise((resolve) => {
+            if (window.naver && window.naver.maps && window.naver.maps.Service) { resolve(true); return; }
+            window.__evtGeoReady = () => setTimeout(() => resolve(true), 0);
+            const s = document.createElement("script");
+            s.src = "https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=" + NCP_KEY_ID + "&submodules=geocoder&callback=__evtGeoReady";
+            s.onerror = () => resolve(false);
+            document.head.appendChild(s);
+        });
+    }
+    function setGeoStatus(text, cls) {
+        geoStatusEl.textContent = text;
+        geoStatusEl.hidden = !text;
+        geoStatusEl.classList.toggle("is-ok", cls === "ok");
+        geoStatusEl.classList.toggle("is-err", cls === "err");
+    }
+    async function geocodeLocation() {
+        const address = locationInput.value.trim();
+        // a bare map URL (some existing entries use this instead of a real
+        // address) can't be geocoded — leave lat/lng for manual entry
+        if (!address || /^https?:\/\//.test(address)) return;
+        setGeoStatus("좌표를 찾는 중…", null);
+        const ready = await loadGeocoder();
+        if (!ready || !window.naver || !naver.maps || !naver.maps.Service) {
+            setGeoStatus("좌표를 자동으로 찾지 못했어요 — 실제 배포된 사이트(github.io)에서만 동작해요. 직접 입력해주세요.", "err");
+            return;
+        }
+        naver.maps.Service.geocode({ query: address }, (status, response) => {
+            if (status !== naver.maps.Service.Status.OK || !response?.v2?.addresses?.length) {
+                setGeoStatus("주소로 좌표를 찾지 못했어요. 직접 입력해주세요.", "err");
+                return;
+            }
+            const first = response.v2.addresses[0];
+            latInput.value = first.y;
+            lngInput.value = first.x;
+            setGeoStatus(`좌표를 찾았어요: ${first.y}, ${first.x}`, "ok");
+        });
+    }
+    locationInput.addEventListener("blur", geocodeLocation);
 
     let editingId = null;
     let heroUpload = makeImageUpload(null);
@@ -2441,7 +2497,6 @@
         titleInput.value = item ? (item.title || "") : "";
         titleEnInput.value = item ? (item.titleEn || "") : "";
         dateInput.value = item ? (item.date || "") : new Date().toISOString().slice(0, 10);
-        endDateInput.value = item ? (item.endDate || "") : "";
         timeInput.value = item ? (item.time || "") : "";
         categorySelect.value = item && item.category === "specialTea" ? "specialTea" : "regulars";
         locationInput.value = item ? (item.location || "") : "";
@@ -2453,6 +2508,7 @@
         heroUpload.reset(item ? item.heroImageUrl : null);
         introTitleInput.value = item ? (item.introTitle || "") : "";
         introBodyInput.value = item ? (item.introBody || "") : "";
+        setGeoStatus("", null);
 
         teasList.innerHTML = "";
         teaEntries = [];
@@ -2493,8 +2549,11 @@
 
         const title = titleInput.value.trim();
         const date = dateInput.value;
-        if (!title || !date) {
-            showError("제목과 날짜는 필수예요.");
+        const time = timeInput.value.trim();
+        const location = locationInput.value.trim();
+        const capacity = numOrNull(capacityInput);
+        if (!title || !date || !time || !location || capacity == null) {
+            showError("제목, 날짜, 시간, 장소, 인원은 필수예요.");
             return;
         }
 
@@ -2502,15 +2561,14 @@
             title,
             titleEn: titleEnInput.value.trim() || null,
             date,
-            endDate: endDateInput.value || null,
-            time: timeInput.value.trim() || null,
+            time,
             category: categorySelect.value === "specialTea" ? "specialTea" : "regulars",
-            location: locationInput.value.trim() || null,
+            location,
             mapLink: mapLinkInput.value.trim() || null,
             lat: numOrNull(latInput),
             lng: numOrNull(lngInput),
             fee: feeInput.value.trim() || null,
-            capacity: numOrNull(capacityInput),
+            capacity,
             heroImageUrl: heroUpload.getUrl() || null,
             introTitle: introTitleInput.value.trim() || null,
             introBody: introBodyInput.value.trim() || null,
