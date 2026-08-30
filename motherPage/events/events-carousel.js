@@ -79,6 +79,30 @@
         return card;
     }
 
+    // admin-authored rows from the `content` backend (content-api.js) map
+    // onto the same shape as a teaClubEvents entry — `path` points at the
+    // generic view.html?id=… page instead of a hand-authored folder, still
+    // relative to motherPage/ same as every other path in that array — so
+    // renderCard/renderTrack below don't need to know the two sources apart.
+    function mapDynamicEvent(e) {
+        return {
+            date: e.date,
+            endDate: e.endDate || undefined,
+            time: e.time || undefined,
+            title: e.title,
+            subtitle: e.introTitle || undefined,
+            path: "events/view.html?id=" + encodeURIComponent(e.id),
+            thumbnail: e.heroImageUrl || undefined,
+            location: e.location || undefined,
+            lat: e.lat != null ? e.lat : undefined,
+            lng: e.lng != null ? e.lng : undefined,
+            mapLink: e.mapLink || undefined,
+            fee: e.fee || undefined,
+            "인원": e.capacity != null ? e.capacity : undefined,
+            category: e.category || "regulars",
+        };
+    }
+
     function init() {
         const section = document.getElementById("eventCarousel");
         const track = document.getElementById("carouselTrack");
@@ -94,18 +118,19 @@
 
         const pathPrefix = section.dataset.pathPrefix !== undefined ? section.dataset.pathPrefix : "../";
 
-        // all events, newest date first — single pool for every filter;
-        // 전체 and 마감 include past events, status filters narrow within this
-        const allEventsDesc = (typeof teaClubEvents !== "undefined" ? teaClubEvents : [])
-            .slice()
-            .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+        // static (hand-authored) + dynamic (admin-created) events, merged
+        // once fetched; starts as just the static ones so the carousel
+        // isn't empty while the network call is in flight
+        let allEvents = typeof teaClubEvents !== "undefined" ? teaClubEvents : [];
 
-        if (allEventsDesc.length === 0) {
-            section.style.display = "none";
-            return;
+        // newest date first — single pool for every filter; 전체 and 마감
+        // include past events, status filters narrow within this
+        function sortedDesc() {
+            return allEvents.slice().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
         }
 
         function renderTrack(filterStatus) {
+            const allEventsDesc = sortedDesc();
             track.innerHTML = "";
             const filtered = filterStatus === "all"
                 ? allEventsDesc
@@ -115,7 +140,29 @@
             });
         }
 
-        renderTrack("all");
+        // remembers the active filter so a re-render (once dynamic events
+        // arrive) doesn't reset it back to "전체"; also hides the whole
+        // section when there's nothing to show yet (e.g. the static list is
+        // empty and the dynamic fetch hasn't landed), same as the original
+        // early-return, but re-checked on every render instead of once.
+        let activeFilter = "all";
+        function renderTrackKeepingFilter() {
+            section.style.display = allEvents.length === 0 ? "none" : "";
+            renderTrack(activeFilter);
+        }
+
+        renderTrackKeepingFilter();
+
+        // fetch admin-created events and re-render once they're in —
+        // silently no-ops if content-api.js isn't loaded on this page or
+        // the backend is unreachable, since the static list already rendered
+        if (typeof ContentAPI !== "undefined") {
+            ContentAPI.listEvents().then((res) => {
+                if (!res.ok || !Array.isArray(res.events) || res.events.length === 0) return;
+                allEvents = allEvents.concat(res.events.map(mapDynamicEvent));
+                renderTrackKeepingFilter();
+            }).catch(() => {});
+        }
 
         // filter dropdown: "전체" plus every status that eventStatuses defines
         if (filterToggle && filterToggleLabel && filterMenu && typeof eventStatuses !== "undefined") {
@@ -141,7 +188,8 @@
                     item.classList.add("is-selected");
                     item.setAttribute("aria-selected", "true");
                     filterToggleLabel.textContent = option.label;
-                    renderTrack(option.key);
+                    activeFilter = option.key;
+                    renderTrack(activeFilter);
                     closeMenu();
                 });
                 filterMenu.appendChild(item);

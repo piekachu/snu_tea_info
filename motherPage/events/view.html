@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ko_KR">
+
+    <!--fonts-->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+
+    <!--공통 css-->
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="../subpage.css">
+    <script src="../i18n.js"></script>
+    <script src="../content-config.js"></script>
+    <script src="../content-api.js"></script>
+    <script src="events-data.js"></script>
+
+    <title id="pageTitle">정기다회</title>
+
+    <style>
+        /* small page-specific bits that don't belong in subpage.css (shared
+           by the hand-authored event pages too) — kept scoped to #evtBack
+           and #teaList so they can't leak anywhere else. */
+        #evtBack {
+            display: inline-block;
+            margin-bottom: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray, #767671);
+            text-decoration: none;
+        }
+        #evtBack:hover { color: var(--green, #1c6655); }
+        #detailLoading, #detailError { max-width: 970px; margin: 0 auto; }
+        .evt_tea_hr { margin-top: 0; }
+    </style>
+</head>
+<body>
+
+    <!-- header wide -->
+    <header class="header">
+        <div class="layout_full header_inner">
+            <h1 class="header_logo">
+                <a href="../index.html"><img src="../main_images/0001.png" width="154" height="23" alt="오설록" class="logo_img"></a>
+            </h1>
+        </div>
+    </header>
+
+    <main id="container" class="magazine">
+        <div class="layout_max magazine_wrap">
+            <div id="magazine_contents" class="magazine_contents">
+                <section class="magazine_teainside layer_1445 teainside_type2">
+                    <article class="magazine_article teainside_article teainside_view_06">
+                        <div class="article_inner">
+
+                            <p id="detailLoading" data-i18n="common.loading">불러오는 중...</p>
+                            <p id="detailError" hidden data-i18n="events.loadError">행사를 불러오지 못했어요. 링크를 다시 확인해주세요.</p>
+
+                            <!-- admin-authored event, hidden until ContentAPI.getEvent resolves -->
+                            <div id="detailContent" hidden>
+                                <a href="index.html" id="evtBack" data-i18n="nav.backToEvents">&larr; 행사 목록으로</a>
+
+                                <!-- hero -->
+                                <div class="article_header header_overlay" id="heroWrap" hidden>
+                                    <figure class="article_img">
+                                        <img id="heroImg" src="" alt="" style="width:100%; aspect-ratio: 1365 / 547; object-fit: cover; display: block;">
+                                    </figure>
+                                    <div class="title_wrap">
+                                        <div class="title_box">
+                                            <p class="sub_title" id="heroTitle"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- plain title, shown instead of the hero when no photo was uploaded -->
+                                <div class="magazine_block txt_block top_txt_block" id="plainTitleBlock" hidden>
+                                    <div class="block_cont">
+                                        <div class="cont_para">
+                                            <h3 class="para_title" id="plainTitle" style="margin:0;"></h3>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- intro -->
+                                <div class="magazine_block txt_block top_txt_block" id="introBlock" hidden>
+                                    <div class="block_cont">
+                                        <div class="cont_para">
+                                            <h3 class="para_title mb_10" id="introTitleEl" hidden></h3>
+                                            <div class="article_txt" id="introBodyEl"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="article_hr hr_dashed" id="metaHr">
+
+                                <!-- date/location/fee/capacity/category — same markup shape as
+                                     events-meta.js renders on the hand-authored pages, built
+                                     inline below since this page looks the event up by ?id=
+                                     instead of matching teaClubEvents by pathname. -->
+                                <div id="eventMeta" class="event_meta"></div>
+
+                                <hr class="article_hr hr_dashed">
+
+                                <!-- tea lineup — only shown when the event has at least one -->
+                                <div id="teaSection" hidden>
+                                    <div class="magazine_block_wrap cont_970">
+                                        <h3 class="para_title mb_30" data-i18n="events.teaSection">차 정보</h3>
+                                    </div>
+                                    <div id="teaList"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </article>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- footer -->
+    <footer class="footer">
+        <div class="layout_max footer_inner">
+            <div class="footer_about">
+                <h2 class="footer_brand" data-i18n="footer.brand">설다연</h2>
+                <p class="footer_desc" data-i18n="footer.desc">서울대학교 중앙 차동아리 설다연에 오신 것을 환영합니다!</p>
+            </div>
+            <div class="footer_contact">
+                <a class="footer_link" href="https://www.instagram.com/snu_dado/" target="_blank" rel="noopener noreferrer">
+                    <span class="footer_icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/></svg>
+                    </span>
+                    <span>@snu_dado</span>
+                </a>
+                <p class="footer_note" data-i18n="footer.instagramNote">문의사항은 인스타그램 DM으로 편하게 연락주세요!</p>
+            </div>
+        </div>
+        <div class="footer_bottom">
+            <p data-i18n="footer.rights">&copy; 2026 설다연. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        "use strict";
+
+        const id = new URLSearchParams(window.location.search).get("id");
+
+        const pageTitle      = document.getElementById("pageTitle");
+        const loadingEl      = document.getElementById("detailLoading");
+        const errorEl        = document.getElementById("detailError");
+        const contentEl      = document.getElementById("detailContent");
+        const heroWrap        = document.getElementById("heroWrap");
+        const heroImg         = document.getElementById("heroImg");
+        const heroTitle       = document.getElementById("heroTitle");
+        const plainTitleBlock = document.getElementById("plainTitleBlock");
+        const plainTitle      = document.getElementById("plainTitle");
+        const introBlock      = document.getElementById("introBlock");
+        const introTitleEl    = document.getElementById("introTitleEl");
+        const introBodyEl     = document.getElementById("introBodyEl");
+        const metaEl          = document.getElementById("eventMeta");
+        const teaSection      = document.getElementById("teaSection");
+        const teaList          = document.getElementById("teaList");
+
+        let event = null;
+
+        // paragraphs separated by a blank line become <p>; single newlines
+        // become <br> — same convention as a plain textarea, no markup needed
+        function textToHtml(text) {
+            return String(text || "")
+                .split(/\n{2,}/)
+                .map((para) => "<p>" + para.split("\n").map(escapeHtml).join("<br>") + "</p>")
+                .join("");
+        }
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
+
+        function addMetaRow(list, label, value, isLink) {
+            if (!value) return;
+            const row = document.createElement("div");
+            row.className = "event_meta_row";
+            const dt = document.createElement("dt");
+            dt.textContent = label;
+            const dd = document.createElement("dd");
+            if (isLink || /^https?:\/\//.test(value)) {
+                const link = document.createElement("a");
+                link.href = value;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.className = "event_meta_link";
+                link.textContent = isLink === "directions" ? "길찾기" : "지도에서 보기";
+                dd.appendChild(link);
+            } else {
+                dd.textContent = value;
+            }
+            row.appendChild(dt);
+            row.appendChild(dd);
+            list.appendChild(row);
+        }
+
+        function renderMeta() {
+            metaEl.innerHTML = "";
+            const main = document.createElement("div");
+            main.className = "event_meta_main";
+
+            const effectiveStatus = typeof effectiveEventStatus === "function" ? effectiveEventStatus(event) : null;
+            const status = typeof eventStatuses !== "undefined" && effectiveStatus ? eventStatuses[effectiveStatus] : null;
+            const category = typeof eventCategories !== "undefined" ? eventCategories[event.category] : null;
+
+            const badges = document.createElement("div");
+            badges.className = "event_meta_badges";
+            if (status) {
+                const statusBadge = document.createElement("span");
+                statusBadge.className = `event_meta_badge event_status_${effectiveStatus}`;
+                statusBadge.textContent = status.label;
+                badges.appendChild(statusBadge);
+            }
+            if (category) {
+                const categoryBadge = document.createElement("span");
+                categoryBadge.className = "event_meta_badge";
+                categoryBadge.textContent = category.label;
+                badges.appendChild(categoryBadge);
+            }
+            main.appendChild(badges);
+
+            const list = document.createElement("dl");
+            list.className = "event_meta_list";
+            const dateTime = typeof formatEventDateTimeKo === "function" ? formatEventDateTimeKo(event) : event.date;
+            addMetaRow(list, "일시", dateTime);
+            addMetaRow(list, "장소", event.location);
+            if (event.mapLink) addMetaRow(list, "길찾기", event.mapLink, "directions");
+            addMetaRow(list, "참가비", event.fee);
+            addMetaRow(list, "인원", event.capacity != null ? `${event.capacity}명` : null);
+            main.appendChild(list);
+
+            metaEl.appendChild(main);
+        }
+
+        function renderTea(tea, index) {
+            const wrap = document.createElement("div");
+            wrap.className = "magazine_block_wrap cont_970";
+
+            const num = String(index + 1).padStart(2, "0");
+            const hasStats = tea.brewTemp || tea.brewVolume || tea.brewTime;
+
+            let html = '<div class="recipe_wrap recipe_section_02 mb_40">'
+                + '<div class="article_title_block type_num type_row">'
+                + '<span class="title_num en">' + num + '</span>'
+                + '<div class="txt_wrap">'
+                + '<h4 class="article_title">' + escapeHtml(tea.name || "") + '</h4>'
+                + (tea.subtitle ? '<p class="title_info">' + escapeHtml(tea.subtitle) + '</p>' : "")
+                + '</div></div>';
+            if (tea.photoUrl) {
+                html += '<figure class="article_img"><img src="' + tea.photoUrl + '" alt="' + escapeHtml(tea.name || "") + '" style="width:100%; max-width:970px; aspect-ratio:16/9; object-fit:cover; display:block;"></figure>';
+            }
+            if (tea.description) {
+                html += '<div class="block_cont"><div class="cont_para"><div class="article_txt">' + textToHtml(tea.description) + '</div></div></div>';
+            }
+            html += '</div>';
+
+            if (hasStats || tea.brewNote) {
+                html += '<div class="recipe_wrap recipe_list_col mb_80"><div class="recipe_item">';
+                if (hasStats) {
+                    html += '<figure class="brew_stats">';
+                    if (tea.brewTemp) html += '<div class="brew_stat"><svg class="brew_stat_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brew_stat_value">' + escapeHtml(tea.brewTemp) + '</span></div>';
+                    if (tea.brewVolume) html += '<div class="brew_stat"><svg class="brew_stat_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brew_stat_value">' + escapeHtml(tea.brewVolume) + '</span></div>';
+                    if (tea.brewTime) html += '<div class="brew_stat"><svg class="brew_stat_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brew_stat_value">' + escapeHtml(tea.brewTime) + '</span></div>';
+                    html += '</figure>';
+                }
+                if (tea.brewNote) {
+                    html += '<div class="txt_block"><div class="cont_para"><div class="article_txt"><strong>차 우림법</strong><br>' + textToHtml(tea.brewNote).replace(/^<p>|<\/p>$/g, "") + '</div></div></div>';
+                }
+                html += '</div></div>';
+            }
+
+            wrap.innerHTML = html;
+            return wrap;
+        }
+
+        // re-render whenever the language toggles, same pattern as every
+        // other dynamically-rendered page on the site
+        function render() {
+            if (!event) return;
+            const title = I18N.pick(event, "title");
+            pageTitle.textContent = title;
+
+            if (event.heroImageUrl) {
+                heroWrap.hidden = false;
+                plainTitleBlock.hidden = true;
+                heroImg.src = event.heroImageUrl;
+                heroImg.alt = title;
+                heroTitle.textContent = title;
+            } else {
+                heroWrap.hidden = true;
+                plainTitleBlock.hidden = false;
+                plainTitle.textContent = title;
+            }
+
+            const introTitle = I18N.pick(event, "introTitle");
+            const introBody = (I18N.lang === "en" && event.introBodyEn) ? event.introBodyEn : event.introBody;
+            if (introTitle || introBody) {
+                introBlock.hidden = false;
+                if (introTitle) { introTitleEl.hidden = false; introTitleEl.textContent = introTitle; }
+                else { introTitleEl.hidden = true; }
+                introBodyEl.innerHTML = textToHtml(introBody);
+            } else {
+                introBlock.hidden = true;
+            }
+
+            renderMeta();
+
+            const teas = Array.isArray(event.teas) ? event.teas.filter((t) => t && t.name) : [];
+            if (teas.length > 0) {
+                teaSection.hidden = false;
+                teaList.innerHTML = "";
+                teas.forEach((tea, i) => teaList.appendChild(renderTea(tea, i)));
+            } else {
+                teaSection.hidden = true;
+            }
+        }
+
+        async function init() {
+            if (!id) {
+                loadingEl.hidden = true;
+                errorEl.hidden = false;
+                return;
+            }
+            const res = await ContentAPI.getEvent(id);
+            if (!res.ok || !res.event) {
+                loadingEl.hidden = true;
+                errorEl.hidden = false;
+                return;
+            }
+            event = res.event;
+            loadingEl.hidden = true;
+            contentEl.hidden = false;
+            render();
+        }
+
+        window.addEventListener("i18n:changed", render);
+        init();
+    })();
+    </script>
+
+</body>
+</html>

@@ -794,6 +794,10 @@
             padding: 28px 28px 24px;
             position: relative;
         }
+        /* 정기다회 modal has enough extra fields (location/coords/hero photo/
+           repeatable tea list) to want more breathing room than the
+           notices/info modal */
+        .cnt-modal-wide { max-width: 760px; }
         .cnt-modal-close {
             position: absolute;
             top: 16px; right: 16px;
@@ -843,6 +847,48 @@
             align-items: flex-end;
         }
         .cnt-field-row .cnt-field { flex: 1; margin-bottom: 0; }
+        .cnt-field-row-3 { display: flex; gap: 12px; margin-bottom: 14px; }
+        .cnt-field-row-3 .cnt-field { flex: 1; margin-bottom: 0; min-width: 0; }
+        .cnt-field select {
+            padding: 9px 11px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 14px;
+            color: #222;
+            background: #fff;
+        }
+        .cnt-field select:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(28,102,85,.1);
+        }
+
+        /* ── image upload row (event hero photo + per-tea photo) ── */
+        .evt-img-upload { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .evt-img-thumb {
+            width: 72px; height: 54px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #f3f3f1;
+            border: 1px solid var(--border);
+        }
+
+        /* ── repeatable tea sections ── */
+        .evt-tea-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 10px; }
+        .evt-tea-card {
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px 4px;
+            background: #fbfbfa;
+        }
+        .evt-tea-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .evt-tea-num { font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .05em; }
         .cnt-pin-check {
             display: flex;
             align-items: center;
@@ -993,6 +1039,7 @@
     <button class="adm-tab"           data-panel="tab-history">소모임 이력</button>
     <button class="adm-tab"           data-panel="tab-notices">공지사항</button>
     <button class="adm-tab"           data-panel="tab-info">정보</button>
+    <button class="adm-tab"           data-panel="tab-events">정기다회</button>
 </nav>
 
 <div class="adm-wrap">
@@ -1064,6 +1111,17 @@
         <div class="cnt-grid" id="inf-grid"></div>
     </div><!-- /tab-info -->
 
+    <!-- ══ 정기다회 panel ═══════════════════════════════════════════════ -->
+    <div class="adm-panel" id="tab-events">
+        <div class="sm-toolbar">
+            <button class="adm-btn-sec" id="evt-refresh-btn">새로고침</button>
+            <div class="sm-toolbar-spacer"></div>
+            <button class="adm-btn" id="evt-new-btn">+ 새 다회 작성</button>
+        </div>
+        <p class="adm-status" id="evt-status"></p>
+        <div class="cnt-grid" id="evt-grid"></div>
+    </div><!-- /tab-events -->
+
 </div><!-- /adm-wrap -->
 
 <!-- ══ 공지사항/정보 create·edit modal (shared — see wireContentAdmin()) ══ -->
@@ -1115,6 +1173,101 @@
     </div>
 </div>
 
+<!-- ══ 정기다회 create·edit modal — separate from #cnt-modal-overlay above:
+     events have enough extra fields (location/fee/hero photo/repeatable tea
+     sections) that reusing the notices/info modal would mean branching most
+     of its logic, so this is its own small self-contained form instead,
+     just reusing the same .cnt-modal/.cnt-field visual language. ══ -->
+<div class="cnt-modal-overlay" id="evt-modal-overlay">
+    <div class="cnt-modal cnt-modal-wide">
+        <button type="button" class="cnt-modal-close" id="evt-modal-close" aria-label="닫기">&times;</button>
+        <h3 class="cnt-modal-title" id="evt-modal-title">새 다회 작성</h3>
+        <form id="evt-form">
+            <div class="cnt-field">
+                <label for="evt-title">제목 *</label>
+                <input type="text" id="evt-title" required maxlength="120">
+            </div>
+            <div class="cnt-field">
+                <label for="evt-title-en">영문 제목 (선택)</label>
+                <input type="text" id="evt-title-en" maxlength="160">
+            </div>
+            <div class="cnt-field-row-3">
+                <div class="cnt-field">
+                    <label for="evt-date">날짜 *</label>
+                    <input type="date" id="evt-date" required>
+                </div>
+                <div class="cnt-field">
+                    <label for="evt-end-date">종료일 (선택)</label>
+                    <input type="date" id="evt-end-date">
+                </div>
+                <div class="cnt-field">
+                    <label for="evt-time">시간 (선택)</label>
+                    <input type="text" id="evt-time" placeholder="18:00" maxlength="30">
+                </div>
+            </div>
+            <div class="cnt-field">
+                <label for="evt-category">구분</label>
+                <select id="evt-category">
+                    <option value="regulars">정기다회</option>
+                    <option value="specialTea">특별다회</option>
+                </select>
+            </div>
+            <div class="cnt-field-row">
+                <div class="cnt-field">
+                    <label for="evt-location">장소 (선택)</label>
+                    <input type="text" id="evt-location" maxlength="160" placeholder="주소 또는 지도 링크">
+                </div>
+                <div class="cnt-field">
+                    <label for="evt-map-link">길찾기 링크 (선택)</label>
+                    <input type="text" id="evt-map-link" maxlength="300" placeholder="https://naver.me/...">
+                </div>
+            </div>
+            <div class="cnt-field-row-3">
+                <div class="cnt-field">
+                    <label for="evt-lat">위도 (선택)</label>
+                    <input type="text" id="evt-lat" inputmode="decimal" maxlength="20">
+                </div>
+                <div class="cnt-field">
+                    <label for="evt-lng">경도 (선택)</label>
+                    <input type="text" id="evt-lng" inputmode="decimal" maxlength="20">
+                </div>
+                <div class="cnt-field">
+                    <label for="evt-capacity">인원 (선택)</label>
+                    <input type="text" id="evt-capacity" inputmode="numeric" maxlength="6">
+                </div>
+            </div>
+            <div class="cnt-field">
+                <label for="evt-fee">참가비 (선택)</label>
+                <input type="text" id="evt-fee" maxlength="60">
+            </div>
+            <div class="cnt-field">
+                <label>대표 사진 (선택)</label>
+                <div id="evt-hero-upload"></div>
+            </div>
+            <div class="cnt-field">
+                <label for="evt-intro-title">소개 제목 (선택)</label>
+                <input type="text" id="evt-intro-title" maxlength="120">
+            </div>
+            <div class="cnt-field">
+                <label for="evt-intro-body">소개 문구 (선택)</label>
+                <textarea id="evt-intro-body" rows="4"></textarea>
+            </div>
+
+            <div class="cnt-field">
+                <label>차 정보 (선택)</label>
+                <div class="evt-tea-list" id="evt-teas-list"></div>
+                <button type="button" class="cnt-btn-secondary" id="evt-add-tea-btn">+ 차 추가</button>
+            </div>
+
+            <p class="cnt-form-error" id="evt-form-error" hidden></p>
+            <div class="cnt-form-actions">
+                <button type="button" class="cnt-btn-secondary" id="evt-cancel-btn">취소</button>
+                <button type="submit" class="adm-btn" id="evt-save-btn">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 /* ══════════════════════════════════════════════════════════════════════
    1. Tab switching
@@ -1131,6 +1284,7 @@
             if (id === "tab-somori") window.__smActivate?.();
             if (id === "tab-notices") window.__ntcActivate?.();
             if (id === "tab-info") window.__infActivate?.();
+            if (id === "tab-events") window.__evtActivate?.();
         });
     });
 })();
@@ -2010,6 +2164,377 @@
         create: (fields, pw) => ContentAPI.createInfo(fields, pw),
         update: (id, fields, pw) => ContentAPI.updateInfo(id, fields, pw),
         delete: (id, pw) => ContentAPI.deleteInfo(id, pw),
+    });
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   7. 정기다회 admin — its own grid + modal (not wireContentAdmin(): the
+      field shape is different enough — location/coords/hero photo/a
+      repeatable tea list — that sharing the notices/info modal would mean
+      branching most of it anyway.
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+    const STORAGE_KEY = "snuTeaAdminPw_v1"; // same key the password-lock IIFE uses
+    function adminPw() {
+        try { return sessionStorage.getItem(STORAGE_KEY) || ""; } catch (e) { return ""; }
+    }
+    function el(tag, cls, text) {
+        const n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text != null) n.textContent = text;
+        return n;
+    }
+    function formatDateKo(iso) {
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+        return m ? `${Number(m[1])}년 ${Number(m[2])}월 ${Number(m[3])}일` : String(iso || "");
+    }
+    function labeled(labelText, inputEl) {
+        const field = el("div", "cnt-field");
+        field.appendChild(el("label", "", labelText));
+        field.appendChild(inputEl);
+        return field;
+    }
+
+    // small reusable "photo → upload button → thumbnail" control, used for
+    // both the event's hero photo and each tea's photo
+    function makeImageUpload(initialUrl) {
+        const wrap = el("div", "evt-img-upload");
+        const thumb = document.createElement("img");
+        thumb.className = "evt-img-thumb";
+        thumb.hidden = !initialUrl;
+        if (initialUrl) thumb.src = initialUrl;
+        const pickBtn = el("button", "cnt-btn-secondary", "사진 선택");
+        pickBtn.type = "button";
+        const clearBtn = el("button", "cnt-btn-secondary", "제거");
+        clearBtn.type = "button";
+        clearBtn.hidden = !initialUrl;
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.style.display = "none";
+
+        let url = initialUrl || null;
+
+        pickBtn.addEventListener("click", () => input.click());
+        input.addEventListener("change", async () => {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const pw = adminPw();
+            if (!pw) { window.alert("관리자 비밀번호가 필요해요. 페이지 상단에서 잠금을 먼저 해제해주세요."); return; }
+            pickBtn.disabled = true;
+            pickBtn.textContent = "업로드 중…";
+            try {
+                const res = await ContentAPI.uploadImage(file, pw);
+                if (!res.ok) { window.alert(res.error || "이미지를 업로드하지 못했어요."); return; }
+                url = res.url;
+                thumb.src = url;
+                thumb.hidden = false;
+                clearBtn.hidden = false;
+            } catch (e) {
+                window.alert("이미지를 업로드하지 못했어요.");
+            } finally {
+                pickBtn.disabled = false;
+                pickBtn.textContent = "사진 선택";
+                input.value = "";
+            }
+        });
+        clearBtn.addEventListener("click", () => {
+            url = null;
+            thumb.hidden = true;
+            thumb.src = "";
+            clearBtn.hidden = true;
+        });
+
+        wrap.appendChild(thumb);
+        wrap.appendChild(pickBtn);
+        wrap.appendChild(clearBtn);
+        wrap.appendChild(input);
+        return { el: wrap, getUrl: () => url, reset: (u) => { url = u || null; thumb.src = url || ""; thumb.hidden = !url; clearBtn.hidden = !url; } };
+    }
+
+    // ── grid ───────────────────────────────────────────────────────────
+    const grid = document.getElementById("evt-grid");
+    const status = document.getElementById("evt-status");
+    const refreshBtn = document.getElementById("evt-refresh-btn");
+    const newBtn = document.getElementById("evt-new-btn");
+
+    function setStatus(text, isErr) {
+        status.textContent = text || "";
+        status.classList.toggle("err", !!isErr);
+    }
+
+    function renderCard(item) {
+        const card = el("div", "cnt-card");
+        const top = el("div", "cnt-card-top");
+        const dateLabel = item.endDate && item.endDate !== item.date
+            ? `${formatDateKo(item.date)} ~ ${formatDateKo(item.endDate)}`
+            : formatDateKo(item.date);
+        top.appendChild(el("span", "cnt-card-date", dateLabel));
+        top.appendChild(el("span", "cnt-pin-badge", item.category === "specialTea" ? "특별다회" : "정기다회"));
+        card.appendChild(top);
+        card.appendChild(el("h4", "cnt-card-title", item.title));
+        if (item.location) card.appendChild(el("p", "cnt-card-excerpt", item.location));
+
+        const actions = el("div", "cnt-card-actions");
+        const editBtn = el("button", "adm-btn-sm", "수정");
+        editBtn.type = "button";
+        editBtn.addEventListener("click", () => openModal(item));
+        actions.appendChild(editBtn);
+
+        const delBtn = el("button", "adm-btn-danger", "삭제");
+        delBtn.type = "button";
+        delBtn.addEventListener("click", async () => {
+            if (!window.confirm(`"${item.title}"을(를) 삭제할까요? 되돌릴 수 없어요.`)) return;
+            const pw = adminPw();
+            if (!pw) { setStatus("관리자 비밀번호가 필요해요.", true); return; }
+            const res = await ContentAPI.deleteEvent(item.id, pw);
+            if (!res.ok) { setStatus(res.error || "삭제하지 못했어요.", true); return; }
+            fetchList();
+        });
+        actions.appendChild(delBtn);
+        card.appendChild(actions);
+        return card;
+    }
+
+    async function fetchList() {
+        const pw = adminPw();
+        setStatus("불러오는 중…");
+        const res = await ContentAPI.listEvents(pw);
+        if (!res.ok) { setStatus(res.error || "불러오지 못했어요.", true); return; }
+        // list-with-adminPassword also returns soft-deleted rows — see the
+        // same fix applied to wireContentAdmin's fetchList() above
+        const items = (res.events || []).filter((item) => !item.deletedAt);
+        grid.innerHTML = "";
+        if (items.length === 0) {
+            setStatus("등록된 다회가 없어요.");
+            return;
+        }
+        setStatus(`${items.length}개`);
+        items.forEach((item) => grid.appendChild(renderCard(item)));
+    }
+
+    refreshBtn.addEventListener("click", fetchList);
+    newBtn.addEventListener("click", () => openModal(null));
+    window.__evtActivate = fetchList;
+
+    // ── modal ──────────────────────────────────────────────────────────
+    const modalOverlay   = document.getElementById("evt-modal-overlay");
+    const modalTitle     = document.getElementById("evt-modal-title");
+    const form            = document.getElementById("evt-form");
+    const titleInput      = document.getElementById("evt-title");
+    const titleEnInput    = document.getElementById("evt-title-en");
+    const dateInput        = document.getElementById("evt-date");
+    const endDateInput    = document.getElementById("evt-end-date");
+    const timeInput        = document.getElementById("evt-time");
+    const categorySelect  = document.getElementById("evt-category");
+    const locationInput   = document.getElementById("evt-location");
+    const mapLinkInput    = document.getElementById("evt-map-link");
+    const latInput         = document.getElementById("evt-lat");
+    const lngInput         = document.getElementById("evt-lng");
+    const capacityInput   = document.getElementById("evt-capacity");
+    const feeInput         = document.getElementById("evt-fee");
+    const heroUploadHost  = document.getElementById("evt-hero-upload");
+    const introTitleInput = document.getElementById("evt-intro-title");
+    const introBodyInput  = document.getElementById("evt-intro-body");
+    const teasList         = document.getElementById("evt-teas-list");
+    const addTeaBtn        = document.getElementById("evt-add-tea-btn");
+    const formError        = document.getElementById("evt-form-error");
+    const saveBtn           = document.getElementById("evt-save-btn");
+    const cancelBtn        = document.getElementById("evt-cancel-btn");
+    const closeBtn          = document.getElementById("evt-modal-close");
+
+    let editingId = null;
+    let heroUpload = makeImageUpload(null);
+    heroUploadHost.appendChild(heroUpload.el);
+
+    let teaEntries = [];
+
+    function renumberTeas() {
+        teaEntries.forEach((t, i) => t.setNum(i + 1));
+    }
+
+    function createTeaCard(data) {
+        data = data || {};
+        const card = el("div", "evt-tea-card");
+        const head = el("div", "evt-tea-card-head");
+        const numLabel = el("span", "evt-tea-num", "");
+        head.appendChild(numLabel);
+        const rmBtn = el("button", "cnt-btn-secondary", "삭제");
+        rmBtn.type = "button";
+        head.appendChild(rmBtn);
+        card.appendChild(head);
+
+        const nameInput = document.createElement("input");
+        nameInput.type = "text"; nameInput.maxLength = 60; nameInput.value = data.name || "";
+        nameInput.placeholder = "예: 어린잎 잭살차";
+        card.appendChild(labeled("차 이름 *", nameInput));
+
+        const subtitleInput = document.createElement("input");
+        subtitleInput.type = "text"; subtitleInput.maxLength = 80; subtitleInput.value = data.subtitle || "";
+        card.appendChild(labeled("한 줄 설명 (선택)", subtitleInput));
+
+        const photoField = el("div", "cnt-field");
+        photoField.appendChild(el("label", "", "사진 (선택)"));
+        const photoUpload = makeImageUpload(data.photoUrl || null);
+        photoField.appendChild(photoUpload.el);
+        card.appendChild(photoField);
+
+        const descInput = document.createElement("textarea");
+        descInput.rows = 3; descInput.value = data.description || "";
+        card.appendChild(labeled("소개 (선택)", descInput));
+
+        const brewRow = el("div", "cnt-field-row-3");
+        const tempInput = document.createElement("input"); tempInput.type = "text"; tempInput.maxLength = 20; tempInput.placeholder = "95°C"; tempInput.value = data.brewTemp || "";
+        const volInput  = document.createElement("input"); volInput.type = "text"; volInput.maxLength = 20; volInput.placeholder = "150ml"; volInput.value = data.brewVolume || "";
+        const timeInput2 = document.createElement("input"); timeInput2.type = "text"; timeInput2.maxLength = 20; timeInput2.placeholder = "30초"; timeInput2.value = data.brewTime || "";
+        brewRow.appendChild(labeled("온도", tempInput));
+        brewRow.appendChild(labeled("물양", volInput));
+        brewRow.appendChild(labeled("시간", timeInput2));
+        card.appendChild(brewRow);
+
+        const noteInput = document.createElement("textarea");
+        noteInput.rows = 2; noteInput.value = data.brewNote || "";
+        card.appendChild(labeled("우림법 설명 (선택)", noteInput));
+
+        const entry = {
+            el: card,
+            setNum(n) { numLabel.textContent = "차 " + n; },
+            getData() {
+                return {
+                    name: nameInput.value.trim(),
+                    subtitle: subtitleInput.value.trim() || undefined,
+                    photoUrl: photoUpload.getUrl() || undefined,
+                    description: descInput.value.trim() || undefined,
+                    brewTemp: tempInput.value.trim() || undefined,
+                    brewVolume: volInput.value.trim() || undefined,
+                    brewTime: timeInput2.value.trim() || undefined,
+                    brewNote: noteInput.value.trim() || undefined,
+                };
+            },
+        };
+        rmBtn.addEventListener("click", () => {
+            card.remove();
+            teaEntries = teaEntries.filter((t) => t !== entry);
+            renumberTeas();
+        });
+        return entry;
+    }
+
+    function addTea(data) {
+        const entry = createTeaCard(data);
+        teaEntries.push(entry);
+        teasList.appendChild(entry.el);
+        renumberTeas();
+    }
+    addTeaBtn.addEventListener("click", () => addTea(null));
+
+    function showError(msg) {
+        formError.textContent = msg;
+        formError.hidden = false;
+    }
+
+    function openModal(item) {
+        editingId = item ? item.id : null;
+        modalTitle.textContent = item ? "다회 수정" : "새 다회 작성";
+        titleInput.value = item ? (item.title || "") : "";
+        titleEnInput.value = item ? (item.titleEn || "") : "";
+        dateInput.value = item ? (item.date || "") : new Date().toISOString().slice(0, 10);
+        endDateInput.value = item ? (item.endDate || "") : "";
+        timeInput.value = item ? (item.time || "") : "";
+        categorySelect.value = item && item.category === "specialTea" ? "specialTea" : "regulars";
+        locationInput.value = item ? (item.location || "") : "";
+        mapLinkInput.value = item ? (item.mapLink || "") : "";
+        latInput.value = item && item.lat != null ? item.lat : "";
+        lngInput.value = item && item.lng != null ? item.lng : "";
+        capacityInput.value = item && item.capacity != null ? item.capacity : "";
+        feeInput.value = item ? (item.fee || "") : "";
+        heroUpload.reset(item ? item.heroImageUrl : null);
+        introTitleInput.value = item ? (item.introTitle || "") : "";
+        introBodyInput.value = item ? (item.introBody || "") : "";
+
+        teasList.innerHTML = "";
+        teaEntries = [];
+        (item && Array.isArray(item.teas) ? item.teas : []).forEach((t) => addTea(t));
+
+        formError.hidden = true;
+        modalOverlay.classList.add("is-open");
+        titleInput.focus();
+    }
+    function closeModal() {
+        modalOverlay.classList.remove("is-open");
+        editingId = null;
+    }
+
+    closeBtn.addEventListener("click", closeModal);
+    cancelBtn.addEventListener("click", closeModal);
+    modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModal(); });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modalOverlay.classList.contains("is-open")) closeModal();
+    });
+
+    // parses a text input as a finite number, or null if blank/invalid
+    function numOrNull(input) {
+        const v = input.value.trim();
+        if (!v) return null;
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
+    }
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const pw = adminPw();
+        if (!pw) {
+            showError("관리자 비밀번호가 필요해요. 페이지 상단에서 잠금을 먼저 해제해주세요.");
+            return;
+        }
+
+        const title = titleInput.value.trim();
+        const date = dateInput.value;
+        if (!title || !date) {
+            showError("제목과 날짜는 필수예요.");
+            return;
+        }
+
+        const fields = {
+            title,
+            titleEn: titleEnInput.value.trim() || null,
+            date,
+            endDate: endDateInput.value || null,
+            time: timeInput.value.trim() || null,
+            category: categorySelect.value === "specialTea" ? "specialTea" : "regulars",
+            location: locationInput.value.trim() || null,
+            mapLink: mapLinkInput.value.trim() || null,
+            lat: numOrNull(latInput),
+            lng: numOrNull(lngInput),
+            fee: feeInput.value.trim() || null,
+            capacity: numOrNull(capacityInput),
+            heroImageUrl: heroUpload.getUrl() || null,
+            introTitle: introTitleInput.value.trim() || null,
+            introBody: introBodyInput.value.trim() || null,
+            teas: teaEntries.map((t) => t.getData()).filter((t) => t.name),
+        };
+
+        saveBtn.disabled = true;
+        saveBtn.textContent = "저장 중…";
+        try {
+            const res = editingId
+                ? await ContentAPI.updateEvent(editingId, fields, pw)
+                : await ContentAPI.createEvent(fields, pw);
+            if (!res.ok) {
+                showError(res.error || "저장하지 못했어요.");
+                return;
+            }
+            closeModal();
+            fetchList();
+        } catch (err) {
+            showError("네트워크 오류가 발생했어요.");
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "저장";
+        }
     });
 })();
 </script>

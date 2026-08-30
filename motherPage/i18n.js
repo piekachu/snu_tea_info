@@ -35,6 +35,7 @@
         "nav.more":            { ko: "더 알아보기", en: "Learn more" },
         "nav.backToInfo":      { ko: "정보 목록으로", en: "Back to Info" },
         "nav.backToNotice":    { ko: "공지사항 목록으로", en: "Back to Notices" },
+        "nav.backToEvents":    { ko: "행사 목록으로", en: "Back to Events" },
         "a11y.prev":           { ko: "이전", en: "Previous" },
         "a11y.next":           { ko: "다음", en: "Next" },
         "a11y.prevMonth":      { ko: "이전 달", en: "Previous month" },
@@ -427,6 +428,8 @@
         "notice.emptyCarousel":{ ko: "아직 등록된 공지가 없어요.", en: "No notices yet." },
         "notice.loadError":    { ko: "글을 불러오지 못했어요. 링크를 다시 확인해주세요.", en: "Couldn't load this post. Please check the link." },
         "info.loadError":      { ko: "글을 불러오지 못했어요. 링크를 다시 확인해주세요.", en: "Couldn't load this post. Please check the link." },
+        "events.loadError":    { ko: "행사를 불러오지 못했어요. 링크를 다시 확인해주세요.", en: "Couldn't load this event. Please check the link." },
+        "events.teaSection":   { ko: "차 정보", en: "Tea Lineup" },
 
         /* ── 소모임 / join ───────────────────────────────────────── */
         "join.pageTitle":      { ko: "소모임 신청", en: "Meetup Sign-up" },
