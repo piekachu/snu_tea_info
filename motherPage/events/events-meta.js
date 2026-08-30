@@ -161,6 +161,13 @@
         showPanel("event");
     }
 
+    // exposed so events/view.html can add the same share button for
+    // admin-created events — its event object uses different field names
+    // (venueName instead of location, capacity instead of "인원"), so the
+    // caller passes in an adapter object shaped to match instead of a raw
+    // teaClubEvents entry.
+    window.EventsMeta = { createShareButton: createShareButton };
+
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
     } else {
