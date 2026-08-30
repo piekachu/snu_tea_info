@@ -209,10 +209,124 @@
         "meetup.closing":       { ko: "<strong>궁금한 점이 있다면?</strong> 임원진에게 편하게 문의해주세요. 이 페이지는 소모임 신청이 처음이신 분들을 위한 안내이며, 실제 기능과 다르게 안내된 부분이 있다면 알려주세요.",
                                   en: "<strong>Have a question?</strong> Feel free to ask any officer. This page is meant as a guide for members signing up for a meetup for the first time — if anything here doesn't match how it actually works, please let us know." },
 
-        /* ── 신입부원 OT ──────────────────────────────────────────── */
+        /* ── 신입부원 OT ──────────────────────────────────────────────
+              notice/newmember-ot.html. Shared section-label keys
+              (ot.label.*) repeat across several sections; everything
+              else is one key per paragraph/title, namespaced by
+              section. data-i18n-html is used wherever the Korean
+              fallback has inline <strong>/<em>/<a> tags. */
         "ot.pageTitle":        { ko: "신입부원 OT 자료 — 공지사항", en: "New Member Orientation — Notices" },
         "ot.title":            { ko: "신입부원 OT 자료", en: "New Member Orientation" },
         "ot.empty":            { ko: "아직 등록된 내용이 없습니다.", en: "Nothing has been posted yet." },
+
+        /* shared section-head labels (kicker text above each h4) */
+        "ot.label.about":          { ko: "동아리 소개", en: "About the Club" },
+        "ot.label.mainActivity":   { ko: "주요 활동", en: "Key Activities" },
+        "ot.label.specialActivity": { ko: "특별활동", en: "Special Activity" },
+        "ot.label.externalProgram": { ko: "외부 프로그램", en: "External Program" },
+        "ot.label.reference":      { ko: "참고", en: "For Reference" },
+        "ot.label.howToApply":     { ko: "지원 방법", en: "How to Apply" },
+
+        /* 동아리 소개 */
+        "ot.q1.title": { ko: "설다연은 어떤 동아리인가요?", en: "What kind of club is Seoldayeon?" },
+        "ot.q1.p1":    { ko: "설다연은 서울대학교 유일의 중앙 차동아리입니다!", en: "Seoldayeon is the only university-wide tea club at Seoul National University!" },
+        "ot.q1.p2":    { ko: "고정된 동아리방이 없는 대신, 서울 곳곳에 숨겨진 예쁜 찻집들을 직접 찾아다니며 차를 즐기는 매력적인 동아리예요.",
+                         en: "Instead of a fixed clubroom, we're a club with real character — we seek out lovely, hidden tea houses all across Seoul and enjoy tea together there." },
+        "ot.q1.p3":    { ko: "설다연에는 부원들이 함께 차를 즐길 수 있도록 다양한 활동들이 준비되어 있습니다!", en: "Seoldayeon has all kinds of activities lined up so members can enjoy tea together!" },
+        "ot.q1.p4":    { ko: "<strong>차를 몰라도 활동에 전혀 지장이 없으니 부담 없이 지원해 주세요!</strong> 부원 대부분이 차와 처음 만나는 자리에서 시작합니다.",
+                         en: "<strong>Not knowing anything about tea won't hold you back at all — please apply without any worry!</strong> Most members are meeting tea for the very first time when they start." },
+
+        /* 정기다회 */
+        "ot.regulars.title":   { ko: "정기다회", en: "Regular Tea Gathering (정기다회)" },
+        "ot.regulars.imgAlt":  { ko: "정기다회에 모인 부원들", en: "Members gathered at a regular tea gathering" },
+        "ot.regulars.p1":      { ko: "임원진이 주관하는 다회입니다. <strong>설다연에서 찻집을 통째로 대여해</strong> 소모임보다 많은 인원이 함께 모여 차를 마시며 친목을 나눕니다.",
+                                  en: "This gathering is run by the club officers. <strong>Seoldayeon rents out an entire tea house</strong> so a larger group than a 소모임 can gather, drink tea together, and get to know one another." },
+        "ot.regulars.p2":      { ko: "임원진이 다회 일정과 장소, 주제(차 종류 등)를 사전에 공지하고 참가 신청을 받아 인원을 확정합니다. 다회 당일에는 임원진이 준비한 다구와 차로 함께 차를 마시며 이야기를 나눕니다.",
+                                  en: "Officers announce the date, location, and theme (type of tea, etc.) ahead of time and take sign-ups to lock in the headcount. On the day, everyone drinks tea together and chats, using the tea ware and tea the officers prepared." },
+
+        /* 소모임 */
+        "ot.somoim.title":       { ko: "소모임 · 3명 이상", en: "Meetup (소모임) · 3 or more people" },
+        "ot.somoim.imgAlt":      { ko: "찻자리에 놓인 청화 개완", en: "A blue-and-white gaiwan set out for a tea gathering" },
+        "ot.somoim.splitP":      { ko: "부원 누구나 자유롭게 열고 참여할 수 있는 가장 기본적인 활동입니다. 예전의 주간 조 배정 시스템은 사라졌고, 이제는 <a href=\"../join/index.html\">소모임 신청 페이지</a>에서 원하는 날짜에 직접 열거나 이미 열린 소모임에 신청하는 방식으로 운영됩니다.",
+                                   en: "This is the most basic activity, and anyone is free to start or join one. The old weekly group-assignment system is gone — now it runs through the <a href=\"../join/index.html\">meetup sign-up page</a>, where you can open a meetup on any date you like, or sign up for one that's already open." },
+        "ot.somoim.manualTitle": { ko: "소모임 신청 매뉴얼 바로가기", en: "Open the Meetup Sign-Up Manual" },
+        "ot.somoim.manualBody":  { ko: "스크린샷과 함께 소모임 만들기·신청하기 전 과정을 자세히 안내해드려요.",
+                                   en: "See the full step-by-step walkthrough — with screenshots — for creating a meetup and signing up for one." },
+
+        /* 티 클래스 */
+        "ot.teaclass.title":  { ko: "티 클래스", en: "Tea Class" },
+        "ot.teaclass.imgAlt": { ko: "티 클래스에서 설명을 듣는 부원들", en: "Members listening to a talk at a tea class" },
+        "ot.teaclass.p1":     { ko: "6대 다류와 다구를 소개하고 직접 시음하는 자리입니다. 차 문화와 종류에 대해 깊이 알아볼 수 있습니다.",
+                                en: "A session introducing the six major tea types and tea ware, with tastings included — a great way to dig deeper into tea culture and varieties." },
+        "ot.teaclass.p2":     { ko: "임원진이 클래스 일정과 주제를 사전에 공지하고 참가 신청을 받아 인원을 확정합니다. 당일에는 6대 다류(백차·녹차·황차·홍차·청차·흑차)와 다구를 함께 살펴보며 직접 시음하는 시간을 가집니다.",
+                                en: "Officers announce the class schedule and topic ahead of time and take sign-ups to lock in the headcount. On the day, everyone looks over the six major tea types (white, green, yellow, black, oolong, and dark tea) and tea ware together, with time set aside for tasting." },
+        "ot.teaclass.p3":     { ko: "지난 학기에는 6대 다류 이외에도 <em>티 블렌딩 · 자사호 · 보이차</em> 등 다양한 주제의 클래스가 진행되었습니다.",
+                                en: "Last semester's classes also covered <em>tea blending, Yixing teapots, and pu-erh tea</em> alongside the six major types." },
+
+        /* 제다여행 */
+        "ot.teatrip.title":    { ko: "제다여행", en: "Tea-Making Trip (제다여행)" },
+        "ot.teatrip.imgAlt1":  { ko: "하동 차 밭에서 찻잎을 따는 부원들", en: "Members picking tea leaves in a Hadong tea field" },
+        "ot.teatrip.imgAlt2":  { ko: "갓 딴 찻잎이 담긴 대나무 소쿠리", en: "Freshly picked tea leaves in a bamboo basket" },
+        "ot.teatrip.p1":       { ko: "1학기 활동의 하이라이트. 1박 2일 일정으로 경상남도 하동의 차 산지를 방문해 차 생산 과정을 직접 체험합니다. 연 1회 진행됩니다.",
+                                  en: "The highlight of the spring semester. Over a 1-night, 2-day trip, we visit tea-growing regions in Hadong, Gyeongsangnam-do, and experience the tea-making process firsthand. Held once a year." },
+        "ot.teatrip.p2":       { ko: "학기 초에 참가 신청을 받아 인원을 확정한 뒤, 5월 중 1박 2일 일정으로 하동군을 방문합니다. 차 밭과 제다 공장을 견학하고 차 만드는 과정을 직접 체험하며, 여행 후에는 사진과 후기를 함께 나눕니다.",
+                                  en: "Sign-ups are taken early in the semester to lock in the headcount, then the trip to Hadong runs over 1 night and 2 days in May. We tour tea fields and tea-processing workshops, try our hand at making tea, and share photos and stories together afterward." },
+
+        /* 연합활동 */
+        "ot.joint.title": { ko: "연합활동", en: "Joint Activities" },
+        "ot.joint.p1":    { ko: "<strong>매 학기마다</strong> 연세대학교 관설차회, 이화여자대학교 홍작 등 타 학교 차 동아리와 교류하는 활동입니다. 교류다회, 부스 방문 등 다양한 형식으로 진행됩니다.",
+                             en: "<strong>Every semester</strong>, we exchange visits with tea clubs at other universities, including Yonsei University's Gwanseolchahoe and Ewha Womans University's Hongjak. These take the form of joint tea gatherings, booth visits, and more." },
+        "ot.joint.p2":    { ko: "양 동아리 임원진이 교류 일정과 형식을 조율한 뒤, 교류다회나 부스 방문 등 함께할 프로그램을 진행합니다. 활동 후에는 사진과 소감을 함께 나눕니다.",
+                             en: "Officers from both clubs coordinate a schedule and format, then run a joint tea gathering, booth visit, or other shared program together. Afterward, everyone shares photos and thoughts." },
+
+        /* MT */
+        "ot.mt.title": { ko: "MT", en: "Club Retreat (MT)" },
+        "ot.mt.p":     { ko: "학기마다 부원 전체가 함께하는 1박 2일 엠티가 준비되어 있습니다. 2026-2학기에는 <strong>9월 18일(금) ~ 19일(토)</strong>로 예정되어 있어요. 자세한 장소·회비·프로그램은 확정되는 대로 단체 카카오톡방과 인스타그램을 통해 공지드립니다.",
+                         en: "Every semester there's a 1-night, 2-day retreat for the whole club. For the 2026 Fall semester it's scheduled for <strong>September 18 (Fri) – 19 (Sat)</strong>. Details on location, cost, and program will be announced through the group KakaoTalk chat and Instagram once confirmed." },
+
+        /* 티 블렌딩 */
+        "ot.blending.title":   { ko: "티 블렌딩", en: "Tea Blending" },
+        "ot.blending.p":       { ko: "여러 재료를 조합해 나만의 블렌딩 티를 만들어보는 특별 활동입니다. 준비된 꽃잎, 과일, 향신료를 취향대로 담아 우려내며 조합의 재미를 나눕니다.",
+                                  en: "A special activity where you combine different ingredients to create your own blended tea. Mix in flower petals, fruit, and spices to your taste and brew them up — it's all about the fun of combining flavors." },
+        "ot.blending.imgAlt1": { ko: "티 블렌딩에 쓰인 여러 재료들", en: "Various ingredients used for tea blending" },
+        "ot.blending.imgAlt2": { ko: "블렌딩한 티를 우려낸 모습", en: "A brewed cup of blended tea" },
+
+        /* 이도옥션 */
+        "ot.leedo.title":  { ko: "이도옥션", en: "Yido Auction (이도옥션)" },
+        "ot.leedo.p":      { ko: "인사동 소재의 도자기 업체 <em>이도옥션</em>이 매달 마지막 주에 학생들을 초대해주십니다. 사장님의 재능기부로 한반도의 옛 차 도구를 소개받고 함께 차를 마시는 시간을 가집니다.",
+                              en: "<em>Yido Auction</em>, a ceramics business in Insadong, invites students in on the last week of every month. Through the owner's generosity, we get introduced to traditional Korean tea ware and enjoy tea together." },
+        "ot.leedo.imgAlt": { ko: "이도옥션에서 옛 차 도구로 차를 우리는 모습", en: "Brewing tea with traditional tea ware at Yido Auction" },
+
+        /* 알아두면 좋은 규칙 */
+        "ot.rules.title":              { ko: "알아두면 좋은 규칙", en: "Good Rules to Know" },
+        "ot.rules.noShow.title":       { ko: "소모임 불참비 · 2,500원", en: "Meetup No-Show Fee · ₩2,500" },
+        "ot.rules.noShow.body":        { ko: "취소 마감(모임 2일 전) 이후 파토 시 부과됩니다. 신청 페이지의 취소 링크가 잠긴 뒤에는 주최자에게 먼저 양해를 구하시고, 회계부장에게 개인톡으로 연락 부탁드립니다.",
+                                          en: "Charged if you back out after the cancellation deadline (2 days before the meetup). Once the cancel link on the sign-up page is locked, please ask the host for understanding first, then contact the treasurer directly." },
+        "ot.rules.regularsNoShow.title": { ko: "정기다회 불참비 · 5,000원", en: "Regular Gathering No-Show Fee · ₩5,000" },
+        "ot.rules.regularsNoShow.body":  { ko: "당일 파토 시 부과됩니다. 사정이 있으신 경우 사전에 알려주세요.",
+                                            en: "Charged if you back out on the day itself. If something comes up, please let us know ahead of time." },
+        "ot.rules.twoLeft.title":      { ko: "두 명이 남은 경우", en: "When Only Two People Are Left" },
+        "ot.rules.twoLeft.body":       { ko: "소모임은 3명 이상을 원칙으로 하지만, 참가자 불참으로 두 명만 남게 된 경우에는 <em>모임 무산 · 두 분이서 진행</em> 중 하나를 선택하실 수 있습니다. 두 분이 진행하시는 경우에도 지원금은 동일하게 지급됩니다. 모임이 무산되더라도 불참비는 원인을 제공한 분들만 부담합니다.",
+                                          en: "A meetup is meant to have 3 or more people, but if a no-show leaves only two, you can choose either to <em>cancel the meetup or go ahead with just the two of you</em>. If you go ahead with two, the same stipend is still paid. If the meetup is cancelled, only the people responsible for the no-show cover the fee." },
+
+        /* 활동비 */
+        "ot.fee.title": { ko: "활동비", en: "Membership Dues" },
+        "ot.fee.p1":    { ko: "한 학기 회비는 <strong>25,000원</strong>입니다. 지원 시 구글폼 안내에 따라 입금해주시면 신청이 완료됩니다.",
+                           en: "Semester dues are <strong>₩25,000</strong>. Once you pay according to the Google Form's instructions when applying, your application is complete." },
+        "ot.fee.p2":    { ko: "소모임에 한 번 참여할 때마다 회비에서 <strong>2,500원</strong>의 활동 지원금이 지급됩니다.",
+                           en: "Every time you take part in a meetup, you get a <strong>₩2,500</strong> activity stipend out of the dues." },
+        "ot.fee.p3":    { ko: "그 외 회비는 시험기간 이벤트, 단체 활동(티 클래스, 교류다회 등) 지원에 사용됩니다.",
+                           en: "The rest of the dues go toward exam-period events and support for group activities (tea classes, joint gatherings, etc.)." },
+
+        /* 지원 방법 */
+        "ot.apply.title": { ko: "신입부원 상시모집", en: "New Members — Rolling Admissions" },
+        "ot.apply.p1":    { ko: "설다연 인스타그램 <a href=\"https://www.instagram.com/snu_dado/\" target=\"_blank\" rel=\"noopener noreferrer\">@snu_dado</a> 프로필 링크를 통해 구글폼을 제출해주시면 됩니다. 구글폼 안내에 따라 <strong>학기 회비 25,000원</strong>을 입금하시면 신청이 완료됩니다.",
+                             en: "Submit the Google Form linked in our Instagram profile, <a href=\"https://www.instagram.com/snu_dado/\" target=\"_blank\" rel=\"noopener noreferrer\">@snu_dado</a>. Once you pay the <strong>semester dues of ₩25,000</strong> as instructed on the form, your application is complete." },
+        "ot.apply.p2":    { ko: "문의사항은 회장 이준성 (<a href=\"tel:010-6717-7582\">010-6717-7582</a>) 또는 인스타그램 <a href=\"https://www.instagram.com/snu_dado/\" target=\"_blank\" rel=\"noopener noreferrer\">@snu_dado</a> DM으로 편하게 연락주세요.",
+                             en: "For questions, feel free to reach out to club president Junseong Lee (<a href=\"tel:010-6717-7582\">010-6717-7582</a>) or DM <a href=\"https://www.instagram.com/snu_dado/\" target=\"_blank\" rel=\"noopener noreferrer\">@snu_dado</a> on Instagram." },
+
+        "ot.closing":     { ko: "<strong>환영합니다!</strong> 궁금한 점은 언제든 임원진에게 편하게 물어보세요.",
+                             en: "<strong>Welcome!</strong> Feel free to ask any officer if you have questions." },
 
         /* ── 회칙 / bylaws ────────────────────────────────────────────
            English intentionally left empty — the club will supply it.

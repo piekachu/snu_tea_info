@@ -52,23 +52,30 @@
                      brewing shots. Kakao/Instagram screenshots and photos
                      with identifiable individuals were deliberately dropped
                      (privacy / third-party content). Officer names dropped
-                     per user's request. -->
+                     per user's request.
+
+                     Every piece of copy is wired through i18n.js under the
+                     "ot.*" namespace — data-i18n-html is used wherever the
+                     Korean fallback has inline <strong>/<em>/<a> tags;
+                     section-head "kicker" labels reuse a handful of shared
+                     ot.label.* keys since the same label repeats verbatim
+                     across several sections. -->
 
                 <div class="ot_body">
 
                     <!-- 설다연 소개 (Q&A opener, "설다연은 어떤 동아리인가요?") -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">동아리 소개</span>
-                        <h4 class="ot_section_head_title">설다연은 어떤 동아리인가요?</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.about">동아리 소개</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.q1.title">설다연은 어떤 동아리인가요?</h4>
                     </div>
 
-                    <p>설다연은 서울대학교 유일의 중앙 차동아리입니다!</p>
+                    <p data-i18n="ot.q1.p1">설다연은 서울대학교 유일의 중앙 차동아리입니다!</p>
 
-                    <p>고정된 동아리방이 없는 대신, 서울 곳곳에 숨겨진 예쁜 찻집들을 직접 찾아다니며 차를 즐기는 매력적인 동아리예요.</p>
+                    <p data-i18n="ot.q1.p2">고정된 동아리방이 없는 대신, 서울 곳곳에 숨겨진 예쁜 찻집들을 직접 찾아다니며 차를 즐기는 매력적인 동아리예요.</p>
 
-                    <p>설다연에는 부원들이 함께 차를 즐길 수 있도록 다양한 활동들이 준비되어 있습니다!</p>
+                    <p data-i18n="ot.q1.p3">설다연에는 부원들이 함께 차를 즐길 수 있도록 다양한 활동들이 준비되어 있습니다!</p>
 
-                    <p><strong>차를 몰라도 활동에 전혀 지장이 없으니 부담 없이 지원해 주세요!</strong> 부원 대부분이 차와 처음 만나는 자리에서 시작합니다.</p>
+                    <p data-i18n-html="ot.q1.p4"><strong>차를 몰라도 활동에 전혀 지장이 없으니 부담 없이 지원해 주세요!</strong> 부원 대부분이 차와 처음 만나는 자리에서 시작합니다.</p>
 
                     <!-- SOMOIM WORKFLOW ──────────────────────────────── -->
                     <!-- 정기다회 ─────────────────────────────────────
@@ -77,55 +84,62 @@
                          정기다회 in one sentence. Review and edit to match
                          the actual workflow. -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">주요 활동</span>
-                        <h4 class="ot_section_head_title">정기다회</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.mainActivity">주요 활동</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.regulars.title">정기다회</h4>
                     </div>
 
                     <div class="ot_split">
                         <div>
-                            <img class="ot_split_image" src="images/ot/jeonggidahoe-1.jpg" alt="정기다회에 모인 부원들">
+                            <img class="ot_split_image" src="images/ot/jeonggidahoe-1.jpg" alt="정기다회에 모인 부원들" data-i18n-attr="alt:ot.regulars.imgAlt">
                         </div>
                         <div>
-                            <p>임원진이 주관하는 다회입니다. <strong>설다연에서 찻집을 통째로 대여해</strong> 소모임보다 많은 인원이 함께 모여 차를 마시며 친목을 나눕니다.</p>
-                            <p>임원진이 다회 일정과 장소, 주제(차 종류 등)를 사전에 공지하고 참가 신청을 받아 인원을 확정합니다. 다회 당일에는 임원진이 준비한 다구와 차로 함께 차를 마시며 이야기를 나눕니다.</p>
+                            <p data-i18n-html="ot.regulars.p1">임원진이 주관하는 다회입니다. <strong>설다연에서 찻집을 통째로 대여해</strong> 소모임보다 많은 인원이 함께 모여 차를 마시며 친목을 나눕니다.</p>
+                            <p data-i18n="ot.regulars.p2">임원진이 다회 일정과 장소, 주제(차 종류 등)를 사전에 공지하고 참가 신청을 받아 인원을 확정합니다. 다회 당일에는 임원진이 준비한 다구와 차로 함께 차를 마시며 이야기를 나눕니다.</p>
                         </div>
                     </div>
 
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">주요 활동</span>
-                        <h4 class="ot_section_head_title">소모임 · 3명 이상</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.mainActivity">주요 활동</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.somoim.title">소모임 · 3명 이상</h4>
                     </div>
 
                     <div class="ot_split ot_split_flip">
                         <div>
-                            <p>부원 누구나 자유롭게 열고 참여할 수 있는 가장 기본적인 활동입니다. 예전의 주간 조 배정 시스템은 사라졌고, 이제는 <a href="../join/index.html">소모임 신청 페이지</a>에서 원하는 날짜에 직접 열거나 이미 열린 소모임에 신청하는 방식으로 운영됩니다.</p>
+                            <p data-i18n-html="ot.somoim.splitP">부원 누구나 자유롭게 열고 참여할 수 있는 가장 기본적인 활동입니다. 예전의 주간 조 배정 시스템은 사라졌고, 이제는 <a href="../join/index.html">소모임 신청 페이지</a>에서 원하는 날짜에 직접 열거나 이미 열린 소모임에 신청하는 방식으로 운영됩니다.</p>
                         </div>
                         <div>
-                            <img class="ot_split_image" src="images/ot/jeonggidahoe-2.jpg" alt="찻자리에 놓인 청화 개완">
+                            <img class="ot_split_image" src="images/ot/jeonggidahoe-2.jpg" alt="찻자리에 놓인 청화 개완" data-i18n-attr="alt:ot.somoim.imgAlt">
                         </div>
                     </div>
 
-                    <p>소모임을 열고 싶으시다면 신청 페이지의 달력에서 원하는 날짜(내일 이후)를 골라 <em>+ 새 소모임 만들기</em>를 누르고 이름·시간·정원·장소·주최자 정보와 편집 비밀번호를 입력해주세요. 정원은 본인 포함 <strong>3명 이상</strong>이어야 합니다. 등록 후에는 상단의 공유 버튼으로 소모임 정보를 복사해 단체 카카오톡방에 붙여넣으면 임원진이 확인 후 승인해드리고, 승인된 시점부터 다른 부원들이 링크를 통해 신청할 수 있어요.</p>
-
-                    <p>참여하고 싶으시다면 신청 페이지에서 관심 있는 소모임 카드를 열어 이름과 실명, 취소 비밀번호를 채워 <em>신청하기</em>를 눌러주세요. <strong>신청은 소모임 전날까지</strong>만 가능하고, <strong>취소는 2일 전까지</strong>만 열려 있으니 시간 여유를 두고 결정해주세요. 모임 당일에는 실제로 만나 차를 마시고 사진으로 기록을 남기시면 되고, 모임이 끝난 뒤에는 짧은 후기를 단체 카톡방에 공유해주시면 좋아요. 자세한 사용법은 <a href="meetup-signup.html">소모임 신청 방법</a> 페이지에서 확인하실 수 있습니다.</p>
+                    <!-- Quick link to the full manual (notice/meetup-signup.html)
+                         instead of repeating its step-by-step instructions here —
+                         same amber "!" callout language as .ot_rule below. -->
+                    <a class="ot_rule ot_manual_link" href="meetup-signup.html">
+                        <h5 class="ot_rule_title">
+                            <span data-i18n="ot.somoim.manualTitle">소모임 신청 매뉴얼 바로가기</span>
+                            <span class="ot_manual_link_arrow" aria-hidden="true">&rarr;</span>
+                        </h5>
+                        <p data-i18n="ot.somoim.manualBody">스크린샷과 함께 소모임 만들기·신청하기 전 과정을 자세히 안내해드려요.</p>
+                    </a>
 
                     <!-- 티 클래스 ────────────────────────────────────
                          Steps inferred — PDF only mentions the class
                          teaches 6대 다류 and 다구 with tastings. Adjust
                          to match the actual workflow. -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">주요 활동</span>
-                        <h4 class="ot_section_head_title">티 클래스</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.mainActivity">주요 활동</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.teaclass.title">티 클래스</h4>
                     </div>
 
                     <div class="ot_split">
                         <div>
-                            <img class="ot_split_image" src="images/ot/tea-class-1.jpg" alt="티 클래스에서 설명을 듣는 부원들">
+                            <img class="ot_split_image" src="images/ot/tea-class-1.jpg" alt="티 클래스에서 설명을 듣는 부원들" data-i18n-attr="alt:ot.teaclass.imgAlt">
                         </div>
                         <div>
-                            <p>6대 다류와 다구를 소개하고 직접 시음하는 자리입니다. 차 문화와 종류에 대해 깊이 알아볼 수 있습니다.</p>
-                            <p>임원진이 클래스 일정과 주제를 사전에 공지하고 참가 신청을 받아 인원을 확정합니다. 당일에는 6대 다류(백차·녹차·황차·홍차·청차·흑차)와 다구를 함께 살펴보며 직접 시음하는 시간을 가집니다.</p>
-                            <p>지난 학기에는 6대 다류 이외에도 <em>티 블렌딩 · 자사호 · 보이차</em> 등 다양한 주제의 클래스가 진행되었습니다.</p>
+                            <p data-i18n="ot.teaclass.p1">6대 다류와 다구를 소개하고 직접 시음하는 자리입니다. 차 문화와 종류에 대해 깊이 알아볼 수 있습니다.</p>
+                            <p data-i18n="ot.teaclass.p2">임원진이 클래스 일정과 주제를 사전에 공지하고 참가 신청을 받아 인원을 확정합니다. 당일에는 6대 다류(백차·녹차·황차·홍차·청차·흑차)와 다구를 함께 살펴보며 직접 시음하는 시간을 가집니다.</p>
+                            <p data-i18n-html="ot.teaclass.p3">지난 학기에는 6대 다류 이외에도 <em>티 블렌딩 · 자사호 · 보이차</em> 등 다양한 주제의 클래스가 진행되었습니다.</p>
                         </div>
                     </div>
 
@@ -133,46 +147,46 @@
                          Intro pulled from PDF; steps inferred. Adjust
                          to match this year's actual itinerary. -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">주요 활동</span>
-                        <h4 class="ot_section_head_title">제다여행</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.mainActivity">주요 활동</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.teatrip.title">제다여행</h4>
                     </div>
 
                     <div class="ot_split ot_split_flip">
                         <div>
-                            <p>1학기 활동의 하이라이트. 1박 2일 일정으로 경상남도 하동의 차 산지를 방문해 차 생산 과정을 직접 체험합니다. 연 1회 진행됩니다.</p>
+                            <p data-i18n="ot.teatrip.p1">1학기 활동의 하이라이트. 1박 2일 일정으로 경상남도 하동의 차 산지를 방문해 차 생산 과정을 직접 체험합니다. 연 1회 진행됩니다.</p>
                         </div>
                         <div>
-                            <img class="ot_split_image" src="images/ot/tea-trip-picking.jpg" alt="하동 차 밭에서 찻잎을 따는 부원들">
+                            <img class="ot_split_image" src="images/ot/tea-trip-picking.jpg" alt="하동 차 밭에서 찻잎을 따는 부원들" data-i18n-attr="alt:ot.teatrip.imgAlt1">
                         </div>
                     </div>
 
                     <div class="ot_split">
                         <div>
-                            <img class="ot_split_image" src="images/ot/tea-trip-baskets.jpg" alt="갓 딴 찻잎이 담긴 대나무 소쿠리">
+                            <img class="ot_split_image" src="images/ot/tea-trip-baskets.jpg" alt="갓 딴 찻잎이 담긴 대나무 소쿠리" data-i18n-attr="alt:ot.teatrip.imgAlt2">
                         </div>
                         <div>
-                            <p>학기 초에 참가 신청을 받아 인원을 확정한 뒤, 5월 중 1박 2일 일정으로 하동군을 방문합니다. 차 밭과 제다 공장을 견학하고 차 만드는 과정을 직접 체험하며, 여행 후에는 사진과 후기를 함께 나눕니다.</p>
+                            <p data-i18n="ot.teatrip.p2">학기 초에 참가 신청을 받아 인원을 확정한 뒤, 5월 중 1박 2일 일정으로 하동군을 방문합니다. 차 밭과 제다 공장을 견학하고 차 만드는 과정을 직접 체험하며, 여행 후에는 사진과 후기를 함께 나눕니다.</p>
                         </div>
                     </div>
 
                     <!-- 연합활동 ─────────────────────────────────────
                          Intro pulled from PDF; steps inferred. -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">주요 활동</span>
-                        <h4 class="ot_section_head_title">연합활동</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.mainActivity">주요 활동</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.joint.title">연합활동</h4>
                     </div>
 
-                    <p><strong>매 학기마다</strong> 연세대학교 관설차회, 이화여자대학교 홍작 등 타 학교 차 동아리와 교류하는 활동입니다. 교류다회, 부스 방문 등 다양한 형식으로 진행됩니다.</p>
+                    <p data-i18n-html="ot.joint.p1"><strong>매 학기마다</strong> 연세대학교 관설차회, 이화여자대학교 홍작 등 타 학교 차 동아리와 교류하는 활동입니다. 교류다회, 부스 방문 등 다양한 형식으로 진행됩니다.</p>
 
-                    <p>양 동아리 임원진이 교류 일정과 형식을 조율한 뒤, 교류다회나 부스 방문 등 함께할 프로그램을 진행합니다. 활동 후에는 사진과 소감을 함께 나눕니다.</p>
+                    <p data-i18n="ot.joint.p2">양 동아리 임원진이 교류 일정과 형식을 조율한 뒤, 교류다회나 부스 방문 등 함께할 프로그램을 진행합니다. 활동 후에는 사진과 소감을 함께 나눕니다.</p>
 
                     <!-- MT ─────────────────────────────────────────── -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">주요 활동</span>
-                        <h4 class="ot_section_head_title">MT</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.mainActivity">주요 활동</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.mt.title">MT</h4>
                     </div>
 
-                    <p>학기마다 부원 전체가 함께하는 1박 2일 엠티가 준비되어 있습니다.
+                    <p data-i18n-html="ot.mt.p">학기마다 부원 전체가 함께하는 1박 2일 엠티가 준비되어 있습니다.
                     2026-2학기에는 <strong>9월 18일(금) ~ 19일(토)</strong>로 예정되어 있어요.
                     자세한 장소·회비·프로그램은 확정되는 대로 단체 카카오톡방과 인스타그램을 통해 공지드립니다.</p>
 
@@ -182,76 +196,76 @@
                          특별활동-티블렌딩. Intro is a plausible draft;
                          adjust to match what this activity actually does. -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">특별활동</span>
-                        <h4 class="ot_section_head_title">티 블렌딩</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.specialActivity">특별활동</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.blending.title">티 블렌딩</h4>
                     </div>
 
-                    <p>여러 재료를 조합해 나만의 블렌딩 티를 만들어보는 특별 활동입니다. 준비된 꽃잎, 과일, 향신료를 취향대로 담아 우려내며 조합의 재미를 나눕니다.</p>
+                    <p data-i18n="ot.blending.p">여러 재료를 조합해 나만의 블렌딩 티를 만들어보는 특별 활동입니다. 준비된 꽃잎, 과일, 향신료를 취향대로 담아 우려내며 조합의 재미를 나눕니다.</p>
 
                     <div class="ot_gallery">
-                        <img src="images/ot/blending-1.jpg" alt="티 블렌딩에 쓰인 여러 재료들">
-                        <img src="images/ot/blending-2.jpg" alt="블렌딩한 티를 우려낸 모습">
+                        <img src="images/ot/blending-1.jpg" alt="티 블렌딩에 쓰인 여러 재료들" data-i18n-attr="alt:ot.blending.imgAlt1">
+                        <img src="images/ot/blending-2.jpg" alt="블렌딩한 티를 우려낸 모습" data-i18n-attr="alt:ot.blending.imgAlt2">
                     </div>
 
                     <!-- 이도옥션 ────────────────────────────────────── -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">외부 프로그램</span>
-                        <h4 class="ot_section_head_title">이도옥션</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.externalProgram">외부 프로그램</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.leedo.title">이도옥션</h4>
                     </div>
 
                     <div class="ot_split ot_split_flip">
                         <div>
-                            <p>인사동 소재의 도자기 업체 <em>이도옥션</em>이 매달 마지막 주에 학생들을 초대해주십니다. 사장님의 재능기부로 한반도의 옛 차 도구를 소개받고 함께 차를 마시는 시간을 가집니다.</p>
+                            <p data-i18n-html="ot.leedo.p">인사동 소재의 도자기 업체 <em>이도옥션</em>이 매달 마지막 주에 학생들을 초대해주십니다. 사장님의 재능기부로 한반도의 옛 차 도구를 소개받고 함께 차를 마시는 시간을 가집니다.</p>
                         </div>
                         <div>
-                            <img class="ot_split_image" src="images/ot/leedo-auction.jpg" alt="이도옥션에서 옛 차 도구로 차를 우리는 모습">
+                            <img class="ot_split_image" src="images/ot/leedo-auction.jpg" alt="이도옥션에서 옛 차 도구로 차를 우리는 모습" data-i18n-attr="alt:ot.leedo.imgAlt">
                         </div>
                     </div>
 
                     <!-- RULES ────────────────────────────────────────── -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">참고</span>
-                        <h4 class="ot_section_head_title">알아두면 좋은 규칙</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.reference">참고</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.rules.title">알아두면 좋은 규칙</h4>
                     </div>
 
                     <div class="ot_rules">
                         <div class="ot_rule">
-                            <h5 class="ot_rule_title">소모임 불참비 · 2,500원</h5>
-                            <p>취소 마감(모임 2일 전) 이후 파토 시 부과됩니다. 신청 페이지의 취소 링크가 잠긴 뒤에는 주최자에게 먼저 양해를 구하시고, 회계부장에게 개인톡으로 연락 부탁드립니다.</p>
+                            <h5 class="ot_rule_title" data-i18n="ot.rules.noShow.title">소모임 불참비 · 2,500원</h5>
+                            <p data-i18n="ot.rules.noShow.body">취소 마감(모임 2일 전) 이후 파토 시 부과됩니다. 신청 페이지의 취소 링크가 잠긴 뒤에는 주최자에게 먼저 양해를 구하시고, 회계부장에게 개인톡으로 연락 부탁드립니다.</p>
                         </div>
                         <div class="ot_rule">
-                            <h5 class="ot_rule_title">정기다회 불참비 · 5,000원</h5>
-                            <p>당일 파토 시 부과됩니다. 사정이 있으신 경우 사전에 알려주세요.</p>
+                            <h5 class="ot_rule_title" data-i18n="ot.rules.regularsNoShow.title">정기다회 불참비 · 5,000원</h5>
+                            <p data-i18n="ot.rules.regularsNoShow.body">당일 파토 시 부과됩니다. 사정이 있으신 경우 사전에 알려주세요.</p>
                         </div>
                         <div class="ot_rule">
-                            <h5 class="ot_rule_title">두 명이 남은 경우</h5>
-                            <p>소모임은 3명 이상을 원칙으로 하지만, 참가자 불참으로 두 명만 남게 된 경우에는 <em>모임 무산 · 두 분이서 진행</em> 중 하나를 선택하실 수 있습니다. 두 분이 진행하시는 경우에도 지원금은 동일하게 지급됩니다. 모임이 무산되더라도 불참비는 원인을 제공한 분들만 부담합니다.</p>
+                            <h5 class="ot_rule_title" data-i18n="ot.rules.twoLeft.title">두 명이 남은 경우</h5>
+                            <p data-i18n-html="ot.rules.twoLeft.body">소모임은 3명 이상을 원칙으로 하지만, 참가자 불참으로 두 명만 남게 된 경우에는 <em>모임 무산 · 두 분이서 진행</em> 중 하나를 선택하실 수 있습니다. 두 분이 진행하시는 경우에도 지원금은 동일하게 지급됩니다. 모임이 무산되더라도 불참비는 원인을 제공한 분들만 부담합니다.</p>
                         </div>
                     </div>
 
                     <!-- 활동비 ─────────────────────────────────────── -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">참고</span>
-                        <h4 class="ot_section_head_title">활동비</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.reference">참고</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.fee.title">활동비</h4>
                     </div>
 
-                    <p>한 학기 회비는 <strong>25,000원</strong>입니다. 지원 시 구글폼 안내에 따라 입금해주시면 신청이 완료됩니다.</p>
+                    <p data-i18n-html="ot.fee.p1">한 학기 회비는 <strong>25,000원</strong>입니다. 지원 시 구글폼 안내에 따라 입금해주시면 신청이 완료됩니다.</p>
 
-                    <p>소모임에 한 번 참여할 때마다 회비에서 <strong>2,500원</strong>의 활동 지원금이 지급됩니다.</p>
+                    <p data-i18n-html="ot.fee.p2">소모임에 한 번 참여할 때마다 회비에서 <strong>2,500원</strong>의 활동 지원금이 지급됩니다.</p>
 
-                    <p>그 외 회비는 시험기간 이벤트, 단체 활동(티 클래스, 교류다회 등) 지원에 사용됩니다.</p>
+                    <p data-i18n="ot.fee.p3">그 외 회비는 시험기간 이벤트, 단체 활동(티 클래스, 교류다회 등) 지원에 사용됩니다.</p>
 
                     <!-- 지원 방법 ─────────────────────────────────────── -->
                     <div class="ot_section_head">
-                        <span class="ot_section_head_label">지원 방법</span>
-                        <h4 class="ot_section_head_title">신입부원 상시모집</h4>
+                        <span class="ot_section_head_label" data-i18n="ot.label.howToApply">지원 방법</span>
+                        <h4 class="ot_section_head_title" data-i18n="ot.apply.title">신입부원 상시모집</h4>
                     </div>
 
-                    <p>설다연 인스타그램 <a href="https://www.instagram.com/snu_dado/" target="_blank" rel="noopener noreferrer">@snu_dado</a> 프로필 링크를 통해 구글폼을 제출해주시면 됩니다. 구글폼 안내에 따라 <strong>학기 회비 25,000원</strong>을 입금하시면 신청이 완료됩니다.</p>
+                    <p data-i18n-html="ot.apply.p1">설다연 인스타그램 <a href="https://www.instagram.com/snu_dado/" target="_blank" rel="noopener noreferrer">@snu_dado</a> 프로필 링크를 통해 구글폼을 제출해주시면 됩니다. 구글폼 안내에 따라 <strong>학기 회비 25,000원</strong>을 입금하시면 신청이 완료됩니다.</p>
 
-                    <p>문의사항은 회장 이준성 (<a href="tel:010-6717-7582">010-6717-7582</a>) 또는 인스타그램 <a href="https://www.instagram.com/snu_dado/" target="_blank" rel="noopener noreferrer">@snu_dado</a> DM으로 편하게 연락주세요.</p>
+                    <p data-i18n-html="ot.apply.p2">문의사항은 회장 이준성 (<a href="tel:010-6717-7582">010-6717-7582</a>) 또는 인스타그램 <a href="https://www.instagram.com/snu_dado/" target="_blank" rel="noopener noreferrer">@snu_dado</a> DM으로 편하게 연락주세요.</p>
 
-                    <p class="ot_closing">
+                    <p class="ot_closing" data-i18n-html="ot.closing">
                         <strong>환영합니다!</strong>
                         궁금한 점은 언제든 임원진에게 편하게 물어보세요.
                     </p>
