@@ -1079,6 +1079,15 @@ body.page-home .header_logo .logo_img {
     width: 100%;
     height: 100%;
 }
+/* replaces the old email/phone .footer_link rows — a plain note pointing
+   people at Instagram DMs instead */
+.footer_note {
+    max-width: 320px;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--fontGray);
+}
 .footer_bottom {
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     padding: 16px var(--layout-padding);
@@ -1096,7 +1105,8 @@ body.page-home .header_logo .logo_img {
         font-size: 17px;
     }
     .footer_desc,
-    .footer_link {
+    .footer_link,
+    .footer_note {
         font-size: 12.5px;
     }
     .footer_icon {

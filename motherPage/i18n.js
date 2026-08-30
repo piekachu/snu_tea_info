@@ -30,6 +30,8 @@
                                  en: "Welcome to Seoldayeon, Seoul National University's tea club!" },
         "footer.rights":       { ko: "© 2026 설다연. All rights reserved.",
                                  en: "© 2026 Seoldayeon. All rights reserved." },
+        "footer.instagramNote": { ko: "문의사항은 인스타그램 DM으로 편하게 연락주세요!",
+                                 en: "For any questions, feel free to reach out via DM on Instagram!" },
         "nav.more":            { ko: "더 알아보기", en: "Learn more" },
         "nav.backToInfo":      { ko: "정보 목록으로", en: "Back to Info" },
         "nav.backToNotice":    { ko: "공지사항 목록으로", en: "Back to Notices" },
