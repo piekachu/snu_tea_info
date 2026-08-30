@@ -7,6 +7,9 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
     <script src="../events/events-data.js"></script>
     <script src="../join/join-config.js"></script>
+    <script src="../content-config.js"></script>
+    <script src="../content-api.js"></script>
+    <script src="rich-editor.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -698,6 +701,213 @@
             transition: color 0.15s, border-color 0.15s;
         }
         .adm-lock-relock:hover { color: var(--red); border-color: var(--red); }
+
+        /* ── 공지사항 / 정보 panels (content admin) ──
+           Reuses the same card-grid recipe as .sm-grid/.sm-card above,
+           renamed .cnt-* since these two tabs share one grid/card/modal
+           set (parameterized by JS — see wireContentAdmin()). */
+        .cnt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .cnt-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+        }
+        .cnt-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .cnt-pin-badge {
+            flex-shrink: 0;
+            font-size: 10.5px;
+            font-weight: 700;
+            background: var(--green-pale);
+            color: var(--green);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .cnt-card-date {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 4px;
+        }
+        .cnt-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.35;
+            margin-bottom: 6px;
+        }
+        .cnt-card-excerpt {
+            font-size: 12.5px;
+            color: var(--gray);
+            line-height: 1.55;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .cnt-card-actions {
+            display: flex;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        /* ── shared create/edit modal (notices, info — and events later) ── */
+        .cnt-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            z-index: 50;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 16px;
+            overflow-y: auto;
+        }
+        .cnt-modal-overlay.is-open { display: flex; }
+        .cnt-modal {
+            width: 100%;
+            max-width: 640px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 28px 28px 24px;
+            position: relative;
+        }
+        .cnt-modal-close {
+            position: absolute;
+            top: 16px; right: 16px;
+            width: 30px; height: 30px;
+            border: none;
+            background: none;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--gray);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .cnt-modal-close:hover { background: #f0f0ee; }
+        .cnt-modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .cnt-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .cnt-field label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .cnt-field input[type="text"],
+        .cnt-field input[type="date"],
+        .cnt-field textarea {
+            padding: 9px 11px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 14px;
+            color: #222;
+            resize: vertical;
+        }
+        .cnt-field input:focus,
+        .cnt-field textarea:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(28,102,85,.1);
+        }
+        .cnt-field-row {
+            display: flex;
+            gap: 14px;
+            align-items: flex-end;
+        }
+        .cnt-field-row .cnt-field { flex: 1; margin-bottom: 0; }
+        .cnt-pin-check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            padding-bottom: 9px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .cnt-pin-check input { accent-color: var(--green); cursor: pointer; }
+        .cnt-form-error {
+            font-size: 12.5px;
+            color: var(--red);
+            margin: 4px 0 10px;
+        }
+        .cnt-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .cnt-btn-secondary {
+            padding: 9px 18px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #444;
+            cursor: pointer;
+        }
+        .cnt-btn-secondary:hover { background: #f5f5f3; }
+
+        /* ── rich-text editor (rich-editor.js) ── */
+        .rte {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .rte_toolbar {
+            display: flex;
+            gap: 2px;
+            padding: 6px;
+            background: #f8f8f6;
+            border-bottom: 1px solid var(--border);
+        }
+        .rte_btn {
+            width: 28px; height: 28px;
+            border: none;
+            background: transparent;
+            border-radius: 5px;
+            font-family: var(--font);
+            font-size: 13px;
+            color: #444;
+            cursor: pointer;
+        }
+        .rte_btn:hover { background: #eaeae7; }
+        .rte_area {
+            min-height: 120px;
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 10px 12px;
+            font-size: 14px;
+            line-height: 1.65;
+            color: #222;
+        }
+        .rte_area:focus { outline: none; }
+        .rte_area p { margin: 0 0 10px; }
+        .rte_area h4 { font-size: 15px; font-weight: 700; margin: 14px 0 6px; }
+        .rte_area ul { margin: 0 0 10px 20px; }
+        .rte_area a { color: var(--green); }
     </style>
 </head>
 <body>
@@ -738,6 +948,8 @@
 <nav class="adm-tabs">
     <button class="adm-tab is-active" data-panel="tab-somori">소모임</button>
     <button class="adm-tab"           data-panel="tab-history">소모임 이력</button>
+    <button class="adm-tab"           data-panel="tab-notices">공지사항</button>
+    <button class="adm-tab"           data-panel="tab-info">정보</button>
 </nav>
 
 <div class="adm-wrap">
@@ -787,7 +999,78 @@
 
     </div><!-- /tab-history -->
 
+    <!-- ══ 공지사항 panel ═══════════════════════════════════════════════ -->
+    <div class="adm-panel" id="tab-notices">
+        <div class="sm-toolbar">
+            <button class="adm-btn-sec" id="ntc-refresh-btn">새로고침</button>
+            <div class="sm-toolbar-spacer"></div>
+            <button class="adm-btn" id="ntc-new-btn">+ 새 공지 작성</button>
+        </div>
+        <p class="adm-status" id="ntc-status"></p>
+        <div class="cnt-grid" id="ntc-grid"></div>
+    </div><!-- /tab-notices -->
+
+    <!-- ══ 정보 panel ═══════════════════════════════════════════════════ -->
+    <div class="adm-panel" id="tab-info">
+        <div class="sm-toolbar">
+            <button class="adm-btn-sec" id="inf-refresh-btn">새로고침</button>
+            <div class="sm-toolbar-spacer"></div>
+            <button class="adm-btn" id="inf-new-btn">+ 새 정보 글 작성</button>
+        </div>
+        <p class="adm-status" id="inf-status"></p>
+        <div class="cnt-grid" id="inf-grid"></div>
+    </div><!-- /tab-info -->
+
 </div><!-- /adm-wrap -->
+
+<!-- ══ 공지사항/정보 create·edit modal (shared — see wireContentAdmin()) ══ -->
+<div class="cnt-modal-overlay" id="cnt-modal-overlay">
+    <div class="cnt-modal">
+        <button type="button" class="cnt-modal-close" id="cnt-modal-close" aria-label="닫기">&times;</button>
+        <h3 class="cnt-modal-title" id="cnt-modal-title">새 글 작성</h3>
+        <form id="cnt-form">
+            <div class="cnt-field">
+                <label for="cnt-title">제목 *</label>
+                <input type="text" id="cnt-title" required maxlength="120">
+            </div>
+            <div class="cnt-field">
+                <label for="cnt-title-en">영문 제목 (선택)</label>
+                <input type="text" id="cnt-title-en" maxlength="160">
+            </div>
+            <div class="cnt-field-row">
+                <div class="cnt-field">
+                    <label for="cnt-date">날짜 *</label>
+                    <input type="date" id="cnt-date" required>
+                </div>
+                <label class="cnt-pin-check">
+                    <input type="checkbox" id="cnt-pinned">
+                    상단 고정
+                </label>
+            </div>
+            <div class="cnt-field">
+                <label for="cnt-excerpt">미리보기 문구 (선택)</label>
+                <textarea id="cnt-excerpt" rows="2" maxlength="200"></textarea>
+            </div>
+            <div class="cnt-field">
+                <label for="cnt-excerpt-en">영문 미리보기 (선택)</label>
+                <textarea id="cnt-excerpt-en" rows="2" maxlength="240"></textarea>
+            </div>
+            <div class="cnt-field">
+                <label>본문</label>
+                <div id="cnt-body-editor"></div>
+            </div>
+            <div class="cnt-field">
+                <label>영문 본문 (선택)</label>
+                <div id="cnt-body-editor-en"></div>
+            </div>
+            <p class="cnt-form-error" id="cnt-form-error" hidden></p>
+            <div class="cnt-form-actions">
+                <button type="button" class="cnt-btn-secondary" id="cnt-cancel-btn">취소</button>
+                <button type="submit" class="adm-btn" id="cnt-save-btn">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
 /* ══════════════════════════════════════════════════════════════════════
@@ -803,6 +1086,8 @@
             tabs.forEach(t => t.classList.toggle("is-active", t === tab));
             panels.forEach(p => p.classList.toggle("is-active", p.id === id));
             if (id === "tab-somori") window.__smActivate?.();
+            if (id === "tab-notices") window.__ntcActivate?.();
+            if (id === "tab-info") window.__infActivate?.();
         });
     });
 })();
@@ -1466,6 +1751,219 @@
     });
 
     relock.addEventListener("click", lock);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   6. 공지사항 / 정보 admin — one shared modal + grid renderer,
+      parameterized per content type via wireContentAdmin(cfg).
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+    const STORAGE_KEY = "snuTeaAdminPw_v1"; // same key the password-lock IIFE above uses
+    function adminPw() {
+        try { return sessionStorage.getItem(STORAGE_KEY) || ""; } catch (e) { return ""; }
+    }
+
+    function el(tag, cls, text) {
+        const n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text != null) n.textContent = text;
+        return n;
+    }
+    function formatDateKo(iso) {
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+        return m ? `${Number(m[1])}년 ${Number(m[2])}월 ${Number(m[3])}일` : String(iso || "");
+    }
+
+    // ── shared modal (one DOM instance, retargeted per open() call) ──────
+    const modalOverlay   = document.getElementById("cnt-modal-overlay");
+    const modalTitle     = document.getElementById("cnt-modal-title");
+    const form           = document.getElementById("cnt-form");
+    const titleInput     = document.getElementById("cnt-title");
+    const titleEnInput   = document.getElementById("cnt-title-en");
+    const dateInput      = document.getElementById("cnt-date");
+    const pinnedInput    = document.getElementById("cnt-pinned");
+    const excerptInput   = document.getElementById("cnt-excerpt");
+    const excerptEnInput = document.getElementById("cnt-excerpt-en");
+    const formError      = document.getElementById("cnt-form-error");
+    const saveBtn        = document.getElementById("cnt-save-btn");
+    const cancelBtn      = document.getElementById("cnt-cancel-btn");
+    const closeBtn       = document.getElementById("cnt-modal-close");
+
+    const bodyEditor   = RichEditor.create(document.getElementById("cnt-body-editor"), "");
+    const bodyEditorEn = RichEditor.create(document.getElementById("cnt-body-editor-en"), "");
+
+    let activeConfig = null; // which content type the modal is currently editing
+    let editingId = null;    // null = creating a new one
+
+    function openModal(cfg, item) {
+        activeConfig = cfg;
+        editingId = item ? item.id : null;
+        modalTitle.textContent = item ? cfg.editTitle : cfg.newTitle;
+        titleInput.value = item ? (item.title || "") : "";
+        titleEnInput.value = item ? (item.titleEn || "") : "";
+        dateInput.value = item ? (item.date || "") : new Date().toISOString().slice(0, 10);
+        pinnedInput.checked = item ? !!item.pinned : false;
+        excerptInput.value = item ? (item.excerpt || "") : "";
+        excerptEnInput.value = item ? (item.excerptEn || "") : "";
+        bodyEditor.setHTML(item ? (item.bodyHtml || "") : "");
+        bodyEditorEn.setHTML(item ? (item.bodyHtmlEn || "") : "");
+        formError.hidden = true;
+        modalOverlay.classList.add("is-open");
+        titleInput.focus();
+    }
+    function closeModal() {
+        modalOverlay.classList.remove("is-open");
+        activeConfig = null;
+        editingId = null;
+    }
+
+    closeBtn.addEventListener("click", closeModal);
+    cancelBtn.addEventListener("click", closeModal);
+    modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModal(); });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modalOverlay.classList.contains("is-open")) closeModal();
+    });
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!activeConfig) return;
+
+        const pw = adminPw();
+        if (!pw) {
+            formError.textContent = "관리자 비밀번호가 필요해요. 페이지 상단에서 잠금을 먼저 해제해주세요.";
+            formError.hidden = false;
+            return;
+        }
+
+        const fields = {
+            title: titleInput.value.trim(),
+            titleEn: titleEnInput.value.trim() || null,
+            date: dateInput.value,
+            excerpt: excerptInput.value.trim() || null,
+            excerptEn: excerptEnInput.value.trim() || null,
+            bodyHtml: bodyEditor.getHTML(),
+            bodyHtmlEn: bodyEditorEn.getHTML() || null,
+            pinned: pinnedInput.checked,
+        };
+        if (!fields.title || !fields.date) {
+            formError.textContent = "제목과 날짜는 필수예요.";
+            formError.hidden = false;
+            return;
+        }
+
+        saveBtn.disabled = true;
+        saveBtn.textContent = "저장 중…";
+        try {
+            const res = editingId
+                ? await activeConfig.update(editingId, fields, pw)
+                : await activeConfig.create(fields, pw);
+            if (!res.ok) {
+                formError.textContent = res.error || "저장하지 못했어요.";
+                formError.hidden = false;
+                return;
+            }
+            const cfg = activeConfig;
+            closeModal();
+            cfg.refresh && cfg.refresh();
+        } catch (err) {
+            formError.textContent = "네트워크 오류가 발생했어요.";
+            formError.hidden = false;
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "저장";
+        }
+    });
+
+    // ── per-content-type grid + list wiring ───────────────────────────
+    function wireContentAdmin(cfg) {
+        const grid = document.getElementById(cfg.gridId);
+        const status = document.getElementById(cfg.statusId);
+        const refreshBtn = document.getElementById(cfg.refreshBtnId);
+        const newBtn = document.getElementById(cfg.newBtnId);
+
+        function setStatus(text, isErr) {
+            status.textContent = text || "";
+            status.classList.toggle("err", !!isErr);
+        }
+
+        function renderCard(item) {
+            const card = el("div", "cnt-card");
+            const top = el("div", "cnt-card-top");
+            top.appendChild(el("span", "cnt-card-date", formatDateKo(item.date)));
+            if (item.pinned) top.appendChild(el("span", "cnt-pin-badge", "고정"));
+            card.appendChild(top);
+            card.appendChild(el("h4", "cnt-card-title", item.title));
+            if (item.excerpt) card.appendChild(el("p", "cnt-card-excerpt", item.excerpt));
+
+            const actions = el("div", "cnt-card-actions");
+            const editBtn = el("button", "adm-btn-sm", "수정");
+            editBtn.type = "button";
+            editBtn.addEventListener("click", () => openModal(cfg, item));
+            actions.appendChild(editBtn);
+
+            const delBtn = el("button", "adm-btn-danger", "삭제");
+            delBtn.type = "button";
+            delBtn.addEventListener("click", async () => {
+                if (!window.confirm(`"${item.title}"을(를) 삭제할까요? 되돌릴 수 없어요.`)) return;
+                const pw = adminPw();
+                if (!pw) { setStatus("관리자 비밀번호가 필요해요.", true); return; }
+                const res = await cfg.delete(item.id, pw);
+                if (!res.ok) { setStatus(res.error || "삭제하지 못했어요.", true); return; }
+                fetchList();
+            });
+            actions.appendChild(delBtn);
+            card.appendChild(actions);
+            return card;
+        }
+
+        async function fetchList() {
+            const pw = adminPw();
+            setStatus("불러오는 중…");
+            const res = await cfg.list(pw);
+            if (!res.ok) { setStatus(res.error || "불러오지 못했어요.", true); return; }
+            const items = cfg.items(res);
+            grid.innerHTML = "";
+            if (items.length === 0) {
+                setStatus("등록된 글이 없어요.");
+                return;
+            }
+            setStatus(`${items.length}개`);
+            items.forEach((item) => grid.appendChild(renderCard(item)));
+        }
+
+        cfg.refresh = fetchList;
+
+        refreshBtn.addEventListener("click", fetchList);
+        newBtn.addEventListener("click", () => openModal(cfg, null));
+
+        window[cfg.activateGlobal] = fetchList;
+    }
+
+    wireContentAdmin({
+        gridId: "ntc-grid", statusId: "ntc-status",
+        refreshBtnId: "ntc-refresh-btn", newBtnId: "ntc-new-btn",
+        newTitle: "새 공지 작성", editTitle: "공지 수정",
+        activateGlobal: "__ntcActivate",
+        items: (res) => res.notices || [],
+        list:   (pw) => ContentAPI.listNotices(pw),
+        create: (fields, pw) => ContentAPI.createNotice(fields, pw),
+        update: (id, fields, pw) => ContentAPI.updateNotice(id, fields, pw),
+        delete: (id, pw) => ContentAPI.deleteNotice(id, pw),
+    });
+
+    wireContentAdmin({
+        gridId: "inf-grid", statusId: "inf-status",
+        refreshBtnId: "inf-refresh-btn", newBtnId: "inf-new-btn",
+        newTitle: "새 정보 글 작성", editTitle: "정보 글 수정",
+        activateGlobal: "__infActivate",
+        items: (res) => res.info || [],
+        list:   (pw) => ContentAPI.listInfo(pw),
+        create: (fields, pw) => ContentAPI.createInfo(fields, pw),
+        update: (id, fields, pw) => ContentAPI.updateInfo(id, fields, pw),
+        delete: (id, pw) => ContentAPI.deleteInfo(id, pw),
+    });
 })();
 </script>
 </body>

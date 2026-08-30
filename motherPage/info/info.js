@@ -96,6 +96,22 @@
         nextBtn && nextBtn.addEventListener("click", () => scrollByCard(1));
     }
 
+    // admin-authored rows from the `content` backend (content-api.js) map
+    // onto the exact same shape as a teaClubInfo entry — see the matching
+    // comment in notice/notices.js's mapDynamicNotice for why this needs
+    // no further special-casing in renderGrid/renderCards above.
+    function mapDynamicInfo(n) {
+        return {
+            title: n.title,
+            titleEn: n.titleEn,
+            date: n.date,
+            excerpt: n.excerpt,
+            excerptEn: n.excerptEn,
+            pinned: !!n.pinned,
+            path: "info/view.html?id=" + encodeURIComponent(n.id),
+        };
+    }
+
     function init() {
         if (typeof teaClubInfo === "undefined") return;
 
@@ -103,15 +119,20 @@
         const trackEl = document.getElementById("infoCarouselTrack"); // main hub carousel
         const section = document.getElementById("infoCarousel");
 
+        // static (hand-authored) + dynamic (admin-created), merged once
+        // fetched; starts as just the static ones so the page isn't empty
+        // while the network call is in flight
+        let allInfo = teaClubInfo;
+
         // only the rendering, so it can be re-run on a language change without
         // re-attaching the carousel nav listeners below
         function renderAll() {
             if (listEl) {
-                renderGrid(listEl, teaClubInfo, listEl.dataset.infoPrefix || "");
+                renderGrid(listEl, allInfo, listEl.dataset.infoPrefix || "");
             }
             if (trackEl) {
                 const prefix = (section && section.dataset.infoPrefix) || trackEl.dataset.infoPrefix || "";
-                renderCards(trackEl, teaClubInfo, prefix);
+                renderCards(trackEl, allInfo, prefix);
             }
         }
 
@@ -126,6 +147,17 @@
         }
 
         window.addEventListener("i18n:changed", renderAll);
+
+        // fetch admin-created info posts and re-render once they're in —
+        // silently no-ops if content-api.js isn't loaded on this page or
+        // the backend is unreachable, since the static list already rendered
+        if (typeof ContentAPI !== "undefined") {
+            ContentAPI.listInfo().then((res) => {
+                if (!res.ok || !Array.isArray(res.info) || res.info.length === 0) return;
+                allInfo = teaClubInfo.concat(res.info.map(mapDynamicInfo));
+                renderAll();
+            }).catch(() => {});
+        }
     }
 
     if (document.readyState === "loading") {

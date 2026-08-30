@@ -425,6 +425,8 @@
         "info.emptyCarousel":  { ko: "아직 등록된 정보 글이 없어요.", en: "No info posts yet." },
         "notice.empty":        { ko: "등록된 공지가 없어요.", en: "No notices yet." },
         "notice.emptyCarousel":{ ko: "아직 등록된 공지가 없어요.", en: "No notices yet." },
+        "notice.loadError":    { ko: "글을 불러오지 못했어요. 링크를 다시 확인해주세요.", en: "Couldn't load this post. Please check the link." },
+        "info.loadError":      { ko: "글을 불러오지 못했어요. 링크를 다시 확인해주세요.", en: "Couldn't load this post. Please check the link." },
 
         /* ── 소모임 / join ───────────────────────────────────────── */
         "join.pageTitle":      { ko: "소모임 신청", en: "Meetup Sign-up" },

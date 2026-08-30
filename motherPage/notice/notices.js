@@ -84,6 +84,23 @@
         nextBtn && nextBtn.addEventListener("click", () => scrollByCard(1));
     }
 
+    // admin-authored rows from the `content` backend (content-api.js) map
+    // onto the exact same shape as a teaClubNotices entry — `path` points
+    // at the generic view.html?id=… page instead of a hand-authored file,
+    // relative to motherPage/ same as every other path in this array — so
+    // renderGrid/renderCards above don't need to know the two sources apart.
+    function mapDynamicNotice(n) {
+        return {
+            title: n.title,
+            titleEn: n.titleEn,
+            date: n.date,
+            excerpt: n.excerpt,
+            excerptEn: n.excerptEn,
+            pinned: !!n.pinned,
+            path: "notice/view.html?id=" + encodeURIComponent(n.id),
+        };
+    }
+
     function init() {
         if (typeof teaClubNotices === "undefined") return;
 
@@ -91,15 +108,20 @@
         const trackEl = document.getElementById("noticeCarouselTrack");
         const section = document.getElementById("noticeCarousel");
 
+        // static (hand-authored) + dynamic (admin-created) notices, merged
+        // once fetched; starts as just the static ones so the page isn't
+        // empty while the network call is in flight
+        let allNotices = teaClubNotices;
+
         // only the rendering, so a language change can re-run it without
         // re-attaching the carousel nav listeners below
         function renderAll() {
             if (listEl) {
-                renderGrid(listEl, teaClubNotices, listEl.dataset.noticePrefix || "");
+                renderGrid(listEl, allNotices, listEl.dataset.noticePrefix || "");
             }
             if (trackEl) {
                 const prefix = (section && section.dataset.noticePrefix) || trackEl.dataset.noticePrefix || "";
-                renderCards(trackEl, teaClubNotices, prefix);
+                renderCards(trackEl, allNotices, prefix);
             }
         }
 
@@ -110,6 +132,17 @@
         }
 
         window.addEventListener("i18n:changed", renderAll);
+
+        // fetch admin-created notices and re-render once they're in —
+        // silently no-ops if content-api.js isn't loaded on this page or
+        // the backend is unreachable, since the static list already rendered
+        if (typeof ContentAPI !== "undefined") {
+            ContentAPI.listNotices().then((res) => {
+                if (!res.ok || !Array.isArray(res.notices) || res.notices.length === 0) return;
+                allNotices = teaClubNotices.concat(res.notices.map(mapDynamicNotice));
+                renderAll();
+            }).catch(() => {});
+        }
     }
 
     if (document.readyState === "loading") {
