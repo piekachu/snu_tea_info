@@ -166,6 +166,12 @@
             return;
         }
 
+        // undo a possible earlier "none" (e.g. this file's own init() below
+        // ran first, on a page — like events/view.html — that legitimately
+        // has no entry in teaClubEvents for it to match by pathname, and
+        // hid the container before this direct render() call arrived)
+        mapEl.style.display = "";
+
         loadNaverMapsSdk(function () {
             if (hasVenues) {
                 renderMultiVenueMap(mapEl, event.venues);
@@ -184,7 +190,12 @@
 
         var here = currentRelPath();
         var event = teaClubEvents.find(function (e) { return e.path === here; });
-        if (!event) { mapEl.style.display = "none"; return; }
+        // no match is now an expected case too (events/view.html, which
+        // renders admin-created events by ?id= instead of pathname, and
+        // calls EventsMap.render() itself once its own fetch resolves) —
+        // leave the empty container alone rather than hiding it, since that
+        // would race with and clobber the real render() call on that page
+        if (!event) return;
 
         render(mapEl, event);
     }
