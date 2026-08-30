@@ -1967,7 +1967,10 @@
             setStatus("불러오는 중…");
             const res = await cfg.list(pw);
             if (!res.ok) { setStatus(res.error || "불러오지 못했어요.", true); return; }
-            const items = cfg.items(res);
+            // list*/list-with-adminPassword also returns soft-deleted rows
+            // (deletedAt set) so the events-history view can show them —
+            // this grid isn't a trash bin, so drop them here.
+            const items = cfg.items(res).filter((item) => !item.deletedAt);
             grid.innerHTML = "";
             if (items.length === 0) {
                 setStatus("등록된 글이 없어요.");
