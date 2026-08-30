@@ -42,6 +42,15 @@
         "common.today":        { ko: "오늘", en: "Today" },
         "common.loading":      { ko: "불러오는 중...", en: "Loading..." },
 
+        /* ── translation disclaimer popover (site-wide, next to the
+              KOR/ENG toggle — see injectToggle() below). Only ever shown
+              while lang === "en", but kept as a normal dict entry (with a
+              Korean value too) for consistency with everything else here. */
+        "lang.disclaimer.btnAria": { ko: "번역 안내", en: "About this translation" },
+        "lang.disclaimer.title":   { ko: "번역 안내", en: "About this translation" },
+        "lang.disclaimer.body":    { ko: "이 영문 번역은 영어 사용자의 편의를 위해 제공되며, 원문과 다소 차이가 있을 수 있습니다. 내용이 상충할 경우 한국어 원문이 우선합니다. 애매한 부분이 있다면 언제든 임원진에게 문의해주세요.",
+                                     en: "This English translation is provided only for the convenience of English-speaking members, and may contain minor discrepancies from the original. Wherever the two disagree, the Korean text always takes precedence. If anything is unclear, please don't hesitate to reach out to our staff for help." },
+
         /* ── home ─────────────────────────────────────────────────── */
         "home.events.title":   { ko: "정기/특별다회", en: "Regular & Special Tea Sessions" },
         "home.events.intro":   { ko: "매 학기 종강·개강마다 열리는 정기다회와, 특별한 차로 꾸리는 특별다회를 만나보세요. 임원진이 준비한 다구와 차로 함께 마시는 자리이니, 편하게 신청하고 즐기시면 됩니다.",
@@ -686,6 +695,7 @@
         try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) { /* private mode */ }
         apply();
         syncToggle();
+        maybeAutoShowDisclaimer();
         window.dispatchEvent(new CustomEvent("i18n:changed", { detail: { lang: lang } }));
     }
 
@@ -698,11 +708,57 @@
         });
         btn.setAttribute("aria-label",
             lang === "ko" ? "Switch to English" : "한국어로 전환");
+
+        /* disclaimer only ever makes sense while reading the English
+           translation — hide the "?" affordance (and close its popover,
+           if open) the moment we're back in Korean */
+        var dBtn = document.getElementById("langDisclaimerBtn");
+        if (dBtn) dBtn.hidden = lang !== "en";
+        if (lang !== "en") closeDisclaimer();
+    }
+
+    /* ── translation disclaimer popover ──────────────────────────────
+       A small "i" button next to the toggle, visible only in English.
+       Clicking it opens a short amber callout (same visual language as
+       .ot_rule / .man_note) explaining that the Korean text governs.
+       Auto-opens once, the very first time a visitor lands on the site
+       in English — tracked separately from STORAGE_KEY so re-toggling
+       languages later doesn't re-trigger it. */
+    var DISCLAIMER_SEEN_KEY = "snuTeaEnDisclaimerSeen_v1";
+
+    function openDisclaimer() {
+        var pop = document.getElementById("langDisclaimerPopover");
+        var btn = document.getElementById("langDisclaimerBtn");
+        if (!pop || !btn) return;
+        pop.hidden = false;
+        btn.setAttribute("aria-expanded", "true");
+        try { localStorage.setItem(DISCLAIMER_SEEN_KEY, "1"); } catch (e) { /* private mode */ }
+    }
+    function closeDisclaimer() {
+        var pop = document.getElementById("langDisclaimerPopover");
+        var btn = document.getElementById("langDisclaimerBtn");
+        if (pop) pop.hidden = true;
+        if (btn) btn.setAttribute("aria-expanded", "false");
+    }
+    function disclaimerSeen() {
+        try { return localStorage.getItem(DISCLAIMER_SEEN_KEY) === "1"; } catch (e) { return false; }
+    }
+    function maybeAutoShowDisclaimer() {
+        if (lang === "en" && !disclaimerSeen()) openDisclaimer();
     }
 
     function injectToggle() {
         var host = document.querySelector(".header .header_inner");
         if (!host || document.getElementById("langToggle")) return;
+
+        /* wrapper carries the positioning that used to live directly on
+           .lang_toggle, so the disclaimer button/popover can sit right
+           next to it and the popover can anchor off the wrapper (top:100%)
+           instead of a hardcoded pixel offset that would need to vary
+           per page template's header height */
+        var wrap = document.createElement("div");
+        wrap.className = "lang_toggle_wrap";
+
         var btn = document.createElement("button");
         btn.type = "button";
         btn.id = "langToggle";
@@ -713,13 +769,54 @@
         btn.addEventListener("click", function () {
             setLang(lang === "ko" ? "en" : "ko");
         });
-        host.appendChild(btn);
+
+        var dBtn = document.createElement("button");
+        dBtn.type = "button";
+        dBtn.id = "langDisclaimerBtn";
+        dBtn.className = "lang_disclaimer_btn";
+        dBtn.textContent = "i";
+        dBtn.setAttribute("data-i18n-attr", "aria-label:lang.disclaimer.btnAria");
+        dBtn.setAttribute("aria-haspopup", "true");
+        dBtn.setAttribute("aria-expanded", "false");
+        dBtn.hidden = true;
+        dBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            var pop = document.getElementById("langDisclaimerPopover");
+            if (pop && !pop.hidden) closeDisclaimer();
+            else openDisclaimer();
+        });
+
+        var pop = document.createElement("div");
+        pop.id = "langDisclaimerPopover";
+        pop.className = "lang_disclaimer_popover";
+        pop.hidden = true;
+        pop.innerHTML =
+            '<button type="button" class="lang_disclaimer_close" aria-label="Close">&times;</button>'
+            + '<p class="lang_disclaimer_popover_title" data-i18n="lang.disclaimer.title">About this translation</p>'
+            + '<p data-i18n="lang.disclaimer.body"></p>';
+        pop.addEventListener("click", function (e) { e.stopPropagation(); });
+        pop.querySelector(".lang_disclaimer_close").addEventListener("click", closeDisclaimer);
+
+        wrap.appendChild(btn);
+        wrap.appendChild(dBtn);
+        wrap.appendChild(pop);
+        host.appendChild(wrap);
+
+        /* dismiss on outside click / Escape, same as any lightweight popover */
+        document.addEventListener("click", function (e) {
+            if (!pop.hidden && !wrap.contains(e.target)) closeDisclaimer();
+        });
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && !pop.hidden) closeDisclaimer();
+        });
+
         syncToggle();
     }
 
     function init() {
         injectToggle();
         apply();
+        maybeAutoShowDisclaimer();
     }
 
     if (document.readyState === "loading") {

@@ -571,17 +571,25 @@ body.page-home .header_logo .logo_img {
    The logo is absolutely positioned at these breakpoints, so margin-left:auto
    pins the toggle right; margin-right keeps it off the page edge.
    position/z-index keep it above the header's ::before backdrop. */
-.lang_toggle {
+.lang_toggle_wrap {
     /* absolutely positioned against .header (position:fixed) rather than laid
        out in .header_inner — that container is only as tall as its content, so
        a flex child would sit at the top of the bar instead of centred. Keeping
        it out of flow also leaves .header_inner untouched for every other page
-       that shares this stylesheet. */
+       that shares this stylesheet. Wraps the toggle pill + the disclaimer "i"
+       button so the disclaimer popover (position:absolute; top:100%) can
+       anchor off this one shared box instead of a hardcoded pixel offset that
+       would need to vary per page template's header height. */
     position: absolute;
     top: 50%;
     right: 12px;
     transform: translateY(-50%);
     z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.lang_toggle {
     display: inline-flex;
     align-items: center;
     gap: 3px;
@@ -618,6 +626,106 @@ body.page-home .header_logo .logo_img {
     background: rgba(28, 102, 85, 0.09);
     color: var(--osullocGreen);
 }
+
+/* "i" disclaimer button — only shown while lang === "en" (see syncToggle()
+   in i18n.js). Amber, matching the site's existing "!" callout language
+   (.ot_rule / .man_note) so it reads as "worth a second look" rather than
+   a generic help icon. */
+.lang_disclaimer_btn {
+    /* a fully round custom button — some browsers apply native widget
+       theming (ButtonFace background) to small circular <button>s unless
+       appearance is explicitly reset, ignoring the background below */
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(205, 139, 48, 0.45);
+    border-radius: 50%;
+    background: rgba(226, 168, 68, 0.16);
+    color: #a5711f;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 12.5px;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+.lang_disclaimer_btn:hover {
+    background: rgba(226, 168, 68, 0.28);
+    border-color: #cd8b30;
+}
+.lang_disclaimer_btn[hidden] { display: none; }
+
+.lang_disclaimer_popover {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 280px;
+    max-width: calc(100vw - 24px);
+    padding: 16px 34px 16px 18px;
+    background: linear-gradient(135deg, rgba(226, 168, 68, 0.1) 0%, rgba(226, 168, 68, 0.03) 100%);
+    border: 1px solid rgba(226, 168, 68, 0.35);
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+    text-align: left;
+    z-index: 20;
+}
+.lang_disclaimer_popover[hidden] { display: none; }
+.lang_disclaimer_popover_title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-size: 13.5px;
+    font-weight: var(--font-weight-bold);
+    color: #7a4f10;
+}
+.lang_disclaimer_popover_title::before {
+    content: "!";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    background: #cd8b30;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+}
+.lang_disclaimer_popover p:not(.lang_disclaimer_popover_title) {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: #453b1e;
+}
+.lang_disclaimer_close {
+    appearance: none;
+    -webkit-appearance: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #a5711f;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.lang_disclaimer_close:hover {
+    background: rgba(205, 139, 48, 0.16);
+}
+
 @media all and (max-width: 1024px) {
     .lang_toggle {
         font-size: 12px;
@@ -629,14 +737,25 @@ body.page-home .header_logo .logo_img {
 /* on phones the logo is centred in the same bar, so keep the pill compact
    enough that the two never collide */
 @media all and (max-width: 640px) {
-    .lang_toggle {
+    .lang_toggle_wrap {
         right: 8px;
+        gap: 6px;
+    }
+    .lang_toggle {
         font-size: 10.5px;
         gap: 2px;
         padding: 3px;
     }
     .lang_opt {
         padding: 5px 9px;
+    }
+    .lang_disclaimer_btn {
+        width: 21px;
+        height: 21px;
+        font-size: 11px;
+    }
+    .lang_disclaimer_popover {
+        width: 240px;
     }
 }
 /* main page site nav: a fixed vertical rail on the left edge of the
