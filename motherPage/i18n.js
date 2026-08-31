@@ -57,7 +57,7 @@
         /* ── home ─────────────────────────────────────────────────── */
         "home.events.title":   { ko: "정기/특별다회", en: "Regular & Special Tea Sessions" },
         "home.events.intro":   { ko: "매 학기 종강·개강마다 열리는 정기다회와, 특별한 차로 꾸리는 특별다회를 만나보세요. 임원진이 준비한 다구와 차로 함께 마시는 자리이니, 편하게 신청하고 즐기시면 됩니다.",
-                                 en: "Meet Seoldayeon's regular sessions (정기다회) — held at every semester's opening and closing — and its special-tea sessions (특별다회) built around a particular tea. The officers set up the tea and utensils, so all you need to do is show up." },
+                                 en: "Meet Seoldayeon's regular sessions (정기다회) — held at every semester's opening and closing — and its special-tea sessions (특별다회) built around a particular tea. The staff set up the tea and utensils, so all you need to do is show up." },
         "home.join.title":     { ko: "소모임 신청", en: "Meetups" },
         "home.join.intro":     { ko: "누구나 자유롭게 소모임을 만들고 참여할 수 있습니다. 차에 관심 있는 사람들이 모여 함께 취미를 나누고, 새로운 경험을 쌓을 수 있는 공간입니다. 원하는 날짜를 선택해 새로운 소모임을 시작하거나, 이미 만들어진 모임에 참가 신청을 해보세요!",
                                  en: "Anyone can start a meetup or join one. It's a space for people interested in tea to share the hobby and try something new. Pick a date to start your own, or sign up for one that's already been created." },
@@ -180,7 +180,7 @@
 
         "meetup.create.step9.title": { ko: "소모임이 끝난 뒤에는 시음기를 공유해주세요.", en: "After the meetup, please share a tasting note." },
         "meetup.create.step9.body":  { ko: "소모임을 마친 후에는 <strong>설다연 잡담방</strong>에 소모임을 함께한 분들의 시음기를 모아서 공유해주세요! <em>날짜 · 함께 방문한 찻집 · 참여 인원</em>과 함께 마셨던 차에 대한 시음기를 사진과 같이 공유해주시면, 운영진 확인 이후 조원당 2500원의 지원금을 드립니다!",
-                                       en: "Once your meetup wraps up, gather everyone's tasting notes and share them in the <strong>Seoldayeon group chat</strong>! Share the <em>date · tea house you visited · number of participants</em> along with a tasting note and photos of the tea, and once an officer confirms it, each participant gets a <strong>₩2,500</strong> stipend!" },
+                                       en: "Once your meetup wraps up, gather everyone's tasting notes and share them in the <strong>Seoldayeon group chat</strong>! Share the <em>date · tea house you visited · number of participants</em> along with a tasting note and photos of the tea, and once a staff member confirms it, each participant gets a <strong>₩2,500</strong> stipend!" },
         "meetup.create.step9.imgAlt": { ko: "소모임 후기를 단체 카톡방에 공유한 예시", en: "Example of a meetup review shared in the group chat" },
 
         "meetup.join.ariaLabel": { ko: "이미 열린 소모임에 신청하기", en: "Sign up for an open meetup" },
@@ -219,7 +219,7 @@
         "meetup.join.step5.imgAlt": { ko: "신청이 완료된 소모임 상세 창", en: "Meetup detail window after a completed sign-up" },
 
         "meetup.closing":       { ko: "<strong>궁금한 점이 있다면?</strong> 임원진에게 편하게 문의해주세요. 이 페이지는 소모임 신청이 처음이신 분들을 위한 안내이며, 실제 기능과 다르게 안내된 부분이 있다면 알려주세요.",
-                                  en: "<strong>Have a question?</strong> Feel free to ask any officer. This page is meant as a guide for members signing up for a meetup for the first time — if anything here doesn't match how it actually works, please let us know." },
+                                  en: "<strong>Have a question?</strong> Feel free to ask any staff member. This page is meant as a guide for members signing up for a meetup for the first time — if anything here doesn't match how it actually works, please let us know." },
 
         /* ── 신입부원 OT ──────────────────────────────────────────────
               notice/newmember-ot.html. Shared section-label keys
@@ -252,9 +252,9 @@
         "ot.regulars.title":   { ko: "정기다회", en: "Regular Tea Gathering (정기다회)" },
         "ot.regulars.imgAlt":  { ko: "정기다회에 모인 부원들", en: "Members gathered at a regular tea gathering" },
         "ot.regulars.p1":      { ko: "임원진이 주관하는 다회입니다. <strong>설다연에서 찻집을 통째로 대여해</strong> 소모임보다 많은 인원이 함께 모여 차를 마시며 친목을 나눕니다.",
-                                  en: "This gathering is run by the club officers. <strong>Seoldayeon rents out an entire tea house</strong> so a larger group than a 소모임 can gather, drink tea together, and get to know one another." },
+                                  en: "This gathering is run by the club staff. <strong>Seoldayeon rents out an entire tea house</strong> so a larger group than a 소모임 can gather, drink tea together, and get to know one another." },
         "ot.regulars.p2":      { ko: "임원진이 다회 일정과 장소, 주제(차 종류 등)를 사전에 공지하고 참가 신청을 받아 인원을 확정합니다. 다회 당일에는 임원진이 준비한 다구와 차로 함께 차를 마시며 이야기를 나눕니다.",
-                                  en: "Officers announce the date, location, and theme (type of tea, etc.) ahead of time and take sign-ups to lock in the headcount. On the day, everyone drinks tea together and chats, using the tea ware and tea the officers prepared." },
+                                  en: "Staff announce the date, location, and theme (type of tea, etc.) ahead of time and take sign-ups to lock in the headcount. On the day, everyone drinks tea together and chats, using the tea ware and tea the staff prepared." },
 
         /* 소모임 */
         "ot.somoim.title":       { ko: "소모임 · 3명 이상", en: "Meetup (소모임) · 3 or more people" },
@@ -271,7 +271,7 @@
         "ot.teaclass.p1":     { ko: "6대 다류와 다구를 소개하고 직접 시음하는 자리입니다. 차 문화와 종류에 대해 깊이 알아볼 수 있습니다.",
                                 en: "A session introducing the six major tea types and tea ware, with tastings included — a great way to dig deeper into tea culture and varieties." },
         "ot.teaclass.p2":     { ko: "임원진이 클래스 일정과 주제를 사전에 공지하고 참가 신청을 받아 인원을 확정합니다. 당일에는 6대 다류(백차·녹차·황차·홍차·청차·흑차)와 다구를 함께 살펴보며 직접 시음하는 시간을 가집니다.",
-                                en: "Officers announce the class schedule and topic ahead of time and take sign-ups to lock in the headcount. On the day, everyone looks over the six major tea types (white, green, yellow, black, oolong, and dark tea) and tea ware together, with time set aside for tasting." },
+                                en: "Staff announce the class schedule and topic ahead of time and take sign-ups to lock in the headcount. On the day, everyone looks over the six major tea types (white, green, yellow, black, oolong, and dark tea) and tea ware together, with time set aside for tasting." },
         "ot.teaclass.p3":     { ko: "지난 학기에는 6대 다류 이외에도 <em>티 블렌딩 · 자사호 · 보이차</em> 등 다양한 주제의 클래스가 진행되었습니다.",
                                 en: "Last semester's classes also covered <em>tea blending, Yixing teapots, and pu-erh tea</em> alongside the six major types." },
 
@@ -289,7 +289,7 @@
         "ot.joint.p1":    { ko: "<strong>매 학기마다</strong> 연세대학교 관설차회, 이화여자대학교 홍작 등 타 학교 차 동아리와 교류하는 활동입니다. 교류다회, 부스 방문 등 다양한 형식으로 진행됩니다.",
                              en: "<strong>Every semester</strong>, we exchange visits with tea clubs at other universities, including Yonsei University's Gwanseolchahoe and Ewha Womans University's Hongjak. These take the form of joint tea gatherings, booth visits, and more." },
         "ot.joint.p2":    { ko: "양 동아리 임원진이 교류 일정과 형식을 조율한 뒤, 교류다회나 부스 방문 등 함께할 프로그램을 진행합니다. 활동 후에는 사진과 소감을 함께 나눕니다.",
-                             en: "Officers from both clubs coordinate a schedule and format, then run a joint tea gathering, booth visit, or other shared program together. Afterward, everyone shares photos and thoughts." },
+                             en: "Staff from both clubs coordinate a schedule and format, then run a joint tea gathering, booth visit, or other shared program together. Afterward, everyone shares photos and thoughts." },
 
         /* MT */
         "ot.mt.title": { ko: "MT", en: "Club Retreat (MT)" },
@@ -338,7 +338,7 @@
                              en: "For questions, feel free to reach out to club president Junseong Lee (<a href=\"tel:010-6717-7582\">010-6717-7582</a>) or DM <a href=\"https://www.instagram.com/snu_dado/\" target=\"_blank\" rel=\"noopener noreferrer\">@snu_dado</a> on Instagram." },
 
         "ot.closing":     { ko: "<strong>환영합니다!</strong> 궁금한 점은 언제든 임원진에게 편하게 물어보세요.",
-                             en: "<strong>Welcome!</strong> Feel free to ask any officer if you have questions." },
+                             en: "<strong>Welcome!</strong> Feel free to ask any staff member if you have questions." },
 
         /* ── 회칙 / bylaws ────────────────────────────────────────────
            English intentionally left empty — the club will supply it.
@@ -446,7 +446,7 @@
         "events.brewMethod":       { ko: "차 우림법", en: "Brewing Method" },
         "events.guidelinesTitle":  { ko: "즐거운 다회를 위한 유의사항", en: "Guidelines for an Enjoyable Tea Gathering" },
         "events.guideline1Body":   { ko: "즐거운 다회를 즐기기 위해서 다음 수칙들을 한번씩 읽어주세요.<br> 언제든지 필요한 것이 있으시다면 주변의 운영진을 찾아주시면 언제든 기쁜 마음으로 도와드립니다.",
-                                     en: "Please take a moment to read through the following guidelines to help make the gathering enjoyable for everyone.<br>If you ever need anything, feel free to find one of the officers nearby — we're always glad to help." },
+                                     en: "Please take a moment to read through the following guidelines to help make the gathering enjoyable for everyone.<br>If you ever need anything, feel free to find one of the staff nearby — we're always glad to help." },
         "events.guideline2Title":  { ko: "뜨거운 물을 조심해주세요!", en: "Watch out for hot water!" },
         "events.guideline2Body":   { ko: "뜨거운 물이 항상 함께하기 때문에 혹시라도 쏟지 않도록 항상 주의해주세요.",
                                      en: "Hot water is always close at hand, so please be careful not to spill it." },
