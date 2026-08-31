@@ -178,25 +178,5 @@ const teaClubEvents = [
         fee: "10000원",
         인원: 40,
         category: "regulars"
-    },
-    {
-        date: "2026-09-10",
-        title: "2학기 개강다회",
-        path: "2026fallSOS/index.html",
-        thumbnail: "2026fallSOS/images/hero.webp",
-        location: "[장소를 입력해주세요]",
-        fee: "[참가비를 입력해주세요]",
-        인원: 20,
-        category: "regulars"
-    },
-    {
-        date: "2026-09-28",
-        title: "9월 정기다회",
-        path: "2026sepRegulars/index.html",
-        thumbnail: "2026sepRegulars/images/hero.jpg",
-        location: "[장소를 입력해주세요]",
-        fee: "[참가비를 입력해주세요]",
-        인원: 20,
-        category: "regulars"
     }
 ];
