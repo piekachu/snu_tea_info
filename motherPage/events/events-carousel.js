@@ -25,6 +25,26 @@
         return `D-${diffDays}`;
     }
 
+    // bilingual date (+ weekday, + range if endDate is set) for the card's
+    // date line — events-data.js's own formatEventDateRangeKo is Korean-
+    // only (shared with the hand-authored event subpages, which stay
+    // Korean-only), so this uses I18N's own date formatter instead, same
+    // approach as events/view.html's formatEventDateTime.
+    function formatEventDate(event) {
+        const parseYmd = (s) => {
+            const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ""));
+            return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : null;
+        };
+        const start = parseYmd(event.date);
+        if (!start) return event.date || "";
+        let str = I18N.formatDateWithWeekday(start[0], start[1], start[2]);
+        if (event.endDate && event.endDate !== event.date) {
+            const end = parseYmd(event.endDate);
+            if (end) str += " ~ " + I18N.formatDateWithWeekday(end[0], end[1], end[2]);
+        }
+        return str;
+    }
+
     // 예정/종료 → Upcoming/Closed in English mode — eventStatuses itself
     // (events-data.js) stays Korean-only since hand-authored event
     // subpages read it directly too; this carousel card is the one place
@@ -71,7 +91,7 @@
 
         const dateEl = document.createElement("span");
         dateEl.className = "carousel_date";
-        dateEl.textContent = formatEventDateRangeKo(event.date, event.endDate);
+        dateEl.textContent = formatEventDate(event);
         body.appendChild(dateEl);
 
         const titleEl = document.createElement("h4");
