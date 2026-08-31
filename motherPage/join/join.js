@@ -493,16 +493,11 @@
         els.createMinute.value = mm || "00";
     }
 
-    // falls back to a Naver Map search for the venue text when the creator
-    // didn't paste an actual map link — there's no stored coordinate to
-    // point at otherwise, since anyone can type any venue name here, unlike
-    // the curated event pages
     // one dt/dd row in the event-page-style info list (.event_meta_list,
     // shared with event subpages via subpage.css); `mapHref` adds a
-    // I18N.t("join.mapView") link next to the value, pointed wherever it says.
-    // Passing `showMapAffordance: true` with no `mapHref` renders a disabled
-    // 지도에서 보기 chip instead — so the user can see the affordance exists
-    // for this row but is inert because the host didn't supply a map link.
+    // I18N.t("join.mapView") link next to the value, pointed wherever it
+    // says. No mapHref (the host didn't paste a map link) means no link at
+    // all — just the plain value, same as any other row.
     function addMetaRow(list, label, value, opts) {
         if (!value) return;
         const row = el("div", "event_meta_row");
@@ -518,14 +513,6 @@
             link.className = "event_meta_link";
             link.textContent = I18N.t("join.mapView");
             dd.appendChild(link);
-        } else if (opts && opts.showMapAffordance) {
-            dd.appendChild(document.createTextNode(" · "));
-            const dis = document.createElement("span");
-            dis.className = "event_meta_link is-disabled";
-            dis.textContent = I18N.t("join.mapView");
-            dis.setAttribute("aria-disabled", "true");
-            dis.title = I18N.t("join.noMapLink");
-            dd.appendChild(dis);
         }
         row.appendChild(dd);
         list.appendChild(row);
@@ -937,7 +924,7 @@
         // "역 근처에서 같이 정해봐요!" doesn't produce a useful Naver search,
         // so we no longer fall back to one — instead we show the affordance
         // as a disabled chip when no map link is set.
-        addMetaRow(els.detailModalMetaList, I18N.t("join.meta.where"), ev.location, { mapHref: ev.mapLink || null, showMapAffordance: true });
+        addMetaRow(els.detailModalMetaList, I18N.t("join.meta.where"), ev.location, { mapHref: ev.mapLink || null });
         addMetaRow(els.detailModalMetaList, I18N.t("join.meta.host"), ev.host);
         addMetaRow(els.detailModalMetaList, I18N.t("join.meta.capacity"), ev.capacity === "" || ev.capacity == null ? I18N.t("join.unlimited") : I18N.t("join.people", { n: ev.capacity }));
 

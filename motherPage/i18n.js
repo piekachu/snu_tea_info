@@ -437,6 +437,13 @@
         // reworking every existing event page, not just this one.
         "events.infoTab":          { ko: "다회 정보", en: "Event Info" },
         "events.teaTab":           { ko: "차 정보", en: "Tea Info" },
+        // status badge (예정/종료) shown on carousel cards (home + Events
+        // page, both static and admin-created events — events-carousel.js)
+        // and on this page's own info card. Not applied to the hand-
+        // authored event subpages' own badge (events-meta.js) — same
+        // Korean-only scoping as everything else above.
+        "events.statusUpcoming":  { ko: "예정", en: "Upcoming" },
+        "events.statusClosed":    { ko: "종료", en: "Closed" },
         "events.metaDateTime":     { ko: "일시", en: "Date & Time" },
         "events.metaVenue":        { ko: "장소", en: "Venue" },
         "events.metaFee":          { ko: "참가비", en: "Fee" },
@@ -522,7 +529,6 @@
         "join.unlimited":      { ko: "무제한", en: "Unlimited" },
         "join.people":         { ko: "{n}명", en: "{n} people" },
         "join.mapView":        { ko: "지도에서 보기", en: "View on map" },
-        "join.noMapLink":      { ko: "이 소모임은 지도 링크가 없어요.", en: "No map link for this meetup." },
         "join.share":          { ko: "공유하기", en: "Share" },
         "join.shareDefault":   { ko: "소모임에 초대합니다!", en: "You're invited to a meetup!" },
         "join.share.when":     { ko: "🗓 일시 : {v}", en: "🗓 When : {v}" },

@@ -360,7 +360,10 @@
             if (status) {
                 const statusBadge = document.createElement("span");
                 statusBadge.className = `event_meta_badge event_status_${effectiveStatus}`;
-                statusBadge.textContent = status.label;
+                // 예정/종료 → Upcoming/Closed — this page is fully bilingual,
+                // unlike eventStatuses[key].label itself (Korean-only, shared
+                // with the hand-authored event subpages)
+                statusBadge.textContent = I18N.t(effectiveStatus === "upcoming" ? "events.statusUpcoming" : "events.statusClosed") || status.label;
                 badges.appendChild(statusBadge);
             }
             if (category) {

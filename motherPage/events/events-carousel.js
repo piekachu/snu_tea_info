@@ -25,6 +25,17 @@
         return `D-${diffDays}`;
     }
 
+    // 예정/종료 → Upcoming/Closed in English mode — eventStatuses itself
+    // (events-data.js) stays Korean-only since hand-authored event
+    // subpages read it directly too; this carousel card is the one place
+    // that's otherwise fully bilingual, so it looks up the i18n version
+    // instead of eventStatuses[key].label directly.
+    function statusLabel(effectiveStatus, fallback) {
+        if (typeof I18N === "undefined") return fallback;
+        const key = effectiveStatus === "upcoming" ? "events.statusUpcoming" : "events.statusClosed";
+        return I18N.t(key) || fallback;
+    }
+
     function renderCard(event, pathPrefix) {
         const card = document.createElement("a");
         card.className = "carousel_card";
@@ -43,7 +54,7 @@
         if (status) {
             const statusEl = document.createElement("span");
             statusEl.className = `carousel_status event_status_${effectiveStatus}`;
-            statusEl.textContent = status.label;
+            statusEl.textContent = statusLabel(effectiveStatus, status.label);
             thumb.appendChild(statusEl);
         }
         const dday = dDayLabel(event.date);
@@ -237,6 +248,11 @@
 
         prevBtn?.addEventListener("click", () => scrollByCard(-1));
         nextBtn?.addEventListener("click", () => scrollByCard(1));
+
+        // re-render on language toggle so the status badge switches too —
+        // everything else here was Korean-only either way, so this wasn't
+        // needed until now
+        window.addEventListener("i18n:changed", renderTrackKeepingFilter);
     }
 
     // exposed so calendar.js can merge admin-created events into its own

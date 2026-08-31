@@ -65,11 +65,12 @@
     }
 
     // card row on the main hub page — pinned notices first, then the most
-    // recent of the rest, up to 4 total (previously only ever showed
-    // pinned ones, falling back to recent only when there were zero)
+    // recent of the rest, up to 8 total (shown as 2 rows of 4 — see
+    // #noticeCarouselTrack in carousel.css, the only carousel_track on the
+    // site that isn't a single scrolling row)
     function renderCards(trackEl, notices, prefix) {
         trackEl.innerHTML = "";
-        const picked = pinnedFirstThenRecent(notices).slice(0, 4);
+        const picked = pinnedFirstThenRecent(notices).slice(0, 8);
         picked.forEach((n) => {
             const card = el("a", "carousel_card notice_card");
             card.href = prefix + n.path;
