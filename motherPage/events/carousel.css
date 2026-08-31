@@ -133,11 +133,17 @@
 /* the main page's notice row alone shows 2 rows instead of the single
    scrolling row every other carousel_track on the site uses (events/join/
    info) — grid-auto-flow: column fills top-to-bottom then starts a new
-   column, so it still scrolls horizontally the same way via #noticeCarouselPrev/Next. */
+   column, so it still scrolls horizontally the same way via #noticeCarouselPrev/Next.
+   `dense` matters here: notices.js sets each card's grid-row explicitly
+   (1 = pinned, 2 = the rest) so the two rows pack independently regardless
+   of pinned/unpinned order in the DOM — sparse packing's auto-placement
+   cursor never revisits a column once it's moved past it, which would
+   otherwise stagger the two rows instead of aligning each to its own
+   left-to-right run. */
 #noticeCarouselTrack {
     display: grid;
     grid-template-rows: repeat(2, 1fr);
-    grid-auto-flow: column;
+    grid-auto-flow: column dense;
     grid-auto-columns: 300px;
 }
 #noticeCarouselTrack .carousel_card {

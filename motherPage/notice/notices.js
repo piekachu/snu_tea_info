@@ -74,6 +74,11 @@
         picked.forEach((n) => {
             const card = el("a", "carousel_card notice_card");
             card.href = prefix + n.path;
+            // pins the card into the grid's top or bottom row (see
+            // #noticeCarouselTrack in carousel.css) — pinned notices always
+            // on top, everything else on the bottom, each row packing its
+            // own columns left-to-right independently of the other row
+            card.style.gridRow = n.pinned ? "1" : "2";
             const body = el("div", "notice_card_body");
             if (n.pinned) body.appendChild(el("span", "notice_card_badge", I18N.t("common.pinned")));
             body.appendChild(el("h4", "notice_card_title", I18N.pick(n, "title")));
