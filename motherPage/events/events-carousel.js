@@ -239,6 +239,11 @@
         nextBtn?.addEventListener("click", () => scrollByCard(1));
     }
 
+    // exposed so calendar.js can merge admin-created events into its own
+    // month grid the same way this carousel does, without a second copy of
+    // this mapping
+    window.EventsCarousel = { mapDynamicEvent };
+
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
     } else {

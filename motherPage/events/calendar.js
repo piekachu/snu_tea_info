@@ -59,7 +59,11 @@
             return;
         }
 
-        const eventsByDate = buildEventsByDate(typeof teaClubEvents !== "undefined" ? teaClubEvents : []);
+        // static (hand-authored) + dynamic (admin-created) events, merged
+        // once fetched — starts as just the static ones so the calendar
+        // isn't empty while the network call is in flight, same pattern as
+        // events-carousel.js (which this reuses mapDynamicEvent from)
+        let eventsByDate = buildEventsByDate(typeof teaClubEvents !== "undefined" ? teaClubEvents : []);
 
         const today = new Date();
         const todayKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
@@ -195,6 +199,20 @@
 
         renderWeekdays();
         render();
+
+        // fetch admin-created events and re-render once they're in —
+        // silently no-ops if content-api.js/events-carousel.js aren't
+        // loaded on this page or the backend is unreachable, since the
+        // static calendar already rendered
+        if (typeof ContentAPI !== "undefined" && typeof EventsCarousel !== "undefined") {
+            ContentAPI.listEvents().then((res) => {
+                if (!res.ok || !Array.isArray(res.events) || res.events.length === 0) return;
+                const dynamicEvents = res.events.map(EventsCarousel.mapDynamicEvent);
+                const allEvents = (typeof teaClubEvents !== "undefined" ? teaClubEvents : []).concat(dynamicEvents);
+                eventsByDate = buildEventsByDate(allEvents);
+                render();
+            }).catch(() => {});
+        }
     }
 
     if (document.readyState === "loading") {

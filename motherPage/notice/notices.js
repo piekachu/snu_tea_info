@@ -21,6 +21,19 @@
         return notices.slice().sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
     }
 
+    // same "pinned first" ordering, but the rest are sorted newest-by-date
+    // instead of just kept in authored order — used for the home page's
+    // preview row, where "recent" needs to mean something real once
+    // admin-created notices (whose date isn't tied to array position the
+    // way a hand-curated array is) get merged in
+    function pinnedFirstThenRecent(notices) {
+        return notices.slice().sort((a, b) => {
+            if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+            if (a.pinned) return 0; // keep authored order among pinned notices
+            return (b.date || "").localeCompare(a.date || "");
+        });
+    }
+
     const ARROW_SVG =
         '<svg class="notice_item_arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -51,13 +64,12 @@
         });
     }
 
-    // card row on the main hub page — previews the important (pinned) notices
+    // card row on the main hub page — pinned notices first, then the most
+    // recent of the rest, up to 4 total (previously only ever showed
+    // pinned ones, falling back to recent only when there were zero)
     function renderCards(trackEl, notices, prefix) {
         trackEl.innerHTML = "";
-        let picked = notices.filter((n) => n.pinned);
-        // if nothing is pinned, fall back to the most recent few so the row
-        // isn't empty
-        if (picked.length === 0) picked = pinnedFirst(notices).slice(0, 4);
+        const picked = pinnedFirstThenRecent(notices).slice(0, 4);
         picked.forEach((n) => {
             const card = el("a", "carousel_card notice_card");
             card.href = prefix + n.path;
