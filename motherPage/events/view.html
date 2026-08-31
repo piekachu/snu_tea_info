@@ -461,7 +461,7 @@
                 return '<text x="' + p.x.toFixed(1) + '" y="' + p.y.toFixed(1) + '" text-anchor="middle" dominant-baseline="middle" class="evt-flavor-label">' + escapeHtml(text) + '</text>';
             }).join("");
 
-            return '<svg viewBox="0 0 260 236" class="evt-flavor-svg" role="img" aria-label="맛 프로필 그래프">'
+            return '<svg viewBox="0 0 260 236" class="evt-flavor-svg" role="img" aria-label="Taste Profile Graph">'
                 + gridHtml + spokesHtml
                 + '<polygon points="' + dataPts + '" fill="var(--osullocGreen)" fill-opacity="0.28" stroke="var(--osullocGreen)" stroke-width="2"/>'
                 + labelsHtml
@@ -509,7 +509,7 @@
             const hasFlavor = tea.flavor && FLAVOR_AXES.some(([key]) => typeof tea.flavor[key] === "number");
             if (hasFlavor) {
                 html += '<div class="evt-flavor-block">'
-                    + '<h5 class="evt-flavor-title">맛 프로필</h5>'
+                    + '<h5 class="evt-flavor-title">Taste Profile</h5>'
                     + renderFlavorChart(tea.flavor)
                     + '</div>';
             }
