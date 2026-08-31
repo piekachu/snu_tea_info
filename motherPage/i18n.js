@@ -429,7 +429,33 @@
         "notice.loadError":    { ko: "글을 불러오지 못했어요. 링크를 다시 확인해주세요.", en: "Couldn't load this post. Please check the link." },
         "info.loadError":      { ko: "글을 불러오지 못했어요. 링크를 다시 확인해주세요.", en: "Couldn't load this post. Please check the link." },
         "events.loadError":    { ko: "행사를 불러오지 못했어요. 링크를 다시 확인해주세요.", en: "Couldn't load this event. Please check the link." },
-        "events.teaSection":   { ko: "차 정보", en: "Tea Lineup" },
+
+        // events/view.html — 다회 정보/차 정보 toggle, the info-card labels,
+        // and the fixed guidelines block every event page opens its tea
+        // lineup with. The hand-authored event pages (eventTemplate,
+        // 2026julyRegulars, …) keep this same text hardcoded in Korean only
+        // — out of scope here, since making those bilingual too would mean
+        // reworking every existing event page, not just this one.
+        "events.infoTab":          { ko: "다회 정보", en: "Event Info" },
+        "events.teaTab":           { ko: "차 정보", en: "Tea Info" },
+        "events.metaDateTime":     { ko: "일시", en: "Date & Time" },
+        "events.metaVenue":        { ko: "장소", en: "Venue" },
+        "events.metaFee":          { ko: "참가비", en: "Fee" },
+        "events.metaCapacity":     { ko: "인원", en: "Capacity" },
+        "events.metaCapacityValue":{ ko: "{n}명", en: "{n} people" },
+        "events.brewMethod":       { ko: "차 우림법", en: "Brewing Method" },
+        "events.guidelinesTitle":  { ko: "즐거운 다회를 위한 유의사항", en: "Guidelines for an Enjoyable Tea Gathering" },
+        "events.guideline1Body":   { ko: "즐거운 다회를 즐기기 위해서 다음 수칙들을 한번씩 읽어주세요.<br> 언제든지 필요한 것이 있으시다면 주변의 운영진을 찾아주시면 언제든 기쁜 마음으로 도와드립니다.",
+                                     en: "Please take a moment to read through the following guidelines to help make the gathering enjoyable for everyone.<br>If you ever need anything, feel free to find one of the officers nearby — we're always glad to help." },
+        "events.guideline2Title":  { ko: "뜨거운 물을 조심해주세요!", en: "Watch out for hot water!" },
+        "events.guideline2Body":   { ko: "뜨거운 물이 항상 함께하기 때문에 혹시라도 쏟지 않도록 항상 주의해주세요.",
+                                     en: "Hot water is always close at hand, so please be careful not to spill it." },
+        "events.guideline3Title":  { ko: "깨지기 쉬운 다구들에 주의해주세요!", en: "Handle the fragile tea ware with care!" },
+        "events.guideline3Body":   { ko: "찻잔, 개완, 공도배 같은 도구들은 모두 깨지기 쉬워요.<br class=\"w_view\">항상 신경써서 조심스럽게 다뤄주세요.",
+                                     en: "Teacups, gaiwans, and pitchers are all fragile.<br class=\"w_view\">Please handle them gently and with care." },
+        "events.guideline4Title":  { ko: "차는 즐거운 마음으로 마실 때 가장 맛있습니다!", en: "Tea tastes best when enjoyed with a happy heart!" },
+        "events.guideline4Body":   { ko: "소개된 우림법과 같은 정석적인 방법들에 너무 얽매이실 필요 없습니다.<br>좋은 사람들과 웃으며 즐기는 차가 제일 맛있습니다!<br class=\"m_view\">항상 가볍고 즐거운 마음으로 즐겨주세요.",
+                                     en: "You don't need to feel bound by formal brewing methods like the ones introduced here.<br>Tea tastes best shared with good company and laughter!<br class=\"m_view\">Please enjoy it in a light and cheerful spirit." },
 
         /* ── 소모임 / join ───────────────────────────────────────── */
         "join.pageTitle":      { ko: "소모임 신청", en: "Meetup Sign-up" },
