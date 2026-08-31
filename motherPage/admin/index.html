@@ -2435,16 +2435,19 @@
     locationInput.addEventListener("blur", geocodeLocation);
 
     // six-axis flavor profile, shown as a hexagon/radar chart on the public
-    // page (events/view.html's renderFlavorChart) — kept in sync with the
-    // key order there. 0–5 scale, all optional; a tea with none of these
-    // filled in just skips the chart on the public page.
+    // page (events/view.html's renderFlavorChart, which shows these
+    // bilingually) — kept in sync with the key order there. This admin
+    // page has no language toggle at all, so these labels are just Korean,
+    // matching every other field label in this form. 0–5 scale, all
+    // optional; a tea with none of these filled in just skips the chart on
+    // the public page.
     const FLAVOR_AXES = [
-        ["sweetness", "Sweetness"],
-        ["bitterness", "Bitterness"],
-        ["umami", "Umami"],
-        ["astringency", "Astringency"],
-        ["aroma", "Aroma"],
-        ["body", "Body"],
+        ["sweetness", "단맛"],
+        ["bitterness", "쓴맛"],
+        ["umami", "감칠맛"],
+        ["astringency", "떫은맛"],
+        ["aroma", "향"],
+        ["body", "바디감"],
     ];
 
     let editingId = null;

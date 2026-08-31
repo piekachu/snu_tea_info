@@ -444,12 +444,27 @@
         // Korean-only scoping as everything else above.
         "events.statusUpcoming":  { ko: "예정", en: "Upcoming" },
         "events.statusClosed":    { ko: "종료", en: "Closed" },
-        // the flavor hexagon chart's heading — reverted to a real ko/en
-        // pair (was hardcoded "Taste Profile" for both languages briefly;
-        // the six axis names — Sweetness/Bitterness/… — are still always
-        // English in both languages, that wasn't part of this change)
+        // category badge (정기다회/특별다회) next to the share button
+        "events.categoryRegulars":   { ko: "정기다회", en: "Regular Session" },
+        "events.categorySpecialTea": { ko: "특별다회", en: "Special Tea Session" },
+        // the embedded map's own "길찾기" button (events-map.js,
+        // .event_map_directions) — that file is shared with the hand-
+        // authored event subpages and stays Korean-only there; this page
+        // just re-labels the link after EventsMap.render() builds it (see
+        // the render() function) rather than changing events-map.js itself
+        "events.mapView":  { ko: "길찾기", en: "Directions" },
+        // the flavor hexagon chart's heading — a real ko/en pair (was
+        // hardcoded "Taste Profile" for both languages briefly)
         "events.tasteProfileTitle": { ko: "맛 프로필", en: "Taste Profile" },
         "events.tasteProfileAria":  { ko: "맛 프로필 그래프", en: "Taste Profile Graph" },
+        // the six flavor-chart axis names — also a real ko/en pair now
+        // (were hardcoded English-only for both languages briefly)
+        "events.flavorSweetness":   { ko: "단맛", en: "Sweetness" },
+        "events.flavorBitterness":  { ko: "쓴맛", en: "Bitterness" },
+        "events.flavorUmami":       { ko: "감칠맛", en: "Umami" },
+        "events.flavorAstringency": { ko: "떫은맛", en: "Astringency" },
+        "events.flavorAroma":       { ko: "향", en: "Aroma" },
+        "events.flavorBody":        { ko: "바디감", en: "Body" },
         "events.metaDateTime":     { ko: "일시", en: "Date & Time" },
         "events.metaVenue":        { ko: "장소", en: "Venue" },
         "events.metaFee":          { ko: "참가비", en: "Fee" },

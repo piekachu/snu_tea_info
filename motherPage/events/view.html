@@ -393,7 +393,11 @@
             if (category) {
                 const categoryBadge = document.createElement("span");
                 categoryBadge.className = "event_meta_badge";
-                categoryBadge.textContent = category.label;
+                // 정기다회/특별다회 → Regular/Special Tea Session — same
+                // bilingual treatment as the status badge above; only
+                // "regulars"/"specialTea" are possible here (the admin form
+                // doesn't offer any other category)
+                categoryBadge.textContent = I18N.t(event.category === "specialTea" ? "events.categorySpecialTea" : "events.categoryRegulars") || category.label;
                 badges.appendChild(categoryBadge);
             }
             // same share button as the hand-authored pages (events-meta.js,
@@ -435,14 +439,16 @@
         }
 
         // six-axis flavor profile — kept in sync with admin/index.html's
-        // FLAVOR_AXES (same keys, same order, same 0–5 scale)
+        // FLAVOR_AXES (same keys, same order, same 0–5 scale). Second
+        // element is an i18n key now (단맛/Sweetness etc. — a real ko/en
+        // pair), not the literal label.
         const FLAVOR_AXES = [
-            ["sweetness", "Sweetness"],
-            ["bitterness", "Bitterness"],
-            ["umami", "Umami"],
-            ["astringency", "Astringency"],
-            ["aroma", "Aroma"],
-            ["body", "Body"],
+            ["sweetness", "events.flavorSweetness"],
+            ["bitterness", "events.flavorBitterness"],
+            ["umami", "events.flavorUmami"],
+            ["astringency", "events.flavorAstringency"],
+            ["aroma", "events.flavorAroma"],
+            ["body", "events.flavorBody"],
         ];
         const FLAVOR_MAX = 5;
 
@@ -481,9 +487,10 @@
                 return p.x.toFixed(1) + "," + p.y.toFixed(1);
             }).join(" ");
 
-            const labelsHtml = FLAVOR_AXES.map(([key, label], i) => {
+            const labelsHtml = FLAVOR_AXES.map(([key, labelKey], i) => {
                 const p = hexPoint(cx, cy, r + 26, i, 1);
                 const v = flavor[key];
+                const label = I18N.t(labelKey);
                 const text = v != null ? label + " " + v : label;
                 return '<text x="' + p.x.toFixed(1) + '" y="' + p.y.toFixed(1) + '" text-anchor="middle" dominant-baseline="middle" class="evt-flavor-label">' + escapeHtml(text) + '</text>';
             }).join("");
@@ -576,6 +583,15 @@
             }
 
             renderMeta();
+
+            // events-map.js's own .event_map_directions link is Korean-only
+            // "길찾기" (shared with the hand-authored subpages) — re-label
+            // it here instead, so it doesn't need touching that file. The
+            // map itself only renders once (see mapRendered below), so this
+            // has to happen on every render() call to track later language
+            // toggles; harmlessly does nothing before the map exists yet.
+            const mapDirLink = mapEl.querySelector(".event_map_directions");
+            if (mapDirLink) mapDirLink.textContent = I18N.t("events.mapView");
 
             const teas = Array.isArray(event.teas) ? event.teas.filter((t) => t && t.name) : [];
             teaList.innerHTML = "";

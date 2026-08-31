@@ -96,13 +96,17 @@
 
         const titleEl = document.createElement("h4");
         titleEl.className = "carousel_name";
-        titleEl.textContent = event.title;
+        // uses titleEn in English mode when the admin set one (the
+        // titleEn field on the event form) — static teaClubEvents entries
+        // have no titleEn, so I18N.pick just falls back to the Korean
+        // title there, same as it always has
+        titleEl.textContent = typeof I18N !== "undefined" ? I18N.pick(event, "title") : event.title;
         body.appendChild(titleEl);
 
-        if (event.subtitle) {
+        if (event.subtitle || event.subtitleEn) {
             const descEl = document.createElement("p");
             descEl.className = "carousel_desc";
-            descEl.textContent = event.subtitle;
+            descEl.textContent = typeof I18N !== "undefined" ? I18N.pick(event, "subtitle") : event.subtitle;
             body.appendChild(descEl);
         }
 
@@ -120,8 +124,14 @@
             date: e.date,
             endDate: e.endDate || undefined,
             time: e.time || undefined,
+            // kept as raw title/titleEn (not pre-resolved to one string)
+            // so renderCard can pick the right one at render time via
+            // I18N.pick — this object is only built once per fetch, but
+            // needs to stay reactive to a later language toggle
             title: e.title,
+            titleEn: e.titleEn || undefined,
             subtitle: e.introTitle || undefined,
+            subtitleEn: e.introTitleEn || undefined,
             path: "events/view.html?id=" + encodeURIComponent(e.id),
             thumbnail: e.heroImageUrl || undefined,
             // the shared shape's `location` is what gets displayed (see
