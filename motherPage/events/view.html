@@ -22,6 +22,7 @@
     <script src="events-data.js"></script>
     <script src="events-map.js"></script>
     <script src="events-meta.js"></script>
+    <script src="../subpage.js"></script>
 
     <title id="pageTitle">정기다회</title>
 
@@ -80,6 +81,25 @@
 
     <main id="container" class="magazine">
         <div class="layout_max magazine_wrap">
+
+            <!-- tea-section scroll shortcuts — same nav as the hand-authored
+                 pages (subpage.js drives the scroll-spy highlighting and the
+                 hero-scroll reveal); built dynamically once teas are known
+                 (buildTeaNav in the script below), since there's no fixed
+                 list to write by hand here. Hidden until there's at least
+                 one tea, same as #infoToggle. -->
+            <nav id="magazineLnb" class="magazine_lnb" hidden>
+                <h2 class="a11y_hidden">매거진 카테고리</h2>
+                <div class="magazine_lnb_list inner" id="magazineLnbList"></div>
+            </nav>
+
+            <!-- "to top" shortcut for mobile: kept outside #magazineLnb so
+                 recentering the island (see subpage.css) doesn't move it —
+                 see .magazine_lnb_top_mobile in subpage.css. Not tea-
+                 dependent, so always present (matches the hand-authored
+                 pages). -->
+            <a href="#" class="magazine_lnb_top_mobile" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"><span><svg class="magazine_lnb_top_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="magazine_lnb_top_label">맨 위로</span></span></a>
+
             <div id="magazine_contents" class="magazine_contents">
                 <section class="magazine_teainside layer_1445 teainside_type2">
                     <article class="magazine_article teainside_article teainside_view_06">
@@ -257,15 +277,21 @@
         const eventInfoPanel  = document.getElementById("eventInfoPanel");
         const teaSection      = document.getElementById("teaSection");
         const teaList          = document.getElementById("teaList");
+        const magazineLnb      = document.getElementById("magazineLnb");
+        const magazineLnbList = document.getElementById("magazineLnbList");
 
         let event = null;
         let mapRendered = false; // guards against re-creating the map canvas on every i18n:changed re-render
+        let navBuilt = false;    // guards against rebuilding + re-wiring the scroll-spy nav on every i18n:changed re-render
 
         // switches between "다회 정보" and "차 정보" — same behavior as
-        // events-meta.js's toggle on the hand-authored pages
+        // events-meta.js's toggle on the hand-authored pages, now also
+        // hiding/showing the scroll-shortcut nav in step (it only makes
+        // sense while the tea panel is the one visible)
         function showPanel(panel) {
             eventInfoPanel.style.display = panel === "event" ? "" : "none";
             teaSection.style.display = panel === "tea" ? "" : "none";
+            magazineLnb.style.display = panel === "tea" ? "" : "none";
             infoToggle.querySelectorAll(".info_toggle_btn").forEach((btn) => {
                 btn.classList.toggle("active", btn.dataset.panel === panel);
             });
@@ -436,6 +462,7 @@
             wrap.className = "magazine_block_wrap cont_970";
 
             const num = String(index + 1).padStart(2, "0");
+            wrap.id = "tea_" + num; // target of the scroll-shortcut nav's #tea_NN links
             const hasStats = tea.brewTemp || tea.brewVolume || tea.brewTime;
 
             let html = '<div class="recipe_wrap recipe_section_02 mb_40">'
@@ -514,18 +541,42 @@
 
             const teas = Array.isArray(event.teas) ? event.teas.filter((t) => t && t.name) : [];
             teaList.innerHTML = "";
-            teas.forEach((tea, i) => teaList.appendChild(renderTea(tea, i)));
+            teas.forEach((tea, i) => {
+                // same divider line used elsewhere on this page, between
+                // consecutive teas only — not before the first (the guidelines
+                // block already has one right above #teaList) or after the
+                // last (its own trailing hr, right after #teaList, covers that)
+                if (i > 0) {
+                    const hr = document.createElement("hr");
+                    hr.className = "article_hr hr_dashed";
+                    teaList.appendChild(hr);
+                }
+                teaList.appendChild(renderTea(tea, i));
+            });
 
             // toggle only makes sense (and only shows) when there's a tea
             // lineup to switch to — otherwise just show the info panel alone
             const hasTeas = teas.length > 0;
             teaSection.hidden = !hasTeas;
             infoToggle.hidden = !hasTeas;
+            magazineLnb.hidden = !hasTeas;
             if (hasTeas) {
                 showPanel("event");
             } else {
                 eventInfoPanel.style.display = "";
             }
+        }
+
+        // builds the #tea_NN scroll-shortcut links — same markup as the
+        // hand-authored pages' hand-written #magazine_lnb list, generated
+        // here since the tea count/names aren't known until the event loads
+        function buildTeaNav(teas) {
+            const teaLinks = teas.map((tea, i) => {
+                const num = String(i + 1).padStart(2, "0");
+                return '<a href="#tea_' + num + '" class="magazine_lnb_tab"><span><span class="magazine_lnb_num">' + num + '</span><span class="magazine_lnb_label"> ' + escapeHtml(tea.name || "") + '</span></span></a>';
+            }).join("");
+            const topLink = '<a href="#" class="magazine_lnb_tab magazine_lnb_top" onclick="window.scrollTo({top: 0, behavior: \'smooth\'}); return false;"><span><svg class="magazine_lnb_top_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="magazine_lnb_top_label">맨 위로</span></span></a>';
+            magazineLnbList.innerHTML = teaLinks + topLink;
         }
 
         async function init() {
@@ -551,6 +602,20 @@
             if (!mapRendered && typeof EventsMap !== "undefined") {
                 mapRendered = true;
                 EventsMap.render(mapEl, event);
+            }
+
+            // built once too, for the same reason — subpage.js's own
+            // DOMContentLoaded run found no .magazine_lnb_tab elements yet
+            // (this event hadn't loaded), so the scroll-spy listener it
+            // would've wired up never attached; do it now that the tea
+            // links actually exist, exactly once
+            if (!navBuilt) {
+                navBuilt = true;
+                const teas = Array.isArray(event.teas) ? event.teas.filter((t) => t && t.name) : [];
+                if (teas.length > 0) {
+                    buildTeaNav(teas);
+                    if (typeof Subpage !== "undefined") Subpage.initSectionShortcuts();
+                }
             }
         }
 

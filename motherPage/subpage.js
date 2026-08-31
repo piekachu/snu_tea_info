@@ -30,7 +30,14 @@
     // band) could leave the previously-active tab highlighted indefinitely,
     // since nothing ever tells it to turn back off — this instead
     // recomputes "current section" from scratch on every scroll.
-    document.addEventListener("DOMContentLoaded", () => {
+    //
+    // Exposed (not just run on DOMContentLoaded) so a page that builds its
+    // .magazine_lnb_tab links dynamically — events/view.html, admin-created
+    // events — can call this once those links actually exist. On this
+    // file's own DOMContentLoaded run, a page like that has no tabs yet, so
+    // the early return below is expected there; it wires up for real when
+    // the page calls this itself afterwards.
+    function initSectionShortcuts() {
         const tabs = document.querySelectorAll(".magazine_lnb_tab[href^='#tea_']");
         if (!tabs.length) return;
         const sections = Array.from(tabs)
@@ -75,10 +82,15 @@
         });
 
         updateActive();
-    });
+    }
+    document.addEventListener("DOMContentLoaded", initSectionShortcuts);
 
-    // reveal the section-shortcut nav only once the hero banner has scrolled out of view
-    document.addEventListener("DOMContentLoaded", () => {
+    // reveal the section-shortcut nav only once the hero banner has scrolled
+    // out of view. Also exposed, for symmetry with initSectionShortcuts —
+    // events/view.html's hero element exists from initial page load either
+    // way (only its visibility toggles later), so this one already works
+    // fine from the DOMContentLoaded wiring below without a manual call.
+    function initNavReveal() {
         const hero = document.querySelector(".article_header.header_overlay");
         if (!hero) return;
         const heroObserver = new IntersectionObserver(
@@ -90,5 +102,8 @@
             { threshold: 0 }
         );
         heroObserver.observe(hero);
-    });
+    }
+    document.addEventListener("DOMContentLoaded", initNavReveal);
+
+    window.Subpage = { initSectionShortcuts, initNavReveal };
 })();
