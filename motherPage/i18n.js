@@ -35,7 +35,6 @@
         "nav.more":            { ko: "더 알아보기", en: "Learn more" },
         "nav.backToInfo":      { ko: "정보 목록으로", en: "Back to Info" },
         "nav.backToNotice":    { ko: "공지사항 목록으로", en: "Back to Notices" },
-        "nav.backToEvents":    { ko: "행사 목록으로", en: "Back to Events" },
         "a11y.prev":           { ko: "이전", en: "Previous" },
         "a11y.next":           { ko: "다음", en: "Next" },
         "a11y.prevMonth":      { ko: "이전 달", en: "Previous month" },

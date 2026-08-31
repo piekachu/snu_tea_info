@@ -28,17 +28,8 @@
 
     <style>
         /* small page-specific bits that don't belong in subpage.css (shared
-           by the hand-authored event pages too) — kept scoped to #evtBack
-           and #teaList so they can't leak anywhere else. */
-        #evtBack {
-            display: inline-block;
-            margin-bottom: 18px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--gray, #767671);
-            text-decoration: none;
-        }
-        #evtBack:hover { color: var(--green, #1c6655); }
+           by the hand-authored event pages too) — kept scoped to #teaList
+           so they can't leak anywhere else. */
         #detailLoading, #detailError { max-width: 970px; margin: 0 auto; }
         .evt_tea_hr { margin-top: 0; }
 
@@ -65,6 +56,30 @@
             font-size: 11px;
             font-family: var(--font);
             fill: #555;
+        }
+
+        /* mobile: shrink both the brew-stats box and the flavor hexagon so
+           neither dominates a narrow screen — subpage.css already has one
+           mobile step for .brew_stats (shared with the hand-authored
+           pages), this goes further, scoped to just #teaList so it doesn't
+           touch those other pages. */
+        @media all and (max-width: 768px) {
+            #teaList .brew_stats {
+                padding: 10px 6px;
+                gap: 2px;
+                border-radius: 8px;
+            }
+            #teaList .brew_stat_icon {
+                width: 18px;
+                height: 18px;
+            }
+            #teaList .brew_stat_value {
+                font-size: 12px;
+            }
+            .evt-flavor-block { margin: 0 auto 28px; }
+            .evt-flavor-title { font-size: 13px; margin-bottom: 4px; }
+            .evt-flavor-svg { max-width: 200px; }
+            .evt-flavor-label { font-size: 9px; }
         }
     </style>
 </head>
@@ -110,7 +125,6 @@
 
                             <!-- admin-authored event, hidden until ContentAPI.getEvent resolves -->
                             <div id="detailContent" hidden>
-                                <a href="index.html" id="evtBack" data-i18n="nav.backToEvents">&larr; 행사 목록으로</a>
 
                                 <!-- hero -->
                                 <div class="article_header header_overlay" id="heroWrap" hidden>
