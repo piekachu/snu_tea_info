@@ -444,6 +444,12 @@
         // Korean-only scoping as everything else above.
         "events.statusUpcoming":  { ko: "예정", en: "Upcoming" },
         "events.statusClosed":    { ko: "종료", en: "Closed" },
+        // the flavor hexagon chart's heading — reverted to a real ko/en
+        // pair (was hardcoded "Taste Profile" for both languages briefly;
+        // the six axis names — Sweetness/Bitterness/… — are still always
+        // English in both languages, that wasn't part of this change)
+        "events.tasteProfileTitle": { ko: "맛 프로필", en: "Taste Profile" },
+        "events.tasteProfileAria":  { ko: "맛 프로필 그래프", en: "Taste Profile Graph" },
         "events.metaDateTime":     { ko: "일시", en: "Date & Time" },
         "events.metaVenue":        { ko: "장소", en: "Venue" },
         "events.metaFee":          { ko: "참가비", en: "Fee" },

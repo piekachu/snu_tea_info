@@ -323,6 +323,30 @@
             return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
         }
 
+        // bilingual date/time for the 일시 row — events-data.js's own
+        // formatEventDateTimeKo/formatEventDateRangeKo are Korean-only
+        // (shared with the hand-authored event subpages, which stay
+        // Korean-only throughout), so this page uses I18N's own date
+        // formatter instead. `time` is admin-typed free text (e.g. "18:00")
+        // that's already language-neutral, so it's just appended as-is —
+        // same as formatEventDateTimeKo does. endDate isn't collected by
+        // the admin form anymore, but handled here too in case an older
+        // row still has one.
+        function formatEventDateTime(ev) {
+            const parseYmd = (s) => {
+                const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ""));
+                return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : null;
+            };
+            const start = parseYmd(ev.date);
+            if (!start) return ev.date || "";
+            let dateStr = I18N.formatDateWithWeekday(start[0], start[1], start[2]);
+            if (ev.endDate && ev.endDate !== ev.date) {
+                const end = parseYmd(ev.endDate);
+                if (end) dateStr += " ~ " + I18N.formatDateWithWeekday(end[0], end[1], end[2]);
+            }
+            return ev.time ? `${dateStr} ${ev.time}` : dateStr;
+        }
+
         function addMetaRow(list, label, value, isLink) {
             if (!value) return;
             const row = document.createElement("div");
@@ -393,7 +417,7 @@
 
             const list = document.createElement("dl");
             list.className = "event_meta_list";
-            const dateTime = typeof formatEventDateTimeKo === "function" ? formatEventDateTimeKo(event) : event.date;
+            const dateTime = formatEventDateTime(event);
             addMetaRow(list, I18N.t("events.metaDateTime"), dateTime);
             // venueName is what's shown publicly; the raw address in
             // event.location is only ever used server-side to auto-geocode
@@ -464,7 +488,7 @@
                 return '<text x="' + p.x.toFixed(1) + '" y="' + p.y.toFixed(1) + '" text-anchor="middle" dominant-baseline="middle" class="evt-flavor-label">' + escapeHtml(text) + '</text>';
             }).join("");
 
-            return '<svg viewBox="0 0 260 236" class="evt-flavor-svg" role="img" aria-label="Taste Profile Graph">'
+            return '<svg viewBox="0 0 260 236" class="evt-flavor-svg" role="img" aria-label="' + escapeHtml(I18N.t("events.tasteProfileAria")) + '">'
                 + gridHtml + spokesHtml
                 + '<polygon points="' + dataPts + '" fill="var(--osullocGreen)" fill-opacity="0.28" stroke="var(--osullocGreen)" stroke-width="2"/>'
                 + labelsHtml
@@ -512,7 +536,7 @@
             const hasFlavor = tea.flavor && FLAVOR_AXES.some(([key]) => typeof tea.flavor[key] === "number");
             if (hasFlavor) {
                 html += '<div class="evt-flavor-block">'
-                    + '<h5 class="evt-flavor-title">Taste Profile</h5>'
+                    + '<h5 class="evt-flavor-title">' + escapeHtml(I18N.t("events.tasteProfileTitle")) + '</h5>'
                     + renderFlavorChart(tea.flavor)
                     + '</div>';
             }
