@@ -308,14 +308,17 @@
                               en: "<em>Yido Auction</em>, a ceramics business in Insadong, invites students in on the last week of every month. Through the owner's generosity, we get introduced to traditional Korean tea ware and enjoy tea together." },
         "ot.leedo.imgAlt": { ko: "이도옥션에서 옛 차 도구로 차를 우리는 모습", en: "Brewing tea with traditional tea ware at Yido Auction" },
 
-        /* 알아두면 좋은 규칙 */
-        "ot.rules.title":              { ko: "알아두면 좋은 규칙", en: "Good Rules to Know" },
+        /* 불참비 및 소모임 인원 관련규정 */
+        "ot.rules.title":              { ko: "불참비 및 소모임 인원 관련규정", en: "No-Show Fees & Meetup Headcount Rules" },
         "ot.rules.noShow.title":       { ko: "소모임 불참비 · 2,500원", en: "Meetup No-Show Fee · ₩2,500" },
         "ot.rules.noShow.body":        { ko: "취소 마감(모임 2일 전) 이후 파토 시 부과됩니다. 신청 페이지의 취소 링크가 잠긴 뒤에는 주최자에게 먼저 양해를 구하시고, 회계부장에게 개인톡으로 연락 부탁드립니다.",
                                           en: "Charged if you back out after the cancellation deadline (2 days before the meetup). Once the cancel link on the sign-up page is locked, please ask the host for understanding first, then contact the treasurer directly." },
         "ot.rules.regularsNoShow.title": { ko: "정기다회 불참비 · 5,000원", en: "Regular Gathering No-Show Fee · ₩5,000" },
         "ot.rules.regularsNoShow.body":  { ko: "당일 파토 시 부과됩니다. 사정이 있으신 경우 사전에 알려주세요.",
                                             en: "Charged if you back out on the day itself. If something comes up, please let us know ahead of time." },
+        "ot.rules.otherNoShow.title":  { ko: "기타 불참비 · 개별공지", en: "Other Activities' No-Show Fee · Announced Individually" },
+        "ot.rules.otherNoShow.body":   { ko: "티클래스나 기타 활동들의 불참비 또는 환불 기한에 대해서는 해당 다회에서 별도로 안내됩니다!",
+                                          en: "No-show fees and refund deadlines for tea classes and other activities are announced separately for each gathering!" },
         "ot.rules.twoLeft.title":      { ko: "두 명이 남은 경우", en: "When Only Two People Are Left" },
         "ot.rules.twoLeft.body":       { ko: "소모임은 3명 이상을 원칙으로 하지만, 참가자 불참으로 두 명만 남게 된 경우에는 <em>모임 무산 · 두 분이서 진행</em> 중 하나를 선택하실 수 있습니다. 두 분이 진행하시는 경우에도 지원금은 동일하게 지급됩니다. 모임이 무산되더라도 불참비는 원인을 제공한 분들만 부담합니다.",
                                           en: "A meetup is meant to have 3 or more people, but if a no-show leaves only two, you can choose either to <em>cancel the meetup or go ahead with just the two of you</em>. If you go ahead with two, the same stipend is still paid. If the meetup is cancelled, only the people responsible for the no-show cover the fee." },
