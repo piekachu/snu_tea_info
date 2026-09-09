@@ -316,9 +316,12 @@
         "ot.rules.regularsNoShow.title": { ko: "정기다회 불참비 · 5,000원", en: "Regular Gathering No-Show Fee · ₩5,000" },
         "ot.rules.regularsNoShow.body":  { ko: "당일 파토 시 부과됩니다. 사정이 있으신 경우 사전에 알려주세요.",
                                             en: "Charged if you back out on the day itself. If something comes up, please let us know ahead of time." },
+        "ot.rules.teaClassNoShow.title": { ko: "티클래스 불참비", en: "Tea Class No-Show Fee" },
+        "ot.rules.teaClassNoShow.body":  { ko: "전날 취소 시 참가비의 50%, 당일 취소 또는 불참 시 참가비의 100%가 불참비로 부과됩니다.",
+                                            en: "Cancelling the day before charges 50% of the participation fee as a no-show fee; cancelling the same day (or a no-show) charges 100%." },
         "ot.rules.otherNoShow.title":  { ko: "기타 불참비 · 개별공지", en: "Other Activities' No-Show Fee · Announced Individually" },
-        "ot.rules.otherNoShow.body":   { ko: "티클래스나 기타 활동들의 불참비 또는 환불 기한에 대해서는 해당 다회에서 별도로 안내됩니다!",
-                                          en: "No-show fees and refund deadlines for tea classes and other activities are announced separately for each gathering!" },
+        "ot.rules.otherNoShow.body":   { ko: "그 밖의 활동들의 불참비 또는 환불 기한에 대해서는 해당 다회에서 별도로 안내됩니다!",
+                                          en: "No-show fees and refund deadlines for other activities are announced separately for each gathering!" },
         "ot.rules.twoLeft.title":      { ko: "두 명이 남은 경우", en: "When Only Two People Are Left" },
         "ot.rules.twoLeft.body":       { ko: "소모임은 3명 이상을 원칙으로 하지만, 참가자 불참으로 두 명만 남게 된 경우에는 <em>모임 무산 · 두 분이서 진행</em> 중 하나를 선택하실 수 있습니다. 두 분이 진행하시는 경우에도 지원금은 동일하게 지급됩니다. 모임이 무산되더라도 불참비는 원인을 제공한 분들만 부담합니다.",
                                           en: "A meetup is meant to have 3 or more people, but if a no-show leaves only two, you can choose either to <em>cancel the meetup or go ahead with just the two of you</em>. If you go ahead with two, the same stipend is still paid. If the meetup is cancelled, only the people responsible for the no-show cover the fee." },
@@ -331,6 +334,35 @@
         "refund.intro":     { ko: "정기다회, 소모임 등 설다연의 모든 다회 활동은 참가 인원 확정과 예산 집행이 함께 따르기 때문에, 부득이하게 불참하시는 경우 아래 기준에 따라 불참비가 부과될 수 있습니다.",
                                en: "Every regular gathering and meetup at Seoldayeon involves locking in a headcount and spending a budget ahead of time, so an unavoidable no-show may come with a fee under the rules below." },
         "refund.intro2":    { ko: "신청 전에 아래 내용을 꼭 확인해주세요.", en: "Please make sure to check this before signing up." },
+
+        /* 불참비 기준 table — same figures as ot.rules.* (kept in sync by
+           hand; this page shows them as a table since it lists several
+           activities side by side, while the OT page shows them as
+           individual quick-scan cards). */
+        "refund.fee.title":         { ko: "다회별 불참비 기준", en: "No-Show Fee by Activity" },
+        "refund.fee.colActivity":   { ko: "활동", en: "Activity" },
+        "refund.fee.colCondition":  { ko: "불참비 기준", en: "Condition" },
+        "refund.fee.colAmount":     { ko: "부과 내용", en: "Fee" },
+
+        "refund.fee.somoim":          { ko: "소모임", en: "Meetup" },
+        "refund.fee.somoimCondition": { ko: "취소 마감(모임 2일 전) 이후 취소 또는 불참 시", en: "After the cancellation deadline (2 days before the meetup)" },
+        "refund.fee.somoimAmount":    { ko: "2,500원", en: "₩2,500" },
+
+        "refund.fee.regulars":          { ko: "정기다회", en: "Regular Gathering" },
+        "refund.fee.regularsCondition": { ko: "당일 취소 또는 불참 시", en: "On the day itself" },
+        "refund.fee.regularsAmount":    { ko: "5,000원", en: "₩5,000" },
+
+        "refund.fee.teaClass":                  { ko: "티클래스", en: "Tea Class" },
+        "refund.fee.teaClassDayBeforeCondition": { ko: "전날 취소 시", en: "Cancelling the day before" },
+        "refund.fee.teaClassDayBeforeAmount":    { ko: "참가비의 50%", en: "50% of the participation fee" },
+        "refund.fee.teaClassSameDayCondition":   { ko: "당일 취소 또는 불참 시", en: "On the day itself (or a no-show)" },
+        "refund.fee.teaClassSameDayAmount":      { ko: "참가비의 100%", en: "100% of the participation fee" },
+
+        "refund.fee.other":          { ko: "그 외 활동", en: "Other Activities" },
+        "refund.fee.otherCondition": { ko: "-", en: "-" },
+        "refund.fee.otherAmount":    { ko: "해당 다회에서 개별 안내", en: "Announced individually for that gathering" },
+        "refund.fee.note":           { ko: "소모임 불참비는 취소 링크가 잠긴 뒤 주최자에게 먼저 양해를 구하시고, 회계부장에게 개인톡으로 연락 부탁드립니다.",
+                                        en: "For a meetup no-show fee, please ask the host for understanding first once the cancel link is locked, then contact the treasurer directly." },
 
         /* exemption table — transcribed from 「서울대학교 학업성적 처리
            규정」 제4조(출석인정), so kept verbatim rather than paraphrased.
