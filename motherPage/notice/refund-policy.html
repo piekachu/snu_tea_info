@@ -21,6 +21,47 @@
 
     <title data-i18n="refund.pageTitle">다회 환불 및 불참비 규정 — 공지사항</title>
 
+    <style>
+        /* exemption reference table — no other public page on the site has
+           a data table, so this is a small scoped style rather than
+           anything added to notice.css. Kept plain/light to match the
+           surrounding .ot_body prose rather than looking like a spreadsheet. */
+        .refund_table_wrap {
+            overflow-x: auto;
+            margin: 18px 0 28px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+        }
+        .refund_table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+        .refund_table caption {
+            caption-side: top;
+            text-align: left;
+            padding: 12px 16px 0;
+            font-size: 13px;
+            font-weight: var(--font-weight-semibold);
+            color: var(--osullocGreen);
+        }
+        .refund_table th, .refund_table td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+            line-height: 1.6;
+        }
+        .refund_table thead th {
+            background: var(--osullocGreenS);
+            color: var(--osullocGreen);
+            font-weight: var(--font-weight-semibold);
+            white-space: nowrap;
+        }
+        .refund_table tbody tr:last-child td { border-bottom: none; }
+        .refund_table td:first-child, .refund_table th:first-child { white-space: nowrap; }
+        .refund_table_sub td:nth-child(3), .refund_table_sub th:nth-child(3) { white-space: nowrap; }
+    </style>
+
 </head>
 <body class="page-home">
 
@@ -78,7 +119,132 @@
                     </div>
                 </div>
 
+                <!-- exemption: SNU's own excused-absence reasons (학업성적
+                     처리 규정 제4조) also exempt members from 불참비 here —
+                     transcribed from the university's official regulation,
+                     so kept verbatim rather than paraphrased. -->
+                <div class="ot_section_head">
+                    <span class="ot_section_head_label" data-i18n="ot.label.reference">참고</span>
+                    <h4 class="ot_section_head_title" data-i18n="refund.exempt.title">학사 출석인정 사유에 따른 불참비 면제</h4>
+                </div>
                 <div class="ot_body">
+                    <p data-i18n="refund.exempt.intro">서울대학교 「학업성적 처리 규정」 제4조(출석인정)에서 정한 출석인정 사유에 해당하는 경우, 설다연의 다회 활동에서도 동일한 사유로 불참비가 면제됩니다. 아래 사유에 해당하신다면 관련 증빙서류와 함께 회계부장에게 개인톡으로 알려주세요.</p>
+                </div>
+
+                <div class="refund_table_wrap">
+                    <table class="refund_table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="refund.exempt.colNum">구분</th>
+                                <th data-i18n="refund.exempt.colReason">출석인정 사유</th>
+                                <th data-i18n="refund.exempt.colPeriod">인정 기간</th>
+                                <th data-i18n="refund.exempt.colProof">증빙서류</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td data-i18n="refund.exempt.reason1">「예비군법」 및 「병역법」에 따른 병역판정검사·소집·검열점호 등에 응하거나 동원 또는 훈련에 참가하는 경우</td>
+                                <td data-i18n="refund.exempt.period1">소집(훈련)기간</td>
+                                <td data-i18n="refund.exempt.proof1">예비군 교육필증 등 병역 관련 증빙서류</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td data-i18n="refund.exempt.reason2">「감염병의 예방 및 관리에 관한 법률」이나 그 밖의 다른 법령에 따라 감염 또는 감염 우려 등의 사유로 출석하기 어려운 경우</td>
+                                <td data-i18n="refund.exempt.period2">감염 또는 격리조치 기간</td>
+                                <td data-i18n="refund.exempt.proof2">진단서</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td data-i18n="refund.exempt.reason3">질병 또는 부상으로 인하여 출석하기 어려운 경우</td>
+                                <td data-i18n="refund.exempt.period3">학기 총 수업시수의 1/3 미만</td>
+                                <td data-i18n="refund.exempt.proof3">관련공문 등 입증자료</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td data-i18n="refund.exempt.reason4">생리통으로 인하여 출석이 어려운 경우</td>
+                                <td data-i18n="refund.exempt.period4">월 1일</td>
+                                <td data-i18n="refund.exempt.proof4">증빙서류 불필요</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td data-i18n="refund.exempt.reason5">다음에 해당하는 경조사로 출석하기 어려운 경우 (아래 표 참고)</td>
+                                <td data-i18n="refund.exempt.period5">아래 표 참고</td>
+                                <td data-i18n="refund.exempt.proof5">관련 증빙서류(청첩장, 사망진단서, 가족관계확인서 등)</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td data-i18n="refund.exempt.reason6">총장이 허가한 각종 공식 행사에 참가한 경우</td>
+                                <td data-i18n="refund.exempt.period6">참가기간</td>
+                                <td data-i18n="refund.exempt.proof6">행사참석확인서, 공문 등</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td data-i18n="refund.exempt.reason7">그 밖에 상당한 이유로 소속학과(부)장이 허가하는 경우</td>
+                                <td data-i18n="refund.exempt.period7">-</td>
+                                <td data-i18n="refund.exempt.proof7">출석확인서(학과장 명의)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="refund_table_wrap">
+                    <table class="refund_table refund_table_sub">
+                        <caption data-i18n="refund.exempt.famCaption">5호 경조사 인정 기간</caption>
+                        <thead>
+                            <tr>
+                                <th data-i18n="refund.exempt.famColCategory">구분</th>
+                                <th data-i18n="refund.exempt.famColTarget">대상</th>
+                                <th data-i18n="refund.exempt.famColDays">기간</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" data-i18n="refund.exempt.famMarriage">결혼</td>
+                                <td data-i18n="refund.exempt.famSelf">본인</td>
+                                <td data-i18n="refund.exempt.famDays5">5일</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="refund.exempt.famChild">자녀</td>
+                                <td data-i18n="refund.exempt.famDays1">1일</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2" data-i18n="refund.exempt.famBirth">출산</td>
+                                <td data-i18n="refund.exempt.famSelf">본인</td>
+                                <td data-i18n="refund.exempt.famDays20">20일</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="refund.exempt.famSpouse">배우자</td>
+                                <td data-i18n="refund.exempt.famDays10">10일</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="refund.exempt.famAdoption">입양</td>
+                                <td data-i18n="refund.exempt.famSelf">본인</td>
+                                <td data-i18n="refund.exempt.famDays20">20일</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="4" data-i18n="refund.exempt.famDeath">사망</td>
+                                <td data-i18n="refund.exempt.famDeathParents">배우자, 본인 및 배우자의 부모</td>
+                                <td data-i18n="refund.exempt.famDays5">5일</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="refund.exempt.famDeathGrandparents">본인 및 배우자의 조부모·외조부모</td>
+                                <td data-i18n="refund.exempt.famDays3">3일</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="refund.exempt.famDeathChild">본인의 자녀와 그 자녀의 배우자</td>
+                                <td data-i18n="refund.exempt.famDays3">3일</td>
+                            </tr>
+                            <tr>
+                                <td data-i18n="refund.exempt.famDeathSiblings">본인 및 배우자의 형제자매</td>
+                                <td data-i18n="refund.exempt.famDays1">1일</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="ot_body">
+                    <p data-i18n="refund.exempt.source">위 표는 「서울대학교 학업성적 처리 규정」 제4조(출석인정)를 그대로 옮긴 것입니다.</p>
                     <p data-i18n-html="refund.legalNote">본 규정은 <a href="bylaws.html">설다연 회칙</a> 제13조(불참비)에 근거합니다.</p>
                 </div>
             </div>

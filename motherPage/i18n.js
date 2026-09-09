@@ -331,6 +331,78 @@
         "refund.intro":     { ko: "정기다회, 소모임 등 설다연의 모든 다회 활동은 참가 인원 확정과 예산 집행이 함께 따르기 때문에, 부득이하게 불참하시는 경우 아래 기준에 따라 불참비가 부과될 수 있습니다.",
                                en: "Every regular gathering and meetup at Seoldayeon involves locking in a headcount and spending a budget ahead of time, so an unavoidable no-show may come with a fee under the rules below." },
         "refund.intro2":    { ko: "신청 전에 아래 내용을 꼭 확인해주세요.", en: "Please make sure to check this before signing up." },
+
+        /* exemption table — transcribed from 「서울대학교 학업성적 처리
+           규정」 제4조(출석인정), so kept verbatim rather than paraphrased.
+           Applying the university's own excused-absence reasons to our
+           no-show fee too. */
+        "refund.exempt.title": { ko: "학사 출석인정 사유에 따른 불참비 면제", en: "No-Show Fee Exemption for University-Recognized Excused Absences" },
+        "refund.exempt.intro": { ko: "서울대학교 「학업성적 처리 규정」 제4조(출석인정)에서 정한 출석인정 사유에 해당하는 경우, 설다연의 다회 활동에서도 동일한 사유로 불참비가 면제됩니다. 아래 사유에 해당하신다면 관련 증빙서류와 함께 회계부장에게 개인톡으로 알려주세요.",
+                                  en: "If your absence falls under one of the excused-absence reasons defined in Article 4 (Attendance Recognition) of Seoul National University's Academic Performance Handling Regulation, the same reason will exempt you from Seoldayeon's no-show fee as well. If this applies to you, please message the treasurer directly along with the relevant proof document." },
+
+        "refund.exempt.colNum":    { ko: "구분", en: "No." },
+        "refund.exempt.colReason": { ko: "출석인정 사유", en: "Excused-Absence Reason" },
+        "refund.exempt.colPeriod": { ko: "인정 기간", en: "Recognized Period" },
+        "refund.exempt.colProof":  { ko: "증빙서류", en: "Proof Document" },
+
+        "refund.exempt.reason1": { ko: "「예비군법」 및 「병역법」에 따른 병역판정검사·소집·검열점호 등에 응하거나 동원 또는 훈련에 참가하는 경우",
+                                     en: "Undergoing a military service eligibility exam, muster, or inspection roll call, or participating in mobilization or training, under the Reserve Forces Act or the Military Service Act" },
+        "refund.exempt.period1": { ko: "소집(훈련)기간", en: "For the duration of the muster (training)" },
+        "refund.exempt.proof1":  { ko: "예비군 교육필증 등 병역 관련 증빙서류", en: "Reserve-forces training completion certificate or other military-service-related documentation" },
+
+        "refund.exempt.reason2": { ko: "「감염병의 예방 및 관리에 관한 법률」이나 그 밖의 다른 법령에 따라 감염 또는 감염 우려 등의 사유로 출석하기 어려운 경우",
+                                     en: "Unable to attend due to infection or risk of infection, etc., under the Infectious Disease Control and Prevention Act or other applicable laws" },
+        "refund.exempt.period2": { ko: "감염 또는 격리조치 기간", en: "For the duration of the infection or quarantine order" },
+        "refund.exempt.proof2":  { ko: "진단서", en: "Medical certificate (diagnosis)" },
+
+        "refund.exempt.reason3": { ko: "질병 또는 부상으로 인하여 출석하기 어려운 경우", en: "Unable to attend due to illness or injury" },
+        "refund.exempt.period3": { ko: "학기 총 수업시수의 1/3 미만", en: "Up to (but less than) one-third of the semester's total class hours" },
+        "refund.exempt.proof3":  { ko: "관련공문 등 입증자료", en: "Relevant official documentation or other supporting evidence" },
+
+        "refund.exempt.reason4": { ko: "생리통으로 인하여 출석이 어려운 경우", en: "Unable to attend due to menstrual pain" },
+        "refund.exempt.period4": { ko: "월 1일", en: "One day per month" },
+        "refund.exempt.proof4":  { ko: "증빙서류 불필요", en: "No documentation required" },
+
+        "refund.exempt.reason5": { ko: "다음에 해당하는 경조사로 출석하기 어려운 경우 (아래 표 참고)", en: "Unable to attend due to a family event listed below (see table)" },
+        "refund.exempt.period5": { ko: "아래 표 참고", en: "See table below" },
+        "refund.exempt.proof5":  { ko: "관련 증빙서류(청첩장, 사망진단서, 가족관계확인서 등)", en: "Relevant documentation (wedding invitation, death certificate, family relation certificate, etc.)" },
+
+        "refund.exempt.reason6": { ko: "총장이 허가한 각종 공식 행사에 참가한 경우", en: "Participating in an official event authorized by the university president" },
+        "refund.exempt.period6": { ko: "참가기간", en: "For the duration of participation" },
+        "refund.exempt.proof6":  { ko: "행사참석확인서, 공문 등", en: "Event attendance confirmation, official document, etc." },
+
+        "refund.exempt.reason7": { ko: "그 밖에 상당한 이유로 소속학과(부)장이 허가하는 경우", en: "Any other reasonable case authorized by the head of the student's department" },
+        "refund.exempt.period7": { ko: "-", en: "-" },
+        "refund.exempt.proof7":  { ko: "출석확인서(학과장 명의)", en: "Attendance confirmation issued by the department head" },
+
+        "refund.exempt.famCaption":    { ko: "5호 경조사 인정 기간", en: "No. 5 — Family-Event Recognized Periods" },
+        "refund.exempt.famColCategory": { ko: "구분", en: "Category" },
+        "refund.exempt.famColTarget":  { ko: "대상", en: "Relation" },
+        "refund.exempt.famColDays":    { ko: "기간", en: "Days" },
+
+        "refund.exempt.famMarriage": { ko: "결혼", en: "Marriage" },
+        "refund.exempt.famBirth":    { ko: "출산", en: "Childbirth" },
+        "refund.exempt.famAdoption": { ko: "입양", en: "Adoption" },
+        "refund.exempt.famDeath":    { ko: "사망", en: "Bereavement" },
+
+        "refund.exempt.famSelf":   { ko: "본인", en: "Self" },
+        "refund.exempt.famChild":  { ko: "자녀", en: "Child" },
+        "refund.exempt.famSpouse": { ko: "배우자", en: "Spouse" },
+
+        "refund.exempt.famDeathParents":      { ko: "배우자, 본인 및 배우자의 부모", en: "Spouse, or parents of self/spouse" },
+        "refund.exempt.famDeathGrandparents": { ko: "본인 및 배우자의 조부모·외조부모", en: "Grandparents of self/spouse" },
+        "refund.exempt.famDeathChild":         { ko: "본인의 자녀와 그 자녀의 배우자", en: "Self's child, or that child's spouse" },
+        "refund.exempt.famDeathSiblings":      { ko: "본인 및 배우자의 형제자매", en: "Siblings of self/spouse" },
+
+        "refund.exempt.famDays1":  { ko: "1일", en: "1 day" },
+        "refund.exempt.famDays3":  { ko: "3일", en: "3 days" },
+        "refund.exempt.famDays5":  { ko: "5일", en: "5 days" },
+        "refund.exempt.famDays10": { ko: "10일", en: "10 days" },
+        "refund.exempt.famDays20": { ko: "20일", en: "20 days" },
+
+        "refund.exempt.source": { ko: "위 표는 「서울대학교 학업성적 처리 규정」 제4조(출석인정)를 그대로 옮긴 것입니다.",
+                                    en: "The table above is transcribed directly from Article 4 (Attendance Recognition) of Seoul National University's Academic Performance Handling Regulation." },
+
         "refund.legalNote": { ko: "본 규정은 <a href=\"bylaws.html\">설다연 회칙</a> 제13조(불참비)에 근거합니다.",
                                en: "This policy is based on Article 13 (No-Show Fees) of the <a href=\"bylaws.html\">Seoldayeon Bylaws</a>." },
 
