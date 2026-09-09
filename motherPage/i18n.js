@@ -361,8 +361,6 @@
         "refund.fee.other":          { ko: "그 외 활동", en: "Other Activities" },
         "refund.fee.otherCondition": { ko: "-", en: "-" },
         "refund.fee.otherAmount":    { ko: "해당 다회에서 개별 안내", en: "Announced individually for that gathering" },
-        "refund.fee.note":           { ko: "소모임 불참비는 취소 링크가 잠긴 뒤 주최자에게 먼저 양해를 구하시고, 회계부장에게 개인톡으로 연락 부탁드립니다.",
-                                        en: "For a meetup no-show fee, please ask the host for understanding first once the cancel link is locked, then contact the treasurer directly." },
 
         /* exemption table — transcribed from 「서울대학교 학업성적 처리
            규정」 제4조(출석인정), so kept verbatim rather than paraphrased.
