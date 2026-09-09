@@ -362,6 +362,13 @@
         "refund.fee.otherCondition": { ko: "-", en: "-" },
         "refund.fee.otherAmount":    { ko: "해당 다회에서 개별 안내", en: "Announced individually for that gathering" },
 
+        /* condensed pointer to the full exemption table (refund.exempt.* —
+           hidden below, too much detail for this page) — keeps the
+           exemption itself visible without the full transcribed table. */
+        "refund.exemptShort.title": { ko: "학사 출석인정 사유 · 불참비 면제", en: "University-Recognized Excused Absences · No-Show Fee Exemption" },
+        "refund.exemptShort.body":  { ko: "서울대학교 학칙(학업성적 처리 규정 제4조)에 따른 출석인정 사유(병역의무, 질병·부상, 생리통, 경조사 등)에 해당하는 경우 불참비가 면제됩니다. 해당 사유와 증빙서류는 회계부장에게 개인톡으로 문의해주세요.",
+                                      en: "If your absence qualifies as an excused absence under Seoul National University's academic regulations (Article 4 of the Academic Performance Handling Regulation — military duty, illness/injury, menstrual pain, family events, etc.), you're exempt from the no-show fee. Please message the treasurer directly to check whether your case qualifies and what documentation you'll need." },
+
         /* exemption table — transcribed from 「서울대학교 학업성적 처리
            규정」 제4조(출석인정), so kept verbatim rather than paraphrased.
            Applying the university's own excused-absence reasons to our
