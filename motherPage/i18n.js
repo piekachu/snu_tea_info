@@ -258,8 +258,8 @@
         /* 소모임 */
         "ot.somoim.title":       { ko: "소모임 · 3명 이상", en: "Meetup (소모임) · 3 or more people" },
         "ot.somoim.imgAlt":      { ko: "찻자리에 놓인 청화 개완", en: "A blue-and-white gaiwan set out for a tea gathering" },
-        "ot.somoim.splitP":      { ko: "부원 누구나 자유롭게 열고 참여할 수 있는 가장 기본적인 활동입니다. 예전의 주간 조 배정 시스템은 사라졌고, 이제는 <a href=\"../join/index.html\">소모임 신청 페이지</a>에서 원하는 날짜에 직접 열거나 이미 열린 소모임에 신청하는 방식으로 운영됩니다.",
-                                   en: "This is the most basic activity, and anyone is free to start or join one. The old weekly group-assignment system is gone — now it runs through the <a href=\"../join/index.html\">meetup sign-up page</a>, where you can open a meetup on any date you like, or sign up for one that's already open." },
+        "ot.somoim.splitP":      { ko: "매주 공지방에서 소모임 일정 조사 투표가 열립니다. 가능한 시간대를 투표해주시면 시간이 맞는 분들끼리 소모임 조를 만들어드립니다!",
+                                   en: "Every week, a poll goes up in the announcement chat room to gauge everyone's available times for meetups. Vote for whichever times work for you, and we'll group you together with members whose schedules match!" },
         "ot.somoim.manualTitle": { ko: "소모임 신청 매뉴얼 바로가기", en: "Open the Meetup Sign-Up Manual" },
         "ot.somoim.manualBody":  { ko: "스크린샷과 함께 소모임 만들기·신청하기 전 과정을 자세히 안내해드려요.",
                                    en: "See the full step-by-step walkthrough — with screenshots — for creating a meetup and signing up for one." },
