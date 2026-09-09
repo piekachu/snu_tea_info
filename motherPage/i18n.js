@@ -323,6 +323,17 @@
         "ot.rules.twoLeft.body":       { ko: "소모임은 3명 이상을 원칙으로 하지만, 참가자 불참으로 두 명만 남게 된 경우에는 <em>모임 무산 · 두 분이서 진행</em> 중 하나를 선택하실 수 있습니다. 두 분이 진행하시는 경우에도 지원금은 동일하게 지급됩니다. 모임이 무산되더라도 불참비는 원인을 제공한 분들만 부담합니다.",
                                           en: "A meetup is meant to have 3 or more people, but if a no-show leaves only two, you can choose either to <em>cancel the meetup or go ahead with just the two of you</em>. If you go ahead with two, the same stipend is still paid. If the meetup is cancelled, only the people responsible for the no-show cover the fee." },
 
+        /* notice/refund-policy.html — a standalone notice for the same
+           policy as ot.rules.* above (reuses those keys directly for its
+           four rule cards, so there's one source of truth), so members can
+           find it from the notice list without digging through the OT page. */
+        "refund.pageTitle": { ko: "다회 환불 및 불참비 규정 — 공지사항", en: "Event Refund & No-Show Fee Policy — Notices" },
+        "refund.intro":     { ko: "정기다회, 소모임 등 설다연의 모든 다회 활동은 참가 인원 확정과 예산 집행이 함께 따르기 때문에, 부득이하게 불참하시는 경우 아래 기준에 따라 불참비가 부과될 수 있습니다.",
+                               en: "Every regular gathering and meetup at Seoldayeon involves locking in a headcount and spending a budget ahead of time, so an unavoidable no-show may come with a fee under the rules below." },
+        "refund.intro2":    { ko: "신청 전에 아래 내용을 꼭 확인해주세요.", en: "Please make sure to check this before signing up." },
+        "refund.legalNote": { ko: "본 규정은 <a href=\"bylaws.html\">설다연 회칙</a> 제13조(불참비)에 근거합니다.",
+                               en: "This policy is based on Article 13 (No-Show Fees) of the <a href=\"bylaws.html\">Seoldayeon Bylaws</a>." },
+
         /* 활동비 */
         "ot.fee.title": { ko: "활동비", en: "Membership Dues" },
         "ot.fee.p1":    { ko: "한 학기 회비는 <strong>25,000원</strong>입니다. 지원 시 구글폼 안내에 따라 입금해주시면 신청이 완료됩니다.",

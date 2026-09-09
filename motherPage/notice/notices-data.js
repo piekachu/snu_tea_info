@@ -46,4 +46,13 @@ const teaClubNotices = [
         path: "notice/bylaws.html",
         pinned: true,
     },
+    {
+        title: "다회 환불 및 불참비 규정",
+        titleEn: "Event Refund & No-Show Fee Policy",
+        date: "2026-09-09",
+        excerpt: "정기다회·소모임 등 다회 활동에 참여하기 전 꼭 확인해야 할 환불 및 불참비 규정을 안내합니다.",
+        excerptEn: "The refund and no-show fee rules to check before joining any regular gathering or meetup.",
+        path: "notice/refund-policy.html",
+        pinned: true,
+    },
 ];
