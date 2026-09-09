@@ -41,32 +41,6 @@
             margin: 0 auto 40px;
             text-align: center;
         }
-
-        /* photo + taste-profile chart side by side, when a tea has both —
-           falls back to whichever one alone (still centered) when a tea
-           only has one of the two. */
-        .evt-tea-media-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 32px;
-            max-width: 970px;
-            margin: 0 auto 40px;
-        }
-        .evt-tea-media-row .evt-tea-photo {
-            flex: 1 1 320px;
-            max-width: 420px;
-            margin: 0;
-        }
-        .evt-tea-media-row .evt-flavor-block {
-            flex: 1 1 260px;
-            max-width: 300px;
-            margin: 0;
-        }
-        @media all and (max-width: 640px) {
-            .evt-tea-media-row { gap: 16px; margin-bottom: 24px; }
-        }
         .evt-flavor-title {
             font-weight: var(--font-weight-bold, 700);
             font-size: 15px;
@@ -535,7 +509,6 @@
             const num = String(index + 1).padStart(2, "0");
             wrap.id = "tea_" + num; // target of the scroll-shortcut nav's #tea_NN links
             const hasStats = tea.brewTemp || tea.brewVolume || tea.brewTime;
-            const hasFlavor = tea.flavor && FLAVOR_AXES.some(([key]) => typeof tea.flavor[key] === "number");
 
             let html = '<div class="recipe_wrap recipe_section_02 mb_40">'
                 + '<div class="article_title_block type_num type_row">'
@@ -544,22 +517,9 @@
                 + '<h4 class="article_title">' + escapeHtml(tea.name || "") + '</h4>'
                 + (tea.subtitle ? '<p class="title_info">' + escapeHtml(tea.subtitle) + '</p>' : "")
                 + '</div></div>';
-
-            // photo + taste-profile chart side by side (falls back to
-            // whichever one the tea actually has, still centered, if not both)
-            const photoHtml = tea.photoUrl
-                ? '<figure class="article_img evt-tea-photo"><img src="' + tea.photoUrl + '" alt="' + escapeHtml(tea.name || "") + '" style="width:100%; height:auto; aspect-ratio:16/9; object-fit:cover; display:block;"></figure>'
-                : "";
-            const flavorHtml = hasFlavor
-                ? '<div class="evt-flavor-block">'
-                    + '<h5 class="evt-flavor-title">' + escapeHtml(I18N.t("events.tasteProfileTitle")) + '</h5>'
-                    + renderFlavorChart(tea.flavor)
-                    + '</div>'
-                : "";
-            if (photoHtml || flavorHtml) {
-                html += '<div class="evt-tea-media-row">' + photoHtml + flavorHtml + '</div>';
+            if (tea.photoUrl) {
+                html += '<figure class="article_img"><img src="' + tea.photoUrl + '" alt="' + escapeHtml(tea.name || "") + '" style="width:100%; max-width:970px; aspect-ratio:16/9; object-fit:cover; display:block;"></figure>';
             }
-
             if (tea.description) {
                 html += '<div class="block_cont"><div class="cont_para"><div class="article_txt">' + textToHtml(tea.description) + '</div></div></div>';
             }
@@ -578,6 +538,14 @@
                     html += '<div class="txt_block"><div class="cont_para"><div class="article_txt"><strong>' + escapeHtml(I18N.t("events.brewMethod")) + '</strong><br>' + textToHtml(tea.brewNote).replace(/^<p>|<\/p>$/g, "") + '</div></div></div>';
                 }
                 html += '</div></div>';
+            }
+
+            const hasFlavor = tea.flavor && FLAVOR_AXES.some(([key]) => typeof tea.flavor[key] === "number");
+            if (hasFlavor) {
+                html += '<div class="evt-flavor-block">'
+                    + '<h5 class="evt-flavor-title">' + escapeHtml(I18N.t("events.tasteProfileTitle")) + '</h5>'
+                    + renderFlavorChart(tea.flavor)
+                    + '</div>';
             }
 
             wrap.innerHTML = html;
