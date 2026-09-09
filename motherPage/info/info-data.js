@@ -21,6 +21,6 @@ const teaClubInfo = [
         excerpt: "설다연 부원들이 직접 추천한 서울·경기권 찻집 61곳. 구별 지도와 목록으로 한눈에 살펴보고, 네이버 지도로 바로 길찾기까지 이어집니다.",
         excerptEn: "61 tea houses around Seoul and Gyeonggi, recommended by our members. Browse them by district on the map or as a list, with directions only a tap away.",
         path: "join/chatjip-info.html",
-        pinned: false,
+        pinned: true,
     },
 ];
