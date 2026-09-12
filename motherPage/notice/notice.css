@@ -737,3 +737,42 @@
         font-size: 15px;
     }
 }
+
+/* data table — used by notice/refund-policy.html (활동/불참비 기준/부과
+   내용) and notice/newmember-ot.html's own copy of the same table. Plain/
+   light styling to match the surrounding .ot_body prose rather than
+   looking like a spreadsheet. */
+.refund_table_wrap {
+    overflow-x: auto;
+    margin: 18px 0 28px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+}
+.refund_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+.refund_table caption {
+    caption-side: top;
+    text-align: left;
+    padding: 12px 16px 0;
+    font-size: 13px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--osullocGreen);
+}
+.refund_table th, .refund_table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    line-height: 1.6;
+}
+.refund_table thead th {
+    background: var(--osullocGreenS);
+    color: var(--osullocGreen);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+}
+.refund_table tbody tr:last-child td { border-bottom: none; }
+.refund_table td:first-child, .refund_table th:first-child { white-space: nowrap; }
+.refund_table_sub td:nth-child(3), .refund_table_sub th:nth-child(3) { white-space: nowrap; }

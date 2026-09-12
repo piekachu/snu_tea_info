@@ -230,23 +230,47 @@
                         <h4 class="ot_section_head_title" data-i18n="ot.rules.title">불참비 및 소모임 인원 관련규정</h4>
                     </div>
 
+                    <!-- fee table — same table as notice/refund-policy.html
+                         (refund.fee.* — shared keys, kept in sync by hand). -->
+                    <div class="refund_table_wrap">
+                        <table class="refund_table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="refund.fee.colActivity">활동</th>
+                                    <th data-i18n="refund.fee.colCondition">불참비 기준</th>
+                                    <th data-i18n="refund.fee.colAmount">부과 내용</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-i18n="refund.fee.somoim">소모임</td>
+                                    <td data-i18n="refund.fee.somoimCondition">취소 마감(모임 2일 전) 이후 취소 또는 불참 시</td>
+                                    <td data-i18n="refund.fee.somoimAmount">2,500원</td>
+                                </tr>
+                                <tr>
+                                    <td data-i18n="refund.fee.regulars">정기다회</td>
+                                    <td data-i18n="refund.fee.regularsCondition">당일 취소 또는 불참 시</td>
+                                    <td data-i18n="refund.fee.regularsAmount">5,000원</td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="2" data-i18n="refund.fee.teaClass">티클래스</td>
+                                    <td data-i18n="refund.fee.teaClassDayBeforeCondition">전날 취소 시</td>
+                                    <td data-i18n="refund.fee.teaClassDayBeforeAmount">참가비의 50%</td>
+                                </tr>
+                                <tr>
+                                    <td data-i18n="refund.fee.teaClassSameDayCondition">당일 취소 또는 불참 시</td>
+                                    <td data-i18n="refund.fee.teaClassSameDayAmount">참가비의 100%</td>
+                                </tr>
+                                <tr>
+                                    <td data-i18n="refund.fee.other">그 외 활동</td>
+                                    <td data-i18n="refund.fee.otherCondition">-</td>
+                                    <td data-i18n="refund.fee.otherAmount">해당 다회에서 개별 안내</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <div class="ot_rules">
-                        <div class="ot_rule">
-                            <h5 class="ot_rule_title" data-i18n="ot.rules.noShow.title">소모임 불참비 · 2,500원</h5>
-                            <p data-i18n="ot.rules.noShow.body">취소 마감(모임 2일 전) 이후 파토 시 부과됩니다. 신청 페이지의 취소 링크가 잠긴 뒤에는 주최자에게 먼저 양해를 구하시고, 회계부장에게 개인톡으로 연락 부탁드립니다.</p>
-                        </div>
-                        <div class="ot_rule">
-                            <h5 class="ot_rule_title" data-i18n="ot.rules.regularsNoShow.title">정기다회 불참비 · 5,000원</h5>
-                            <p data-i18n="ot.rules.regularsNoShow.body">당일 파토 시 부과됩니다. 사정이 있으신 경우 사전에 알려주세요.</p>
-                        </div>
-                        <div class="ot_rule">
-                            <h5 class="ot_rule_title" data-i18n="ot.rules.teaClassNoShow.title">티클래스 불참비</h5>
-                            <p data-i18n="ot.rules.teaClassNoShow.body">전날 취소 시 참가비의 50%, 당일 취소 또는 불참 시 참가비의 100%가 불참비로 부과됩니다.</p>
-                        </div>
-                        <div class="ot_rule">
-                            <h5 class="ot_rule_title" data-i18n="ot.rules.otherNoShow.title">기타 불참비 · 개별공지</h5>
-                            <p data-i18n="ot.rules.otherNoShow.body">그 밖의 활동들의 불참비 또는 환불 기한에 대해서는 해당 다회에서 별도로 안내됩니다!</p>
-                        </div>
                         <div class="ot_rule">
                             <h5 class="ot_rule_title" data-i18n="ot.rules.twoLeft.title">두 명이 남은 경우</h5>
                             <p data-i18n-html="ot.rules.twoLeft.body">소모임은 3명 이상을 원칙으로 하지만, 참가자 불참으로 두 명만 남게 된 경우에는 <em>모임 무산 · 두 분이서 진행</em> 중 하나를 선택하실 수 있습니다. 두 분이 진행하시는 경우에도 지원금은 동일하게 지급됩니다. 모임이 무산되더라도 불참비는 원인을 제공한 분들만 부담합니다.</p>
