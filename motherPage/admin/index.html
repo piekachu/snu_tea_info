@@ -773,6 +773,85 @@
             border-top: 1px dashed rgba(0,0,0,0.1);
         }
 
+        /* ── 소모임 지원금 신청 panel ── */
+        .fund-filter-select {
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: var(--font);
+            font-size: 13px;
+            color: #222;
+            background: #fff;
+        }
+        .fund-list { display: flex; flex-direction: column; gap: 14px; }
+        .fund-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            display: grid;
+            grid-template-columns: 84px 1fr auto;
+            gap: 16px;
+            align-items: start;
+        }
+        .fund-thumb {
+            width: 84px; height: 84px; border-radius: 8px; object-fit: cover;
+            border: 1px solid var(--border); cursor: pointer; background: var(--bg-soft, #f6f6f4);
+        }
+        .fund-body { min-width: 0; }
+        .fund-top-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+        .fund-date { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+        .fund-status-badge {
+            font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 10px;
+            background: var(--border); color: var(--gray);
+        }
+        .fund-status-badge.submitted { background: #fff4da; color: #8a6400; }
+        .fund-status-badge.approved  { background: var(--green-pale); color: var(--green); }
+        .fund-status-badge.paid      { background: var(--green); color: #fff; }
+        .fund-status-badge.rejected  { background: #fde2e2; color: var(--red); }
+        .fund-meta { font-size: 12.5px; color: var(--gray); line-height: 1.7; }
+        .fund-meta strong { color: #333; font-weight: 600; }
+        .fund-participants { font-size: 12.5px; color: #333; margin-top: 6px; line-height: 1.6; }
+        .fund-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+        .fund-actions .adm-btn-sm, .fund-actions .cnt-btn-secondary { white-space: nowrap; }
+
+        /* ── 회비 관리 panel ── */
+        .dues-add-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            margin-bottom: 20px;
+        }
+        .dues-add-title { font-size: 13px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }
+        .dues-add-row { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+        .dues-add-row:last-of-type { margin-bottom: 0; }
+        .dues-bulk-textarea { resize: vertical; min-height: 38px; }
+        .dues-summary { font-size: 13px; color: var(--gray); white-space: pre-line; margin: 0 0 14px; }
+        .dues-table { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+        .dues-row {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 110px 120px 32px;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 14px;
+            font-size: 13.5px;
+            border-bottom: 1px solid var(--border);
+        }
+        .dues-row:last-child { border-bottom: none; }
+        .dues-row.is-head { background: #fafaf8; font-weight: 700; font-size: 11.5px; color: var(--gray); text-transform: uppercase; letter-spacing: .04em; }
+        .dues-row-amount { font-feature-settings: "tnum" 1; }
+        .dues-toggle {
+            padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: 700;
+            border: 1px solid var(--border); background: #fff; color: var(--gray); cursor: pointer;
+        }
+        .dues-toggle.is-paid { background: var(--green); color: #fff; border-color: var(--green); }
+        .dues-row-del {
+            background: none; border: none; color: var(--gray); cursor: pointer; font-size: 15px;
+            width: 28px; height: 28px; border-radius: 50%;
+        }
+        .dues-row-del:hover { background: #fde2e2; color: var(--red); }
+
         /* ── shared create/edit modal (notices, info — and events later) ── */
         .cnt-modal-overlay {
             display: none;
@@ -1079,6 +1158,8 @@
     <button class="adm-tab"           data-panel="tab-notices">공지사항</button>
     <button class="adm-tab"           data-panel="tab-info">정보</button>
     <button class="adm-tab"           data-panel="tab-events">정기다회</button>
+    <button class="adm-tab"           data-panel="tab-fund">지원금 신청</button>
+    <button class="adm-tab"           data-panel="tab-dues">회비 관리</button>
 </nav>
 
 <div class="adm-wrap">
@@ -1160,6 +1241,71 @@
         <p class="adm-status" id="evt-status"></p>
         <div class="cnt-grid" id="evt-grid"></div>
     </div><!-- /tab-events -->
+
+    <!-- ══ 소모임 지원금 신청 panel ═══════════════════════════════════════ -->
+    <div class="adm-panel" id="tab-fund">
+        <div class="sm-toolbar">
+            <button class="adm-btn-sec" id="fund-refresh-btn">새로고침</button>
+            <select class="fund-filter-select" id="fund-filter">
+                <option value="all">전체</option>
+                <option value="submitted">대기중</option>
+                <option value="approved">승인됨</option>
+                <option value="paid">지급완료</option>
+                <option value="rejected">반려</option>
+            </select>
+            <div class="sm-toolbar-spacer"></div>
+        </div>
+        <p class="adm-status" id="fund-status"></p>
+        <div class="fund-list" id="fund-list"></div>
+    </div><!-- /tab-fund -->
+
+    <!-- ══ 회비 관리 panel — admin-only, not linked from the public site ══ -->
+    <div class="adm-panel" id="tab-dues">
+
+        <div class="dues-add-card">
+            <p class="dues-add-title">명단 등록</p>
+            <div class="dues-add-row">
+                <div class="adm-field" style="min-width:160px;">
+                    <label for="dues-event">행사명</label>
+                    <input class="adm-pw" id="dues-event" type="text" placeholder="예: 26-2 개강다회">
+                </div>
+                <div class="adm-field" style="min-width:110px; flex:none;">
+                    <label for="dues-amount">금액</label>
+                    <input class="adm-pw" id="dues-amount" type="text" inputmode="numeric" placeholder="25000">
+                </div>
+                <div class="adm-field" style="min-width:140px;">
+                    <label for="dues-name">이름 (Enter로 빠른 추가)</label>
+                    <input class="adm-pw" id="dues-name" type="text" placeholder="이름 입력 후 Enter">
+                </div>
+                <button class="adm-btn" id="dues-add-btn" type="button">추가</button>
+            </div>
+            <div class="dues-add-row">
+                <div class="adm-field" style="flex:1;">
+                    <label for="dues-bulk">여러 명 한번에 추가 (한 줄에 한 명씩)</label>
+                    <textarea class="adm-pw dues-bulk-textarea" id="dues-bulk" rows="2" placeholder="홍길동&#10;김철수&#10;이영희"></textarea>
+                </div>
+                <button class="adm-btn-sec" id="dues-bulk-add-btn" type="button">일괄 추가</button>
+            </div>
+            <p class="adm-status" id="dues-add-status"></p>
+        </div>
+
+        <div class="sm-toolbar">
+            <button class="adm-btn-sec" id="dues-refresh-btn">새로고침</button>
+            <select class="fund-filter-select" id="dues-event-filter">
+                <option value="">전체 행사</option>
+            </select>
+            <label class="sm-filter-toggle">
+                <input type="checkbox" id="dues-unpaid-only">
+                미입금만 보기
+            </label>
+            <div class="sm-toolbar-spacer"></div>
+            <button class="cnt-btn-secondary" id="dues-delete-event-btn" type="button">선택한 행사 전체 삭제</button>
+        </div>
+
+        <p class="adm-status" id="dues-status"></p>
+        <p class="dues-summary" id="dues-summary"></p>
+        <div class="dues-table" id="dues-table"></div>
+    </div><!-- /tab-dues -->
 
 </div><!-- /adm-wrap -->
 
@@ -1327,6 +1473,8 @@
             if (id === "tab-notices") window.__ntcActivate?.();
             if (id === "tab-info") window.__infActivate?.();
             if (id === "tab-events") window.__evtActivate?.();
+            if (id === "tab-fund") window.__fundActivate?.();
+            if (id === "tab-dues") window.__duesActivate?.();
         });
     });
 })();
@@ -2673,6 +2821,423 @@
             saveBtn.textContent = "저장";
         }
     });
+})();
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   8. 소모임 지원금 신청 admin — review queue for join/support-fund.html's
+      public submissions. Public submit/image-upload need no password (see
+      content/index.ts); everything here (list + status changes) does.
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+    const STORAGE_KEY = "snuTeaAdminPw_v1";
+    function adminPw() {
+        try { return sessionStorage.getItem(STORAGE_KEY) || ""; } catch (e) { return ""; }
+    }
+
+    const refreshBtn   = document.getElementById("fund-refresh-btn");
+    const filterSelect = document.getElementById("fund-filter");
+    const statusEl     = document.getElementById("fund-status");
+    const listEl       = document.getElementById("fund-list");
+
+    let applications = [];
+    let loaded = false;
+
+    const STATUS_LABEL = { submitted: "대기중", approved: "승인됨", paid: "지급완료", rejected: "반려" };
+
+    function formatDateKo(iso) {
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+        return m ? `${Number(m[1])}년 ${Number(m[2])}월 ${Number(m[3])}일` : String(iso || "");
+    }
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function render() {
+        const filter = filterSelect.value;
+        const filtered = filter === "all" ? applications : applications.filter((a) => a.status === filter);
+        listEl.innerHTML = "";
+
+        if (filtered.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "adm-empty";
+            empty.textContent = "신청 내역이 없어요.";
+            listEl.appendChild(empty);
+            return;
+        }
+
+        filtered.forEach((a) => {
+            const card = document.createElement("div");
+            card.className = "fund-card";
+
+            const thumb = document.createElement("img");
+            thumb.className = "fund-thumb";
+            thumb.src = a.tastingNoteUrl;
+            thumb.alt = "시음기";
+            thumb.addEventListener("click", () => window.open(a.tastingNoteUrl, "_blank", "noopener"));
+            card.appendChild(thumb);
+
+            const body = document.createElement("div");
+            body.className = "fund-body";
+
+            const topRow = document.createElement("div");
+            topRow.className = "fund-top-row";
+            const dateEl = document.createElement("span");
+            dateEl.className = "fund-date";
+            dateEl.textContent = formatDateKo(a.meetupDate) + (a.meetupTime ? ` ${a.meetupTime}` : "");
+            topRow.appendChild(dateEl);
+            const badge = document.createElement("span");
+            badge.className = "fund-status-badge " + a.status;
+            badge.textContent = STATUS_LABEL[a.status] || a.status;
+            topRow.appendChild(badge);
+            body.appendChild(topRow);
+
+            const meta = document.createElement("div");
+            meta.className = "fund-meta";
+            meta.innerHTML =
+                `<strong>계좌</strong> ${escapeHtml(a.bankName || "")} ${escapeHtml(a.accountHolder || "")} ${escapeHtml(a.accountNumber)}<br>` +
+                `<strong>신청자</strong> ${escapeHtml(a.applicantName || "—")} ${a.applicantContact ? "(" + escapeHtml(a.applicantContact) + ")" : ""}`;
+            body.appendChild(meta);
+
+            const participants = document.createElement("div");
+            participants.className = "fund-participants";
+            participants.textContent = "참가자: " + a.participants.join(", ");
+            body.appendChild(participants);
+
+            card.appendChild(body);
+
+            const actions = document.createElement("div");
+            actions.className = "fund-actions";
+            if (a.status === "submitted") {
+                const approveBtn = document.createElement("button");
+                approveBtn.className = "adm-btn-sm";
+                approveBtn.textContent = "승인";
+                approveBtn.addEventListener("click", () => updateStatus(a.id, "approved"));
+                actions.appendChild(approveBtn);
+
+                const rejectBtn = document.createElement("button");
+                rejectBtn.className = "cnt-btn-secondary";
+                rejectBtn.textContent = "반려";
+                rejectBtn.addEventListener("click", () => updateStatus(a.id, "rejected"));
+                actions.appendChild(rejectBtn);
+            } else if (a.status === "approved") {
+                const paidBtn = document.createElement("button");
+                paidBtn.className = "adm-btn-sm";
+                paidBtn.textContent = "지급 완료 처리";
+                paidBtn.addEventListener("click", () => updateStatus(a.id, "paid"));
+                actions.appendChild(paidBtn);
+            }
+            card.appendChild(actions);
+
+            listEl.appendChild(card);
+        });
+    }
+
+    async function updateStatus(id, status) {
+        const pw = adminPw();
+        if (!pw) {
+            statusEl.textContent = "관리자 비밀번호가 필요해요. 페이지 상단에서 잠금을 먼저 해제해주세요.";
+            statusEl.classList.add("err");
+            return;
+        }
+        if (status === "rejected" && !confirm("이 신청을 반려할까요?")) return;
+        if (status === "paid" && !confirm("지급 완료로 표시할까요?")) return;
+        const res = await ContentAPI.updateSupportFundStatus(id, status, pw);
+        if (!res.ok) {
+            statusEl.textContent = res.error || "처리하지 못했어요.";
+            statusEl.classList.add("err");
+            return;
+        }
+        await fetchList();
+    }
+
+    async function fetchList() {
+        const pw = adminPw();
+        if (!pw) {
+            statusEl.textContent = "관리자 비밀번호가 필요해요. 페이지 상단에서 잠금을 먼저 해제해주세요.";
+            statusEl.classList.add("err");
+            return;
+        }
+        statusEl.textContent = "불러오는 중...";
+        statusEl.classList.remove("err");
+        const res = await ContentAPI.listSupportFund(pw);
+        if (!res.ok) {
+            statusEl.textContent = res.error || "불러오지 못했어요.";
+            statusEl.classList.add("err");
+            return;
+        }
+        applications = res.applications;
+        loaded = true;
+        statusEl.textContent = `총 ${applications.length}건`;
+        render();
+    }
+
+    refreshBtn.addEventListener("click", fetchList);
+    filterSelect.addEventListener("change", render);
+
+    window.__fundActivate = function () {
+        if (!loaded) fetchList();
+    };
+})();
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   9. 회비 관리 admin — admin-only, not linked from the public site.
+      Upgraded/shared replacement for soeldayeon_money.py: same event/
+      name/amount/paid shape, now backed by Supabase (dues_members) so
+      the whole accounting team sees the same list instead of one
+      autosave.txt on one laptop. Adds bulk-add (paste names, one per
+      line) and one-click paid/unpaid toggling for convenience.
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+    const STORAGE_KEY = "snuTeaAdminPw_v1";
+    function adminPw() {
+        try { return sessionStorage.getItem(STORAGE_KEY) || ""; } catch (e) { return ""; }
+    }
+
+    const eventInput    = document.getElementById("dues-event");
+    const amountInput   = document.getElementById("dues-amount");
+    const nameInput     = document.getElementById("dues-name");
+    const addBtn        = document.getElementById("dues-add-btn");
+    const bulkInput     = document.getElementById("dues-bulk");
+    const bulkAddBtn    = document.getElementById("dues-bulk-add-btn");
+    const addStatusEl   = document.getElementById("dues-add-status");
+
+    const refreshBtn     = document.getElementById("dues-refresh-btn");
+    const eventFilter    = document.getElementById("dues-event-filter");
+    const unpaidOnly     = document.getElementById("dues-unpaid-only");
+    const deleteEventBtn = document.getElementById("dues-delete-event-btn");
+    const statusEl       = document.getElementById("dues-status");
+    const summaryEl      = document.getElementById("dues-summary");
+    const tableEl        = document.getElementById("dues-table");
+
+    let members = [];
+    let loaded = false;
+
+    function requirePw() {
+        const pw = adminPw();
+        if (!pw) {
+            statusEl.textContent = "관리자 비밀번호가 필요해요. 페이지 상단에서 잠금을 먼저 해제해주세요.";
+            statusEl.classList.add("err");
+        }
+        return pw;
+    }
+
+    function rebuildEventFilterOptions() {
+        const current = eventFilter.value;
+        const names = Array.from(new Set(members.map((m) => m.eventName))).sort();
+        eventFilter.innerHTML = '<option value="">전체 행사</option>';
+        names.forEach((n) => {
+            const opt = document.createElement("option");
+            opt.value = n; opt.textContent = n;
+            eventFilter.appendChild(opt);
+        });
+        if (names.includes(current)) eventFilter.value = current;
+    }
+
+    function render() {
+        const eventName = eventFilter.value;
+        const onlyUnpaid = unpaidOnly.checked;
+        const filtered = members.filter((m) =>
+            (!eventName || m.eventName === eventName) && (!onlyUnpaid || !m.paid)
+        );
+
+        tableEl.innerHTML = "";
+        const head = document.createElement("div");
+        head.className = "dues-row is-head";
+        head.innerHTML = "<span>행사</span><span>이름</span><span>금액</span><span>상태</span><span></span>";
+        tableEl.appendChild(head);
+
+        if (filtered.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "adm-empty";
+            empty.textContent = "표시할 명단이 없어요.";
+            tableEl.appendChild(empty);
+        }
+
+        filtered.forEach((m) => {
+            const row = document.createElement("div");
+            row.className = "dues-row";
+
+            const eventCell = document.createElement("span");
+            eventCell.textContent = m.eventName;
+            row.appendChild(eventCell);
+
+            const nameCell = document.createElement("span");
+            nameCell.textContent = m.name;
+            row.appendChild(nameCell);
+
+            const amountCell = document.createElement("span");
+            amountCell.className = "dues-row-amount";
+            amountCell.textContent = m.amount.toLocaleString() + "원";
+            row.appendChild(amountCell);
+
+            const toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "dues-toggle" + (m.paid ? " is-paid" : "");
+            toggle.textContent = m.paid ? "입금완료" : "미입금";
+            toggle.addEventListener("click", () => togglePaid(m));
+            row.appendChild(toggle);
+
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "dues-row-del";
+            delBtn.textContent = "×";
+            delBtn.title = "삭제";
+            delBtn.addEventListener("click", () => deleteMember(m));
+            row.appendChild(delBtn);
+
+            tableEl.appendChild(row);
+        });
+
+        updateSummary();
+    }
+
+    function updateSummary() {
+        const eventName = eventFilter.value;
+        const scoped = eventName ? members.filter((m) => m.eventName === eventName) : members;
+        let paidCount = 0, paidMoney = 0, totalMoney = 0;
+        scoped.forEach((m) => {
+            totalMoney += m.amount;
+            if (m.paid) { paidCount++; paidMoney += m.amount; }
+        });
+        const unpaidCount = scoped.length - paidCount;
+        summaryEl.textContent =
+            `총 ${scoped.length}명 / 입금 ${paidCount}명 / 미입금 ${unpaidCount}명\n` +
+            `모인 금액: ${paidMoney.toLocaleString()}원 / ${totalMoney.toLocaleString()}원`;
+    }
+
+    async function fetchList() {
+        const pw = requirePw();
+        if (!pw) return;
+        statusEl.textContent = "불러오는 중...";
+        statusEl.classList.remove("err");
+        const res = await ContentAPI.listDues(pw);
+        if (!res.ok) {
+            statusEl.textContent = res.error || "불러오지 못했어요.";
+            statusEl.classList.add("err");
+            return;
+        }
+        members = res.members;
+        loaded = true;
+        statusEl.textContent = `총 ${members.length}명`;
+        rebuildEventFilterOptions();
+        render();
+    }
+
+    async function togglePaid(m) {
+        const pw = requirePw();
+        if (!pw) return;
+        const res = await ContentAPI.updateDuesMemberStatus(m.id, !m.paid, pw);
+        if (!res.ok) {
+            statusEl.textContent = res.error || "처리하지 못했어요.";
+            statusEl.classList.add("err");
+            return;
+        }
+        m.paid = res.member.paid;
+        render();
+    }
+
+    async function deleteMember(m) {
+        const pw = requirePw();
+        if (!pw) return;
+        if (!confirm(`${m.eventName} / ${m.name} / ${m.amount.toLocaleString()}원\n이 사람을 삭제할까요?`)) return;
+        const res = await ContentAPI.deleteDuesMember(m.id, pw);
+        if (!res.ok) {
+            statusEl.textContent = res.error || "삭제하지 못했어요.";
+            statusEl.classList.add("err");
+            return;
+        }
+        members = members.filter((x) => x.id !== m.id);
+        rebuildEventFilterOptions();
+        render();
+    }
+
+    async function addSingle() {
+        const pw = requirePw();
+        if (!pw) return;
+        const eventName = eventInput.value.trim();
+        const amount = amountInput.value.trim();
+        const name = nameInput.value.trim();
+        addStatusEl.classList.remove("err");
+        if (!eventName) { addStatusEl.textContent = "행사명을 입력해주세요."; addStatusEl.classList.add("err"); return; }
+        if (!name) { addStatusEl.textContent = "이름을 입력해주세요."; addStatusEl.classList.add("err"); return; }
+        if (!/^\d+$/.test(amount)) { addStatusEl.textContent = "금액은 숫자로만 입력해주세요."; addStatusEl.classList.add("err"); return; }
+
+        addStatusEl.textContent = "추가하는 중...";
+        const res = await ContentAPI.createDuesMember({ eventName, name, amount: Number(amount) }, pw);
+        if (!res.ok) {
+            addStatusEl.textContent = res.error || "추가하지 못했어요.";
+            addStatusEl.classList.add("err");
+            return;
+        }
+        members.push(res.member);
+        nameInput.value = "";
+        nameInput.focus();
+        addStatusEl.textContent = `${name} 추가됨`;
+        rebuildEventFilterOptions();
+        render();
+    }
+
+    addBtn.addEventListener("click", addSingle);
+    nameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); addSingle(); }
+    });
+
+    bulkAddBtn.addEventListener("click", async () => {
+        const pw = requirePw();
+        if (!pw) return;
+        const eventName = eventInput.value.trim();
+        const amount = amountInput.value.trim();
+        const names = bulkInput.value.split("\n").map((s) => s.trim()).filter(Boolean);
+        addStatusEl.classList.remove("err");
+        if (!eventName) { addStatusEl.textContent = "행사명을 입력해주세요."; addStatusEl.classList.add("err"); return; }
+        if (!/^\d+$/.test(amount)) { addStatusEl.textContent = "금액은 숫자로만 입력해주세요."; addStatusEl.classList.add("err"); return; }
+        if (names.length === 0) { addStatusEl.textContent = "추가할 이름을 입력해주세요."; addStatusEl.classList.add("err"); return; }
+
+        addStatusEl.textContent = "추가하는 중...";
+        const res = await ContentAPI.createDuesMembersBulk({ eventName, amount: Number(amount), names }, pw);
+        if (!res.ok) {
+            addStatusEl.textContent = res.error || "추가하지 못했어요.";
+            addStatusEl.classList.add("err");
+            return;
+        }
+        members = members.concat(res.members);
+        bulkInput.value = "";
+        addStatusEl.textContent = `${res.members.length}명 추가됨`;
+        rebuildEventFilterOptions();
+        render();
+    });
+
+    refreshBtn.addEventListener("click", fetchList);
+    eventFilter.addEventListener("change", render);
+    unpaidOnly.addEventListener("change", render);
+
+    deleteEventBtn.addEventListener("click", async () => {
+        const pw = requirePw();
+        if (!pw) return;
+        const eventName = eventFilter.value;
+        if (!eventName) {
+            statusEl.textContent = "삭제할 행사를 필터에서 먼저 선택해주세요.";
+            statusEl.classList.add("err");
+            return;
+        }
+        const count = members.filter((m) => m.eventName === eventName).length;
+        if (!confirm(`'${eventName}' 행사의 참가자 ${count}명을 모두 삭제할까요?\n삭제하면 되돌릴 수 없습니다.`)) return;
+        const res = await ContentAPI.deleteDuesEvent(eventName, pw);
+        if (!res.ok) {
+            statusEl.textContent = res.error || "삭제하지 못했어요.";
+            statusEl.classList.add("err");
+            return;
+        }
+        members = members.filter((m) => m.eventName !== eventName);
+        rebuildEventFilterOptions();
+        render();
+    });
+
+    window.__duesActivate = function () {
+        if (!loaded) fetchList();
+    };
 })();
 </script>
 </body>

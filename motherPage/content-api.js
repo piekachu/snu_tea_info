@@ -76,5 +76,29 @@
                 adminPassword,
             });
         },
+
+        // ── 소모임 지원금 신청 (support-fund applications) ──────────────
+        // submit/uploadSupportFundImage: public, no password — anyone with
+        // the link can apply. list/updateStatus: admin-only.
+        uploadSupportFundImage: async (file) => {
+            const dataBase64 = await readFileAsBase64(file);
+            return call("uploadSupportFundImage", {
+                fileName: file.name,
+                contentType: file.type || "image/jpeg",
+                dataBase64,
+            });
+        },
+        submitSupportFund: (fields) => call("submitSupportFund", fields),
+        listSupportFund: (adminPassword) => call("listSupportFund", { adminPassword }),
+        updateSupportFundStatus: (id, status, adminPassword, adminNote) =>
+            call("updateSupportFundStatus", { id, status, adminNote, adminPassword }),
+
+        // ── 회비 관리 (dues) — admin-only ────────────────────────────────
+        listDues: (adminPassword) => call("listDues", { adminPassword }),
+        createDuesMember: (fields, adminPassword) => call("createDuesMember", { ...fields, adminPassword }),
+        createDuesMembersBulk: (fields, adminPassword) => call("createDuesMembersBulk", { ...fields, adminPassword }),
+        updateDuesMemberStatus: (id, paid, adminPassword) => call("updateDuesMemberStatus", { id, paid, adminPassword }),
+        deleteDuesMember: (id, adminPassword) => call("deleteDuesMember", { id, adminPassword }),
+        deleteDuesEvent: (eventName, adminPassword) => call("deleteDuesEvent", { eventName, adminPassword }),
     };
 })();
