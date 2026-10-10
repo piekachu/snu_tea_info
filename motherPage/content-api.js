@@ -92,6 +92,8 @@
         // public — lets an applicant check their own application with the
         // id shown back to them at submission time, no password needed
         getSupportFundStatus: (id) => call("getSupportFundStatus", { id }),
+        // public — masked applicant names only, for the "대기중인 신청" list
+        listPendingSupportFund: () => call("listPendingSupportFund", {}),
         listSupportFund: (adminPassword) => call("listSupportFund", { adminPassword }),
         updateSupportFundStatus: (id, status, adminPassword, adminNote) =>
             call("updateSupportFundStatus", { id, status, adminNote, adminPassword }),

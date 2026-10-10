@@ -81,6 +81,19 @@
             margin-top: 10px; padding: 12px 14px; background: #faf7f0; border-radius: 8px;
             font-size: 13px; line-height: 1.6; color: var(--fontColor);
         }
+
+        /* 대기중인 신청 — masked-name list, public, read-only */
+        .sf_pending_card { margin-bottom: 24px; }
+        .sf_pending_title { font-size: 13px; font-weight: var(--font-weight-semibold); color: var(--osullocGreen); margin: 0 0 14px; }
+        .sf_pending_list { display: flex; flex-direction: column; }
+        .sf_pending_row {
+            display: flex; justify-content: space-between; align-items: baseline;
+            padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 13.5px;
+        }
+        .sf_pending_row:last-child { border-bottom: none; }
+        .sf_pending_name { font-weight: var(--font-weight-semibold); }
+        .sf_pending_date { color: var(--fontGray); font-size: 12.5px; }
+        .sf_pending_empty { color: var(--fontGray); font-size: 13px; margin: 0; }
     </style>
 </head>
 <body class="page-home">
@@ -99,20 +112,22 @@
                 <div class="section_header">
                     <h2 class="title">소모임 지원금 신청</h2>
                 </div>
-                <p class="sf_intro">소모임을 다녀온 뒤, 작성한 시음기와 함께 지원금을 신청해주세요. 회계부장 확인 후 입력하신 계좌로 지원금이 지급됩니다.</p>
+                <p class="sf_intro">
+                    소모임을 다녀온 뒤, 작성한 시음기와 함께 지원금을 신청해주세요. 회계부장 확인 후 입력하신 계좌로 지원금이 지급됩니다.
+                    <a href="support-fund-manual.html" style="color: var(--osullocGreen); font-weight: 600;">신청 방법 안내 보기 →</a>
+                </p>
+
+                <div class="sf_card sf_pending_card">
+                    <p class="sf_pending_title">대기중인 신청</p>
+                    <div class="sf_pending_list" id="sfPendingList"></div>
+                </div>
 
                 <div class="sf_card">
                     <form id="sfForm" class="sf_form">
                         <p class="sf_section_title">소모임 정보</p>
-                        <div class="join_field_row">
-                            <div class="join_field">
-                                <label for="sfDate">날짜 *</label>
-                                <input type="date" id="sfDate" required>
-                            </div>
-                            <div class="join_field">
-                                <label for="sfTime">시간 (선택)</label>
-                                <input type="time" id="sfTime">
-                            </div>
+                        <div class="join_field">
+                            <label for="sfDate">날짜 *</label>
+                            <input type="date" id="sfDate" required>
                         </div>
 
                         <div class="join_field">
@@ -240,7 +255,6 @@
         const statusResultEl = document.getElementById("sfStatusResult");
 
         const dateInput = document.getElementById("sfDate");
-        const timeInput = document.getElementById("sfTime");
         const imageInput = document.getElementById("sfImage");
         const imagePreview = document.getElementById("sfImagePreview");
         const participantsInput = document.getElementById("sfParticipants");
@@ -291,7 +305,6 @@
 
                 const res = await ContentAPI.submitSupportFund({
                     meetupDate,
-                    meetupTime: timeInput.value || null,
                     tastingNoteUrl: upload.url,
                     bankName: bankNameInput.value.trim() || null,
                     accountHolder: accountHolderInput.value.trim() || null,
@@ -354,7 +367,7 @@
                 const a = res.application;
                 let html = `<span class="sf_status_badge ${a.status}">${STATUS_LABEL[a.status] || a.status}</span>`;
                 html += `<div class="sf_status_meta">`;
-                html += `소모임 날짜: ${formatDateKo(a.meetupDate)}${a.meetupTime ? " " + a.meetupTime : ""}<br>`;
+                html += `소모임 날짜: ${formatDateKo(a.meetupDate)}<br>`;
                 html += `참가자: ${a.participants.map((p) => escapeHtml(p)).join(", ")}`;
                 html += `</div>`;
                 if (a.adminNote) {
@@ -389,6 +402,23 @@
             statusToggle.setAttribute("aria-expanded", "true");
             checkStatus();
         }
+
+        // ── 대기중인 신청 — masked names only, see maskName() server-side ──
+        const pendingListEl = document.getElementById("sfPendingList");
+        (async () => {
+            const res = await ContentAPI.listPendingSupportFund();
+            if (!res.ok) { pendingListEl.innerHTML = '<p class="sf_pending_empty">불러오지 못했어요.</p>'; return; }
+            if (res.applications.length === 0) {
+                pendingListEl.innerHTML = '<p class="sf_pending_empty">대기중인 신청이 없어요.</p>';
+                return;
+            }
+            pendingListEl.innerHTML = res.applications.map((a) =>
+                `<div class="sf_pending_row">` +
+                    `<span class="sf_pending_name">${escapeHtml(a.applicantName)}</span>` +
+                    `<span class="sf_pending_date">${formatDateKo(a.meetupDate)}</span>` +
+                `</div>`
+            ).join("");
+        })();
     })();
     </script>
 

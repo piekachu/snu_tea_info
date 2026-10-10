@@ -9,7 +9,7 @@
 //        | listEvents  | getEvent   | createEvent    | updateEvent   | deleteEvent
 //        | uploadImage
 //        | submitSupportFund | uploadSupportFundImage | getSupportFundStatus
-//        | listSupportFund   | updateSupportFundStatus
+//        | listPendingSupportFund | listSupportFund | updateSupportFundStatus
 //        | listDuesEvents | createDuesEvent | deleteDuesEvent
 //        | listDues | createDuesMember | createDuesMembersBulk
 //        | updateDuesMemberStatus | deleteDuesMember
@@ -46,6 +46,18 @@ function json(data: unknown, status = 200) {
 }
 
 const STORAGE_BUCKET = "content-images";
+
+// "김철수" -> "김*수" — used by listPendingSupportFund so a public,
+// unauthenticated listing never shows a full applicant name. Array.from
+// (not string indexing) so this stays correct for any multi-code-point
+// characters, not just the single-code-point Korean syllables it's mainly
+// used on.
+function maskName(name: string): string {
+  const chars = Array.from(name.trim());
+  if (chars.length <= 1) return chars.join("");
+  if (chars.length === 2) return chars[0] + "*";
+  return chars[0] + "*".repeat(chars.length - 2) + chars[chars.length - 1];
+}
 
 // deno-lint-ignore no-explicit-any
 function mapNotice(r: any) {
@@ -496,7 +508,7 @@ Deno.serve(async (req: Request) => {
       if (!id) return json({ ok: false, error: "신청 번호가 필요해요." }, 400);
       const { data, error } = await supabase
         .from("support_fund_applications")
-        .select("id, meetup_date, meetup_time, participants, status, admin_note, created_at, approved_at, paid_at")
+        .select("id, meetup_date, participants, status, admin_note, created_at, approved_at, paid_at")
         .eq("id", id)
         .maybeSingle();
       if (error) return json({ ok: false, error: error.message }, 500);
@@ -506,7 +518,6 @@ Deno.serve(async (req: Request) => {
         application: {
           id: data.id,
           meetupDate: data.meetup_date,
-          meetupTime: data.meetup_time ?? null,
           participants: Array.isArray(data.participants) ? data.participants : [],
           status: data.status,
           adminNote: data.admin_note ?? null,
@@ -515,6 +526,27 @@ Deno.serve(async (req: Request) => {
           paidAt: data.paid_at ?? null,
         },
       });
+    }
+
+    // Public, no password — a lightweight "who's waiting on review" list
+    // for the support-fund page itself. Only ever returns a masked name
+    // (see maskName), the meetup date, and the id — no bank info, no
+    // participant list, nothing else from the row.
+    if (action === "listPendingSupportFund") {
+      const { data, error } = await supabase
+        .from("support_fund_applications")
+        .select("id, meetup_date, applicant_name")
+        .eq("status", "submitted")
+        .order("meetup_date", { ascending: false });
+      if (error) return json({ ok: false, error: error.message }, 500);
+      const applications = (data ?? [])
+        .filter((r) => r.applicant_name)
+        .map((r) => ({
+          id: r.id,
+          meetupDate: r.meetup_date,
+          applicantName: maskName(String(r.applicant_name)),
+        }));
+      return json({ ok: true, applications });
     }
 
     if (action === "listSupportFund") {

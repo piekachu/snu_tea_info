@@ -83,24 +83,6 @@
     color: var(--fontColor);
 }
 
-/* standalone call-to-action button — for a band with no carousel to show
-   (just a link out to a form), e.g. 소모임 지원금 신청 */
-.home_card_cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 13px 26px;
-    background: var(--osullocGreen);
-    color: #fff;
-    font-size: 15px;
-    font-weight: var(--font-weight-semibold);
-    border-radius: 10px;
-    text-decoration: none;
-    transition: opacity .15s;
-}
-.home_card_cta:hover {
-    opacity: .88;
-}
 
 /* the events carousel already ships its own box-free styling
    (events/carousel.css) sized for its full-width home on the Events page —
