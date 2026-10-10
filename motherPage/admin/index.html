@@ -812,8 +812,17 @@
         .fund-meta { font-size: 12.5px; color: var(--gray); line-height: 1.7; }
         .fund-meta strong { color: #333; font-weight: 600; }
         .fund-participants { font-size: 12.5px; color: #333; margin-top: 6px; line-height: 1.6; }
-        .fund-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
-        .fund-actions .adm-btn-sm, .fund-actions .cnt-btn-secondary { white-space: nowrap; }
+        .fund-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; width: 180px; }
+        .fund-status-select {
+            padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius);
+            font-family: var(--font); font-size: 12.5px; color: #222; background: #fff;
+        }
+        .fund-note-input {
+            padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius);
+            font-family: var(--font); font-size: 12.5px; color: #222; resize: vertical; min-height: 32px;
+        }
+        .fund-note-hint { font-size: 10.5px; color: var(--gray); margin: 0; }
+        .fund-actions .adm-btn-sm { white-space: nowrap; }
 
         /* ── 회비 관리 panel ── */
         .dues-add-card {
@@ -827,11 +836,18 @@
         .dues-add-row { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
         .dues-add-row:last-of-type { margin-bottom: 0; }
         .dues-bulk-textarea { resize: vertical; min-height: 38px; }
+        .dues-new-event { margin: 4px 0 0; }
+        .dues-new-event summary {
+            cursor: pointer; font-size: 12.5px; color: var(--green); font-weight: 600;
+            margin-bottom: 10px; list-style: none;
+        }
+        .dues-new-event summary::-webkit-details-marker { display: none; }
+        .dues-new-event[open] summary { margin-bottom: 12px; }
         .dues-summary { font-size: 13px; color: var(--gray); white-space: pre-line; margin: 0 0 14px; }
         .dues-table { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
         .dues-row {
             display: grid;
-            grid-template-columns: 1.3fr 1fr 110px 120px 32px;
+            grid-template-columns: 1.4fr 190px 100px 32px;
             gap: 10px;
             align-items: center;
             padding: 10px 14px;
@@ -840,12 +856,17 @@
         }
         .dues-row:last-child { border-bottom: none; }
         .dues-row.is-head { background: #fafaf8; font-weight: 700; font-size: 11.5px; color: var(--gray); text-transform: uppercase; letter-spacing: .04em; }
-        .dues-row-amount { font-feature-settings: "tnum" 1; }
-        .dues-toggle {
-            padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: 700;
-            border: 1px solid var(--border); background: #fff; color: var(--gray); cursor: pointer;
+        .dues-status-select {
+            padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;
+            border: 1px solid transparent; cursor: pointer; appearance: none; -webkit-appearance: none;
+            background: var(--border) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+            padding-right: 24px; color: var(--gray);
         }
-        .dues-toggle.is-paid { background: var(--green); color: #fff; border-color: var(--green); }
+        .dues-status-select.unpaid         { background-color: #fde2e2; color: var(--red); }
+        .dues-status-select.paid           { background-color: var(--green); color: #fff; }
+        .dues-status-select.canceled       { background-color: var(--border); color: var(--gray); }
+        .dues-status-select.noshow_charged { background-color: #fff4da; color: #8a6400; }
+        .dues-status-select.noshow_paid    { background-color: #1c3f66; color: #fff; }
         .dues-row-del {
             background: none; border: none; color: var(--gray); cursor: pointer; font-size: 15px;
             width: 28px; height: 28px; border-radius: 50%;
@@ -1259,21 +1280,45 @@
         <div class="fund-list" id="fund-list"></div>
     </div><!-- /tab-fund -->
 
-    <!-- ══ 회비 관리 panel — admin-only, not linked from the public site ══ -->
+    <!-- ══ 회비 관리 panel — admin-only, not linked from the public site ══
+         행사(이름+금액)는 한 번만 만들고, 참가자를 추가할 때는 만들어둔 행사를
+         목록에서 선택만 합니다 — 행사명을 매번 다시 입력하다가 오타로 같은
+         행사가 둘로 갈라지는 문제를 막기 위함 (관리자 피드백). ══ -->
     <div class="adm-panel" id="tab-dues">
 
         <div class="dues-add-card">
+            <p class="dues-add-title">행사 선택</p>
+            <div class="dues-add-row">
+                <div class="adm-field" style="min-width:240px;">
+                    <label for="dues-event-select">행사</label>
+                    <select class="adm-pw" id="dues-event-select">
+                        <option value="">행사를 선택하세요</option>
+                    </select>
+                </div>
+                <button class="cnt-btn-secondary" id="dues-delete-event-btn" type="button" disabled>이 행사 삭제</button>
+            </div>
+
+            <details class="dues-new-event">
+                <summary>+ 새 행사 만들기</summary>
+                <div class="dues-add-row">
+                    <div class="adm-field" style="min-width:200px;">
+                        <label for="dues-new-event-name">행사명</label>
+                        <input class="adm-pw" id="dues-new-event-name" type="text" placeholder="예: 26-2 개강다회">
+                    </div>
+                    <div class="adm-field" style="min-width:110px; flex:none;">
+                        <label for="dues-new-event-amount">금액</label>
+                        <input class="adm-pw" id="dues-new-event-amount" type="text" inputmode="numeric" placeholder="25000">
+                    </div>
+                    <button class="adm-btn" id="dues-new-event-btn" type="button">행사 만들기</button>
+                </div>
+            </details>
+            <p class="adm-status" id="dues-event-status"></p>
+        </div>
+
+        <div class="dues-add-card" id="dues-member-add-card">
             <p class="dues-add-title">명단 등록</p>
             <div class="dues-add-row">
                 <div class="adm-field" style="min-width:160px;">
-                    <label for="dues-event">행사명</label>
-                    <input class="adm-pw" id="dues-event" type="text" placeholder="예: 26-2 개강다회">
-                </div>
-                <div class="adm-field" style="min-width:110px; flex:none;">
-                    <label for="dues-amount">금액</label>
-                    <input class="adm-pw" id="dues-amount" type="text" inputmode="numeric" placeholder="25000">
-                </div>
-                <div class="adm-field" style="min-width:140px;">
                     <label for="dues-name">이름 (Enter로 빠른 추가)</label>
                     <input class="adm-pw" id="dues-name" type="text" placeholder="이름 입력 후 Enter">
                 </div>
@@ -1291,15 +1336,15 @@
 
         <div class="sm-toolbar">
             <button class="adm-btn-sec" id="dues-refresh-btn">새로고침</button>
-            <select class="fund-filter-select" id="dues-event-filter">
-                <option value="">전체 행사</option>
+            <select class="fund-filter-select" id="dues-status-filter">
+                <option value="">전체 상태</option>
+                <option value="unpaid">미입금</option>
+                <option value="paid">입금완료</option>
+                <option value="canceled">신청취소</option>
+                <option value="noshow_charged">불참비 부과</option>
+                <option value="noshow_paid">불참비 부과 완료</option>
             </select>
-            <label class="sm-filter-toggle">
-                <input type="checkbox" id="dues-unpaid-only">
-                미입금만 보기
-            </label>
             <div class="sm-toolbar-spacer"></div>
-            <button class="cnt-btn-secondary" id="dues-delete-event-btn" type="button">선택한 행사 전체 삭제</button>
         </div>
 
         <p class="adm-status" id="dues-status"></p>
@@ -2906,43 +2951,57 @@
 
             card.appendChild(body);
 
+            // full control over status (not just the forward submitted ->
+            // approved -> paid flow — admin can revert too), plus an
+            // optional note the applicant will see when checking their own
+            // status (meant mainly for a 반려 reason, but not restricted to
+            // that case).
             const actions = document.createElement("div");
             actions.className = "fund-actions";
-            if (a.status === "submitted") {
-                const approveBtn = document.createElement("button");
-                approveBtn.className = "adm-btn-sm";
-                approveBtn.textContent = "승인";
-                approveBtn.addEventListener("click", () => updateStatus(a.id, "approved"));
-                actions.appendChild(approveBtn);
 
-                const rejectBtn = document.createElement("button");
-                rejectBtn.className = "cnt-btn-secondary";
-                rejectBtn.textContent = "반려";
-                rejectBtn.addEventListener("click", () => updateStatus(a.id, "rejected"));
-                actions.appendChild(rejectBtn);
-            } else if (a.status === "approved") {
-                const paidBtn = document.createElement("button");
-                paidBtn.className = "adm-btn-sm";
-                paidBtn.textContent = "지급 완료 처리";
-                paidBtn.addEventListener("click", () => updateStatus(a.id, "paid"));
-                actions.appendChild(paidBtn);
-            }
+            const select = document.createElement("select");
+            select.className = "fund-status-select";
+            Object.keys(STATUS_LABEL).forEach((key) => {
+                const opt = document.createElement("option");
+                opt.value = key;
+                opt.textContent = STATUS_LABEL[key];
+                if (key === a.status) opt.selected = true;
+                select.appendChild(opt);
+            });
+            actions.appendChild(select);
+
+            const noteInput = document.createElement("textarea");
+            noteInput.className = "fund-note-input";
+            noteInput.rows = 2;
+            noteInput.placeholder = "신청자에게 보여줄 메모 (예: 반려 사유)";
+            noteInput.value = a.adminNote || "";
+            actions.appendChild(noteInput);
+
+            const noteHint = document.createElement("p");
+            noteHint.className = "fund-note-hint";
+            noteHint.textContent = "신청 현황 확인 페이지에 함께 표시돼요.";
+            actions.appendChild(noteHint);
+
+            const saveBtn = document.createElement("button");
+            saveBtn.className = "adm-btn-sm";
+            saveBtn.textContent = "저장";
+            saveBtn.addEventListener("click", () => updateStatus(a.id, select.value, noteInput.value));
+            actions.appendChild(saveBtn);
+
             card.appendChild(actions);
 
             listEl.appendChild(card);
         });
     }
 
-    async function updateStatus(id, status) {
+    async function updateStatus(id, status, note) {
         const pw = adminPw();
         if (!pw) {
             statusEl.textContent = "관리자 비밀번호가 필요해요. 페이지 상단에서 잠금을 먼저 해제해주세요.";
             statusEl.classList.add("err");
             return;
         }
-        if (status === "rejected" && !confirm("이 신청을 반려할까요?")) return;
-        if (status === "paid" && !confirm("지급 완료로 표시할까요?")) return;
-        const res = await ContentAPI.updateSupportFundStatus(id, status, pw);
+        const res = await ContentAPI.updateSupportFundStatus(id, status, pw, note.trim() || null);
         if (!res.ok) {
             statusEl.textContent = res.error || "처리하지 못했어요.";
             statusEl.classList.add("err");
@@ -2983,11 +3042,16 @@
 
 /* ══════════════════════════════════════════════════════════════════════
    9. 회비 관리 admin — admin-only, not linked from the public site.
-      Upgraded/shared replacement for soeldayeon_money.py: same event/
-      name/amount/paid shape, now backed by Supabase (dues_members) so
-      the whole accounting team sees the same list instead of one
-      autosave.txt on one laptop. Adds bulk-add (paste names, one per
-      line) and one-click paid/unpaid toggling for convenience.
+      Upgraded/shared replacement for soeldayeon_money.py, redesigned after
+      first-use feedback:
+        - 행사(이름+금액) is created once (dues_events) and then *selected*
+          — never retyped — when adding participants, so a typo in a
+          repeated event name can't silently split one group into two.
+        - status replaces the old paid boolean: 미입금(red)/입금완료/
+          신청취소/불참비 부과/불참비 부과 완료.
+        - the Enter-to-add name field now ignores the keydown that fires
+          while a Korean IME composition is still in progress, which used
+          to add the same name twice from a single Enter press.
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
     const STORAGE_KEY = "snuTeaAdminPw_v1";
@@ -2995,22 +3059,32 @@
         try { return sessionStorage.getItem(STORAGE_KEY) || ""; } catch (e) { return ""; }
     }
 
-    const eventInput    = document.getElementById("dues-event");
-    const amountInput   = document.getElementById("dues-amount");
-    const nameInput     = document.getElementById("dues-name");
-    const addBtn        = document.getElementById("dues-add-btn");
-    const bulkInput     = document.getElementById("dues-bulk");
-    const bulkAddBtn    = document.getElementById("dues-bulk-add-btn");
-    const addStatusEl   = document.getElementById("dues-add-status");
+    const STATUS_LABEL = {
+        unpaid: "미입금", paid: "입금완료", canceled: "신청취소",
+        noshow_charged: "불참비 부과", noshow_paid: "불참비 부과 완료",
+    };
 
-    const refreshBtn     = document.getElementById("dues-refresh-btn");
-    const eventFilter    = document.getElementById("dues-event-filter");
-    const unpaidOnly     = document.getElementById("dues-unpaid-only");
-    const deleteEventBtn = document.getElementById("dues-delete-event-btn");
+    const eventSelect     = document.getElementById("dues-event-select");
+    const deleteEventBtn  = document.getElementById("dues-delete-event-btn");
+    const newEventName    = document.getElementById("dues-new-event-name");
+    const newEventAmount  = document.getElementById("dues-new-event-amount");
+    const newEventBtn     = document.getElementById("dues-new-event-btn");
+    const eventStatusEl   = document.getElementById("dues-event-status");
+
+    const memberAddCard = document.getElementById("dues-member-add-card");
+    const nameInput      = document.getElementById("dues-name");
+    const addBtn         = document.getElementById("dues-add-btn");
+    const bulkInput      = document.getElementById("dues-bulk");
+    const bulkAddBtn     = document.getElementById("dues-bulk-add-btn");
+    const addStatusEl    = document.getElementById("dues-add-status");
+
+    const refreshBtn    = document.getElementById("dues-refresh-btn");
+    const statusFilter   = document.getElementById("dues-status-filter");
     const statusEl       = document.getElementById("dues-status");
     const summaryEl      = document.getElementById("dues-summary");
     const tableEl        = document.getElementById("dues-table");
 
+    let events = [];
     let members = [];
     let loaded = false;
 
@@ -3023,32 +3097,51 @@
         return pw;
     }
 
-    function rebuildEventFilterOptions() {
-        const current = eventFilter.value;
-        const names = Array.from(new Set(members.map((m) => m.eventName))).sort();
-        eventFilter.innerHTML = '<option value="">전체 행사</option>';
-        names.forEach((n) => {
+    function currentEvent() {
+        return events.find((e) => e.id === eventSelect.value) || null;
+    }
+
+    function rebuildEventOptions() {
+        const current = eventSelect.value;
+        eventSelect.innerHTML = '<option value="">행사를 선택하세요</option>';
+        events.forEach((e) => {
             const opt = document.createElement("option");
-            opt.value = n; opt.textContent = n;
-            eventFilter.appendChild(opt);
+            opt.value = e.id;
+            opt.textContent = `${e.name} — ${e.amount.toLocaleString()}원`;
+            eventSelect.appendChild(opt);
         });
-        if (names.includes(current)) eventFilter.value = current;
+        if (events.some((e) => e.id === current)) eventSelect.value = current;
+        onEventChange();
+    }
+
+    function onEventChange() {
+        const ev = currentEvent();
+        deleteEventBtn.disabled = !ev;
+        memberAddCard.style.opacity = ev ? "1" : ".5";
+        nameInput.disabled = !ev; addBtn.disabled = !ev;
+        bulkInput.disabled = !ev; bulkAddBtn.disabled = !ev;
+        render();
     }
 
     function render() {
-        const eventName = eventFilter.value;
-        const onlyUnpaid = unpaidOnly.checked;
+        const ev = currentEvent();
+        const statusVal = statusFilter.value;
         const filtered = members.filter((m) =>
-            (!eventName || m.eventName === eventName) && (!onlyUnpaid || !m.paid)
+            ev && m.eventId === ev.id && (!statusVal || m.status === statusVal)
         );
 
         tableEl.innerHTML = "";
         const head = document.createElement("div");
         head.className = "dues-row is-head";
-        head.innerHTML = "<span>행사</span><span>이름</span><span>금액</span><span>상태</span><span></span>";
+        head.innerHTML = "<span>이름</span><span>상태</span><span>등록일</span><span></span>";
         tableEl.appendChild(head);
 
-        if (filtered.length === 0) {
+        if (!ev) {
+            const empty = document.createElement("p");
+            empty.className = "adm-empty";
+            empty.textContent = "먼저 행사를 선택하거나 새로 만들어주세요.";
+            tableEl.appendChild(empty);
+        } else if (filtered.length === 0) {
             const empty = document.createElement("p");
             empty.className = "adm-empty";
             empty.textContent = "표시할 명단이 없어요.";
@@ -3059,25 +3152,26 @@
             const row = document.createElement("div");
             row.className = "dues-row";
 
-            const eventCell = document.createElement("span");
-            eventCell.textContent = m.eventName;
-            row.appendChild(eventCell);
-
             const nameCell = document.createElement("span");
             nameCell.textContent = m.name;
             row.appendChild(nameCell);
 
-            const amountCell = document.createElement("span");
-            amountCell.className = "dues-row-amount";
-            amountCell.textContent = m.amount.toLocaleString() + "원";
-            row.appendChild(amountCell);
+            const select = document.createElement("select");
+            select.className = "dues-status-select " + m.status;
+            Object.keys(STATUS_LABEL).forEach((key) => {
+                const opt = document.createElement("option");
+                opt.value = key;
+                opt.textContent = STATUS_LABEL[key];
+                if (key === m.status) opt.selected = true;
+                select.appendChild(opt);
+            });
+            select.addEventListener("change", () => updateStatus(m, select.value));
+            row.appendChild(select);
 
-            const toggle = document.createElement("button");
-            toggle.type = "button";
-            toggle.className = "dues-toggle" + (m.paid ? " is-paid" : "");
-            toggle.textContent = m.paid ? "입금완료" : "미입금";
-            toggle.addEventListener("click", () => togglePaid(m));
-            row.appendChild(toggle);
+            const dateCell = document.createElement("span");
+            const d = new Date(m.createdAt);
+            dateCell.textContent = Number.isNaN(d.getTime()) ? "" : `${d.getMonth() + 1}/${d.getDate()}`;
+            row.appendChild(dateCell);
 
             const delBtn = document.createElement("button");
             delBtn.type = "button";
@@ -3094,54 +3188,54 @@
     }
 
     function updateSummary() {
-        const eventName = eventFilter.value;
-        const scoped = eventName ? members.filter((m) => m.eventName === eventName) : members;
-        let paidCount = 0, paidMoney = 0, totalMoney = 0;
-        scoped.forEach((m) => {
-            totalMoney += m.amount;
-            if (m.paid) { paidCount++; paidMoney += m.amount; }
-        });
-        const unpaidCount = scoped.length - paidCount;
+        const ev = currentEvent();
+        if (!ev) { summaryEl.textContent = ""; return; }
+        const scoped = members.filter((m) => m.eventId === ev.id);
+        const paidCount = scoped.filter((m) => m.status === "paid").length;
+        const unpaidCount = scoped.filter((m) => m.status === "unpaid").length;
+        const paidMoney = paidCount * ev.amount;
+        const totalMoney = scoped.length * ev.amount;
         summaryEl.textContent =
             `총 ${scoped.length}명 / 입금 ${paidCount}명 / 미입금 ${unpaidCount}명\n` +
             `모인 금액: ${paidMoney.toLocaleString()}원 / ${totalMoney.toLocaleString()}원`;
     }
 
-    async function fetchList() {
+    async function fetchAll() {
         const pw = requirePw();
         if (!pw) return;
         statusEl.textContent = "불러오는 중...";
         statusEl.classList.remove("err");
-        const res = await ContentAPI.listDues(pw);
-        if (!res.ok) {
-            statusEl.textContent = res.error || "불러오지 못했어요.";
-            statusEl.classList.add("err");
-            return;
-        }
-        members = res.members;
+        const [evRes, memRes] = await Promise.all([
+            ContentAPI.listDuesEvents(pw),
+            ContentAPI.listDues(pw),
+        ]);
+        if (!evRes.ok) { statusEl.textContent = evRes.error || "불러오지 못했어요."; statusEl.classList.add("err"); return; }
+        if (!memRes.ok) { statusEl.textContent = memRes.error || "불러오지 못했어요."; statusEl.classList.add("err"); return; }
+        events = evRes.events;
+        members = memRes.members;
         loaded = true;
-        statusEl.textContent = `총 ${members.length}명`;
-        rebuildEventFilterOptions();
-        render();
+        statusEl.textContent = `행사 ${events.length}개 / 참가자 ${members.length}명`;
+        rebuildEventOptions();
     }
 
-    async function togglePaid(m) {
+    async function updateStatus(m, status) {
         const pw = requirePw();
-        if (!pw) return;
-        const res = await ContentAPI.updateDuesMemberStatus(m.id, !m.paid, pw);
+        if (!pw) { render(); return; }
+        const res = await ContentAPI.updateDuesMemberStatus(m.id, status, pw);
         if (!res.ok) {
             statusEl.textContent = res.error || "처리하지 못했어요.";
             statusEl.classList.add("err");
+            render();
             return;
         }
-        m.paid = res.member.paid;
+        m.status = res.member.status;
         render();
     }
 
     async function deleteMember(m) {
         const pw = requirePw();
         if (!pw) return;
-        if (!confirm(`${m.eventName} / ${m.name} / ${m.amount.toLocaleString()}원\n이 사람을 삭제할까요?`)) return;
+        if (!confirm(`${m.name}\n이 사람을 삭제할까요?`)) return;
         const res = await ContentAPI.deleteDuesMember(m.id, pw);
         if (!res.ok) {
             statusEl.textContent = res.error || "삭제하지 못했어요.";
@@ -3149,23 +3243,20 @@
             return;
         }
         members = members.filter((x) => x.id !== m.id);
-        rebuildEventFilterOptions();
         render();
     }
 
     async function addSingle() {
         const pw = requirePw();
         if (!pw) return;
-        const eventName = eventInput.value.trim();
-        const amount = amountInput.value.trim();
+        const ev = currentEvent();
         const name = nameInput.value.trim();
         addStatusEl.classList.remove("err");
-        if (!eventName) { addStatusEl.textContent = "행사명을 입력해주세요."; addStatusEl.classList.add("err"); return; }
+        if (!ev) { addStatusEl.textContent = "행사를 먼저 선택해주세요."; addStatusEl.classList.add("err"); return; }
         if (!name) { addStatusEl.textContent = "이름을 입력해주세요."; addStatusEl.classList.add("err"); return; }
-        if (!/^\d+$/.test(amount)) { addStatusEl.textContent = "금액은 숫자로만 입력해주세요."; addStatusEl.classList.add("err"); return; }
 
         addStatusEl.textContent = "추가하는 중...";
-        const res = await ContentAPI.createDuesMember({ eventName, name, amount: Number(amount) }, pw);
+        const res = await ContentAPI.createDuesMember({ eventId: ev.id, name }, pw);
         if (!res.ok) {
             addStatusEl.textContent = res.error || "추가하지 못했어요.";
             addStatusEl.classList.add("err");
@@ -3175,28 +3266,31 @@
         nameInput.value = "";
         nameInput.focus();
         addStatusEl.textContent = `${name} 추가됨`;
-        rebuildEventFilterOptions();
         render();
     }
 
     addBtn.addEventListener("click", addSingle);
+    // Enter-to-add: a Korean IME fires a keydown for the Enter that confirms
+    // its composition *and* a separate one for the "real" Enter right after
+    // — without the isComposing/229 guard, one Enter press added the same
+    // name twice (reported after live use: 6 people each appeared 2x).
     nameInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") { e.preventDefault(); addSingle(); }
+        if (e.key !== "Enter" || e.isComposing || e.keyCode === 229) return;
+        e.preventDefault();
+        addSingle();
     });
 
     bulkAddBtn.addEventListener("click", async () => {
         const pw = requirePw();
         if (!pw) return;
-        const eventName = eventInput.value.trim();
-        const amount = amountInput.value.trim();
+        const ev = currentEvent();
         const names = bulkInput.value.split("\n").map((s) => s.trim()).filter(Boolean);
         addStatusEl.classList.remove("err");
-        if (!eventName) { addStatusEl.textContent = "행사명을 입력해주세요."; addStatusEl.classList.add("err"); return; }
-        if (!/^\d+$/.test(amount)) { addStatusEl.textContent = "금액은 숫자로만 입력해주세요."; addStatusEl.classList.add("err"); return; }
+        if (!ev) { addStatusEl.textContent = "행사를 먼저 선택해주세요."; addStatusEl.classList.add("err"); return; }
         if (names.length === 0) { addStatusEl.textContent = "추가할 이름을 입력해주세요."; addStatusEl.classList.add("err"); return; }
 
         addStatusEl.textContent = "추가하는 중...";
-        const res = await ContentAPI.createDuesMembersBulk({ eventName, amount: Number(amount), names }, pw);
+        const res = await ContentAPI.createDuesMembersBulk({ eventId: ev.id, names }, pw);
         if (!res.ok) {
             addStatusEl.textContent = res.error || "추가하지 못했어요.";
             addStatusEl.classList.add("err");
@@ -3205,38 +3299,57 @@
         members = members.concat(res.members);
         bulkInput.value = "";
         addStatusEl.textContent = `${res.members.length}명 추가됨`;
-        rebuildEventFilterOptions();
         render();
     });
 
-    refreshBtn.addEventListener("click", fetchList);
-    eventFilter.addEventListener("change", render);
-    unpaidOnly.addEventListener("change", render);
+    newEventBtn.addEventListener("click", async () => {
+        const pw = requirePw();
+        if (!pw) return;
+        const name = newEventName.value.trim();
+        const amount = newEventAmount.value.trim();
+        eventStatusEl.classList.remove("err");
+        if (!name) { eventStatusEl.textContent = "행사명을 입력해주세요."; eventStatusEl.classList.add("err"); return; }
+        if (!/^\d+$/.test(amount)) { eventStatusEl.textContent = "금액은 숫자로만 입력해주세요."; eventStatusEl.classList.add("err"); return; }
+
+        eventStatusEl.textContent = "만드는 중...";
+        const res = await ContentAPI.createDuesEvent({ name, amount: Number(amount) }, pw);
+        if (!res.ok) {
+            eventStatusEl.textContent = res.error || "만들지 못했어요.";
+            eventStatusEl.classList.add("err");
+            return;
+        }
+        events.unshift(res.event);
+        newEventName.value = ""; newEventAmount.value = "";
+        eventStatusEl.textContent = `'${res.event.name}' 행사를 만들었어요.`;
+        rebuildEventOptions();
+        eventSelect.value = res.event.id;
+        onEventChange();
+    });
+
+    refreshBtn.addEventListener("click", fetchAll);
+    eventSelect.addEventListener("change", onEventChange);
+    statusFilter.addEventListener("change", render);
 
     deleteEventBtn.addEventListener("click", async () => {
         const pw = requirePw();
         if (!pw) return;
-        const eventName = eventFilter.value;
-        if (!eventName) {
-            statusEl.textContent = "삭제할 행사를 필터에서 먼저 선택해주세요.";
-            statusEl.classList.add("err");
-            return;
-        }
-        const count = members.filter((m) => m.eventName === eventName).length;
-        if (!confirm(`'${eventName}' 행사의 참가자 ${count}명을 모두 삭제할까요?\n삭제하면 되돌릴 수 없습니다.`)) return;
-        const res = await ContentAPI.deleteDuesEvent(eventName, pw);
+        const ev = currentEvent();
+        if (!ev) return;
+        const count = members.filter((m) => m.eventId === ev.id).length;
+        if (!confirm(`'${ev.name}' 행사와 참가자 ${count}명을 모두 삭제할까요?\n삭제하면 되돌릴 수 없습니다.`)) return;
+        const res = await ContentAPI.deleteDuesEvent(ev.id, pw);
         if (!res.ok) {
             statusEl.textContent = res.error || "삭제하지 못했어요.";
             statusEl.classList.add("err");
             return;
         }
-        members = members.filter((m) => m.eventName !== eventName);
-        rebuildEventFilterOptions();
-        render();
+        events = events.filter((e) => e.id !== ev.id);
+        members = members.filter((m) => m.eventId !== ev.id);
+        rebuildEventOptions();
     });
 
     window.__duesActivate = function () {
-        if (!loaded) fetchList();
+        if (!loaded) fetchAll();
     };
 })();
 </script>

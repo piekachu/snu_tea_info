@@ -89,16 +89,24 @@
             });
         },
         submitSupportFund: (fields) => call("submitSupportFund", fields),
+        // public — lets an applicant check their own application with the
+        // id shown back to them at submission time, no password needed
+        getSupportFundStatus: (id) => call("getSupportFundStatus", { id }),
         listSupportFund: (adminPassword) => call("listSupportFund", { adminPassword }),
         updateSupportFundStatus: (id, status, adminPassword, adminNote) =>
             call("updateSupportFundStatus", { id, status, adminNote, adminPassword }),
 
         // ── 회비 관리 (dues) — admin-only ────────────────────────────────
+        // events: created once (name + amount), then selected by id when
+        // adding participants — see createDuesMember/createDuesMembersBulk.
+        listDuesEvents: (adminPassword) => call("listDuesEvents", { adminPassword }),
+        createDuesEvent: (fields, adminPassword) => call("createDuesEvent", { ...fields, adminPassword }),
+        deleteDuesEvent: (eventId, adminPassword) => call("deleteDuesEvent", { eventId, adminPassword }),
+
         listDues: (adminPassword) => call("listDues", { adminPassword }),
         createDuesMember: (fields, adminPassword) => call("createDuesMember", { ...fields, adminPassword }),
         createDuesMembersBulk: (fields, adminPassword) => call("createDuesMembersBulk", { ...fields, adminPassword }),
-        updateDuesMemberStatus: (id, paid, adminPassword) => call("updateDuesMemberStatus", { id, paid, adminPassword }),
+        updateDuesMemberStatus: (id, status, adminPassword) => call("updateDuesMemberStatus", { id, status, adminPassword }),
         deleteDuesMember: (id, adminPassword) => call("deleteDuesMember", { id, adminPassword }),
-        deleteDuesEvent: (eventName, adminPassword) => call("deleteDuesEvent", { eventName, adminPassword }),
     };
 })();

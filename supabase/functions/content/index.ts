@@ -8,10 +8,11 @@
 //        | listInfo    | getInfo    | createInfo    | updateInfo    | deleteInfo
 //        | listEvents  | getEvent   | createEvent    | updateEvent   | deleteEvent
 //        | uploadImage
-//        | submitSupportFund | uploadSupportFundImage | listSupportFund
-//        | updateSupportFundStatus
+//        | submitSupportFund | uploadSupportFundImage | getSupportFundStatus
+//        | listSupportFund   | updateSupportFundStatus
+//        | listDuesEvents | createDuesEvent | deleteDuesEvent
 //        | listDues | createDuesMember | createDuesMembersBulk
-//        | updateDuesMemberStatus | deleteDuesMember | deleteDuesEvent
+//        | updateDuesMemberStatus | deleteDuesMember
 //
 // Required env vars — same project secrets already configured for the
 // `join` function, nothing new to set up:
@@ -20,8 +21,9 @@
 // JWT verification must be OFF (public endpoint — Settings → API → Edge
 // Functions), same as `join`.
 //
-// Run supabase/migrations/2026-08-30_content_tables.sql and
-// 2026-10-10_support_fund_and_dues.sql once in the SQL editor before
+// Run supabase/migrations/2026-08-30_content_tables.sql,
+// 2026-10-10_support_fund_and_dues.sql, and
+// 2026-10-11_dues_events_and_status.sql once in the SQL editor before
 // deploying this, and create a public "content-images" Storage bucket (see
 // the first migration's comment) for uploadImage/uploadSupportFundImage to
 // work.
@@ -119,14 +121,22 @@ function mapSupportFund(r: any) {
 }
 
 // deno-lint-ignore no-explicit-any
+function mapDuesEvent(r: any) {
+  return {
+    id: r.id,
+    name: r.name,
+    amount: r.amount,
+    createdAt: r.created_at,
+  };
+}
+
+// deno-lint-ignore no-explicit-any
 function mapDuesMember(r: any) {
   return {
     id: r.id,
-    eventName: r.event_name,
+    eventId: r.event_id,
     name: r.name,
-    amount: r.amount,
-    paid: !!r.paid,
-    paidAt: r.paid_at ?? null,
+    status: r.status,
     createdAt: r.created_at,
   };
 }
@@ -475,6 +485,38 @@ Deno.serve(async (req: Request) => {
       return json({ ok: true, application: mapSupportFund(data) });
     }
 
+    // Public, no password — lets an applicant check their own application's
+    // status using the id shown back to them right after they submitted
+    // (same "possession of an unguessable UUID = proof it's yours" pattern
+    // as join's editToken). Deliberately omits bank_name/account_holder/
+    // account_number even though it's their own data, to keep what an
+    // unauthenticated endpoint echoes back minimal.
+    if (action === "getSupportFundStatus") {
+      const { id } = body;
+      if (!id) return json({ ok: false, error: "신청 번호가 필요해요." }, 400);
+      const { data, error } = await supabase
+        .from("support_fund_applications")
+        .select("id, meetup_date, meetup_time, participants, status, admin_note, created_at, approved_at, paid_at")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) return json({ ok: false, error: error.message }, 500);
+      if (!data) return json({ ok: false, error: "존재하지 않는 신청 번호예요." }, 404);
+      return json({
+        ok: true,
+        application: {
+          id: data.id,
+          meetupDate: data.meetup_date,
+          meetupTime: data.meetup_time ?? null,
+          participants: Array.isArray(data.participants) ? data.participants : [],
+          status: data.status,
+          adminNote: data.admin_note ?? null,
+          createdAt: data.created_at,
+          approvedAt: data.approved_at ?? null,
+          paidAt: data.paid_at ?? null,
+        },
+      });
+    }
+
     if (action === "listSupportFund") {
       if (!checkAdmin(body.adminPassword))
         return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." }, 403);
@@ -509,8 +551,50 @@ Deno.serve(async (req: Request) => {
     // ═══════════════════════════════════════════════════════════════════
     // 회비 관리 (dues) — admin-only, invisible on the public site.
     // Upgraded/shared replacement for the standalone Tkinter
-    // soeldayeon_money.py tool: same event/name/amount/paid shape.
+    // soeldayeon_money.py tool. An event (name + amount) is created once
+    // in dues_events, then *selected* — never retyped — when adding
+    // participants, so a typo in a repeated event name can't silently
+    // split one group into two. status replaces the old paid boolean:
+    // 'unpaid' | 'paid' | 'canceled' | 'noshow_charged' | 'noshow_paid'.
     // ═══════════════════════════════════════════════════════════════════
+
+    const DUES_STATUSES = ["unpaid", "paid", "canceled", "noshow_charged", "noshow_paid"];
+
+    if (action === "listDuesEvents") {
+      if (!checkAdmin(body.adminPassword))
+        return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." }, 403);
+      const { data, error } = await supabase
+        .from("dues_events").select("*").order("created_at", { ascending: false });
+      if (error) return json({ ok: false, error: error.message }, 500);
+      return json({ ok: true, events: (data ?? []).map(mapDuesEvent) });
+    }
+
+    if (action === "createDuesEvent") {
+      if (!checkAdmin(body.adminPassword))
+        return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." }, 403);
+      const name = String(body.name || "").trim();
+      const amount = Number(body.amount);
+      if (!name) return json({ ok: false, error: "행사명을 입력해주세요." }, 400);
+      if (!Number.isFinite(amount) || amount < 0 || !Number.isInteger(amount))
+        return json({ ok: false, error: "금액은 숫자로만 입력해주세요." }, 400);
+
+      const { data, error } = await supabase
+        .from("dues_events").insert({ name, amount }).select().single();
+      if (error) return json({ ok: false, error: error.message }, 500);
+      return json({ ok: true, event: mapDuesEvent(data) });
+    }
+
+    if (action === "deleteDuesEvent") {
+      if (!checkAdmin(body.adminPassword))
+        return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." }, 403);
+      const { eventId } = body;
+      if (!eventId) return json({ ok: false, error: "eventId가 필요해요." }, 400);
+      // dues_members.event_id is ON DELETE CASCADE, so this also removes
+      // every participant row for the event.
+      const { error } = await supabase.from("dues_events").delete().eq("id", eventId);
+      if (error) return json({ ok: false, error: error.message }, 500);
+      return json({ ok: true });
+    }
 
     if (action === "listDues") {
       if (!checkAdmin(body.adminPassword))
@@ -524,40 +608,32 @@ Deno.serve(async (req: Request) => {
     if (action === "createDuesMember") {
       if (!checkAdmin(body.adminPassword))
         return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." }, 403);
-      const eventName = String(body.eventName || "").trim();
+      const { eventId } = body;
       const name = String(body.name || "").trim();
-      const amount = Number(body.amount);
-      if (!eventName) return json({ ok: false, error: "행사명을 입력해주세요." }, 400);
+      if (!eventId) return json({ ok: false, error: "행사를 먼저 선택해주세요." }, 400);
       if (!name) return json({ ok: false, error: "이름을 입력해주세요." }, 400);
-      if (!Number.isFinite(amount) || amount < 0 || !Number.isInteger(amount))
-        return json({ ok: false, error: "금액은 숫자로만 입력해주세요." }, 400);
 
       const { data, error } = await supabase
         .from("dues_members")
-        .insert({ event_name: eventName, name, amount, paid: false })
+        .insert({ event_id: eventId, name, status: "unpaid" })
         .select().single();
       if (error) return json({ ok: false, error: error.message }, 500);
       return json({ ok: true, member: mapDuesMember(data) });
     }
 
-    // batch add — the "convenient" bulk entry path: one event + amount,
+    // batch add — the "convenient" bulk entry path: one selected event,
     // many names at once (e.g. pasted one-per-line from a group chat)
     if (action === "createDuesMembersBulk") {
       if (!checkAdmin(body.adminPassword))
         return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." }, 403);
-      const eventName = String(body.eventName || "").trim();
-      const amount = Number(body.amount);
+      const { eventId } = body;
       const names = Array.isArray(body.names)
         ? body.names.map((n: unknown) => String(n).trim()).filter(Boolean)
         : [];
-      if (!eventName) return json({ ok: false, error: "행사명을 입력해주세요." }, 400);
-      if (!Number.isFinite(amount) || amount < 0 || !Number.isInteger(amount))
-        return json({ ok: false, error: "금액은 숫자로만 입력해주세요." }, 400);
+      if (!eventId) return json({ ok: false, error: "행사를 먼저 선택해주세요." }, 400);
       if (names.length === 0) return json({ ok: false, error: "추가할 이름이 없어요." }, 400);
 
-      const rows = names.map((name: string) => ({
-        event_name: eventName, name, amount, paid: false,
-      }));
+      const rows = names.map((name: string) => ({ event_id: eventId, name, status: "unpaid" }));
       const { data, error } = await supabase.from("dues_members").insert(rows).select();
       if (error) return json({ ok: false, error: error.message }, 500);
       return json({ ok: true, members: (data ?? []).map(mapDuesMember) });
@@ -566,11 +642,12 @@ Deno.serve(async (req: Request) => {
     if (action === "updateDuesMemberStatus") {
       if (!checkAdmin(body.adminPassword))
         return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." }, 403);
-      const { id, paid } = body;
+      const { id, status } = body;
       if (!id) return json({ ok: false, error: "id가 필요해요." }, 400);
-      const row = { paid: !!paid, paid_at: paid ? new Date().toISOString() : null };
+      if (!DUES_STATUSES.includes(String(status)))
+        return json({ ok: false, error: "status 값이 올바르지 않아요." }, 400);
       const { data, error } = await supabase
-        .from("dues_members").update(row).eq("id", id).select().maybeSingle();
+        .from("dues_members").update({ status }).eq("id", id).select().maybeSingle();
       if (error) return json({ ok: false, error: error.message }, 500);
       if (!data) return json({ ok: false, error: "존재하지 않는 사람이에요." }, 404);
       return json({ ok: true, member: mapDuesMember(data) });
@@ -582,16 +659,6 @@ Deno.serve(async (req: Request) => {
       const { id } = body;
       if (!id) return json({ ok: false, error: "id가 필요해요." }, 400);
       const { error } = await supabase.from("dues_members").delete().eq("id", id);
-      if (error) return json({ ok: false, error: error.message }, 500);
-      return json({ ok: true });
-    }
-
-    if (action === "deleteDuesEvent") {
-      if (!checkAdmin(body.adminPassword))
-        return json({ ok: false, error: "관리자 비밀번호가 올바르지 않습니다." }, 403);
-      const eventName = String(body.eventName || "").trim();
-      if (!eventName) return json({ ok: false, error: "행사명이 필요해요." }, 400);
-      const { error } = await supabase.from("dues_members").delete().eq("event_name", eventName);
       if (error) return json({ ok: false, error: error.message }, 500);
       return json({ ok: true });
     }

@@ -2,6 +2,10 @@
 .idea/
 /publish/
 
+# Supabase CLI's local session/connection cache (created by `supabase link`,
+# `db query`, etc.) — machine-local, not project state
+supabase/.temp/
+
 # raw (uncompressed) source photos — the compressed version actually used
 # by a page lives alongside it and is tracked; keep the multi-MB original
 # out of the repo

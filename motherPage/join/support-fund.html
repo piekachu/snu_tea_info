@@ -39,7 +39,48 @@
         .sf_done_icon { font-size: 40px; margin-bottom: 12px; }
         .sf_done_title { font-size: 18px; font-weight: var(--font-weight-bold); margin: 0 0 8px; }
         .sf_done_body { color: var(--fontGray); font-size: 14px; line-height: 1.6; }
+        .sf_done_id_row { margin: 18px 0; }
+        .sf_done_id_label { font-size: 12px; color: var(--fontGray); margin: 0 0 6px; }
+        .sf_done_id {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 10px 16px; background: var(--osullocGreenS); border-radius: 10px;
+            font-size: 13px; font-family: monospace; word-break: break-all;
+        }
+        .sf_done_id_copy {
+            flex: none; border: none; background: var(--osullocGreen); color: #fff;
+            font-size: 12px; font-weight: var(--font-weight-semibold); padding: 6px 12px;
+            border-radius: 6px; cursor: pointer;
+        }
         .sf_form.is-hidden { display: none; }
+
+        /* 신청 현황 확인 — status lookup by the id shown on the success
+           screen above; same idea as join's own edit/cancel-by-code flow,
+           just for a read-only status check here. */
+        .sf_status_card { margin-top: 24px; }
+        .sf_status_toggle {
+            width: 100%; text-align: left; background: none; border: none;
+            padding: 18px 0; font-size: 14px; font-weight: var(--font-weight-semibold);
+            color: var(--osullocGreen); cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+        }
+        .sf_status_body { display: none; padding-bottom: 24px; }
+        .sf_status_body.is-open { display: block; }
+        .sf_status_row { display: flex; gap: 8px; }
+        .sf_status_row input { flex: 1; }
+        .sf_status_result { margin-top: 16px; display: none; }
+        .sf_status_result.is-visible { display: block; }
+        .sf_status_badge {
+            display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 12px;
+            border-radius: 12px; margin-bottom: 10px;
+        }
+        .sf_status_badge.submitted { background: #fff4da; color: #8a6400; }
+        .sf_status_badge.approved  { background: var(--osullocGreenS); color: var(--osullocGreen); }
+        .sf_status_badge.paid      { background: var(--osullocGreen); color: #fff; }
+        .sf_status_badge.rejected  { background: #fde2e2; color: #b23b3b; }
+        .sf_status_meta { font-size: 13px; color: var(--fontColor); line-height: 1.7; }
+        .sf_status_note {
+            margin-top: 10px; padding: 12px 14px; background: #faf7f0; border-radius: 8px;
+            font-size: 13px; line-height: 1.6; color: var(--fontColor);
+        }
     </style>
 </head>
 <body class="page-home">
@@ -128,6 +169,28 @@
                         <div class="sf_done_icon">✅</div>
                         <p class="sf_done_title">신청이 접수되었어요!</p>
                         <p class="sf_done_body">회계부장 확인 후 입력하신 계좌로 지원금이 지급됩니다.<br>문의사항은 인스타그램 DM으로 편하게 연락주세요.</p>
+                        <div class="sf_done_id_row">
+                            <p class="sf_done_id_label">아래 신청 번호로 나중에 진행 상황을 확인할 수 있어요. 꼭 저장해두세요!</p>
+                            <span class="sf_done_id">
+                                <span id="sfDoneId"></span>
+                                <button type="button" class="sf_done_id_copy" id="sfDoneIdCopy">복사</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sf_card sf_status_card">
+                    <button type="button" class="sf_status_toggle" id="sfStatusToggle" aria-expanded="false">
+                        <span>이미 신청하셨나요? 신청 번호로 현황 확인하기</span>
+                        <span aria-hidden="true">▾</span>
+                    </button>
+                    <div class="sf_status_body" id="sfStatusBody">
+                        <div class="sf_status_row">
+                            <input type="text" id="sfStatusInput" placeholder="신청 번호를 붙여넣어주세요">
+                            <button type="button" class="join_btn_secondary" id="sfStatusCheckBtn">확인</button>
+                        </div>
+                        <p class="join_form_error" id="sfStatusError" hidden></p>
+                        <div class="sf_status_result" id="sfStatusResult"></div>
                     </div>
                 </div>
             </div>
@@ -166,6 +229,15 @@
         const errorEl = document.getElementById("sfError");
         const submitBtn = document.getElementById("sfSubmitBtn");
         const doneEl = document.getElementById("sfDone");
+        const doneIdEl = document.getElementById("sfDoneId");
+        const doneIdCopyBtn = document.getElementById("sfDoneIdCopy");
+
+        const statusToggle = document.getElementById("sfStatusToggle");
+        const statusBody = document.getElementById("sfStatusBody");
+        const statusInput = document.getElementById("sfStatusInput");
+        const statusCheckBtn = document.getElementById("sfStatusCheckBtn");
+        const statusErrorEl = document.getElementById("sfStatusError");
+        const statusResultEl = document.getElementById("sfStatusResult");
 
         const dateInput = document.getElementById("sfDate");
         const timeInput = document.getElementById("sfTime");
@@ -234,6 +306,7 @@
                 }
 
                 form.classList.add("is-hidden");
+                doneIdEl.textContent = res.application.id;
                 doneEl.classList.add("is-visible");
             } catch (err) {
                 showError("네트워크 오류가 발생했어요. 다시 시도해주세요.");
@@ -242,6 +315,80 @@
                 submitBtn.textContent = "신청하기";
             }
         });
+
+        doneIdCopyBtn.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(doneIdEl.textContent);
+                doneIdCopyBtn.textContent = "복사됨";
+                setTimeout(() => { doneIdCopyBtn.textContent = "복사"; }, 1500);
+            } catch (err) { /* clipboard permission denied — user can still select the text manually */ }
+        });
+
+        // ── 신청 현황 확인 ──────────────────────────────────────────────
+        const STATUS_LABEL = { submitted: "검토 대기중", approved: "승인됨 — 곧 지급됩니다", paid: "지급완료", rejected: "반려됨" };
+        function formatDateKo(iso) {
+            const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+            return m ? `${Number(m[1])}년 ${Number(m[2])}월 ${Number(m[3])}일` : String(iso || "");
+        }
+
+        statusToggle.addEventListener("click", () => {
+            const open = statusBody.classList.toggle("is-open");
+            statusToggle.setAttribute("aria-expanded", String(open));
+        });
+
+        async function checkStatus() {
+            const id = statusInput.value.trim();
+            statusErrorEl.hidden = true;
+            statusResultEl.classList.remove("is-visible");
+            if (!id) { statusErrorEl.textContent = "신청 번호를 입력해주세요."; statusErrorEl.hidden = false; return; }
+
+            statusCheckBtn.disabled = true;
+            statusCheckBtn.textContent = "확인 중...";
+            try {
+                const res = await ContentAPI.getSupportFundStatus(id);
+                if (!res.ok) {
+                    statusErrorEl.textContent = res.error || "조회하지 못했어요.";
+                    statusErrorEl.hidden = false;
+                    return;
+                }
+                const a = res.application;
+                let html = `<span class="sf_status_badge ${a.status}">${STATUS_LABEL[a.status] || a.status}</span>`;
+                html += `<div class="sf_status_meta">`;
+                html += `소모임 날짜: ${formatDateKo(a.meetupDate)}${a.meetupTime ? " " + a.meetupTime : ""}<br>`;
+                html += `참가자: ${a.participants.map((p) => escapeHtml(p)).join(", ")}`;
+                html += `</div>`;
+                if (a.adminNote) {
+                    html += `<div class="sf_status_note">💬 ${escapeHtml(a.adminNote)}</div>`;
+                }
+                statusResultEl.innerHTML = html;
+                statusResultEl.classList.add("is-visible");
+            } catch (err) {
+                statusErrorEl.textContent = "네트워크 오류가 발생했어요. 다시 시도해주세요.";
+                statusErrorEl.hidden = false;
+            } finally {
+                statusCheckBtn.disabled = false;
+                statusCheckBtn.textContent = "확인";
+            }
+        }
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
+
+        statusCheckBtn.addEventListener("click", checkStatus);
+        statusInput.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" || e.isComposing || e.keyCode === 229) return;
+            e.preventDefault();
+            checkStatus();
+        });
+
+        // deep link: ?id=... opens the status panel and runs the check
+        const deepLinkId = new URLSearchParams(window.location.search).get("id");
+        if (deepLinkId) {
+            statusInput.value = deepLinkId;
+            statusBody.classList.add("is-open");
+            statusToggle.setAttribute("aria-expanded", "true");
+            checkStatus();
+        }
     })();
     </script>
 
