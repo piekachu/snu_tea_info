@@ -60,6 +60,11 @@
         "home.join.title":     { ko: "소모임 신청", en: "Meetups" },
         "home.join.intro":     { ko: "누구나 자유롭게 소모임을 만들고 참여할 수 있습니다. 차에 관심 있는 사람들이 모여 함께 취미를 나누고, 새로운 경험을 쌓을 수 있는 공간입니다. 원하는 날짜를 선택해 새로운 소모임을 시작하거나, 이미 만들어진 모임에 참가 신청을 해보세요!",
                                  en: "Anyone can start a meetup or join one. It's a space for people interested in tea to share the hobby and try something new. Pick a date to start your own, or sign up for one that's already been created." },
+        "home.supportFund.title": { ko: "소모임 지원금 신청", en: "Meetup Support Fund" },
+        "home.supportFund.intro": { ko: "소모임을 다녀오고 시음기를 작성하셨다면, 지원금을 신청해주세요. 회계부장 확인 후 입력하신 계좌로 지급됩니다.",
+                                     en: "If you've been to a meetup and written your tasting note, apply for the support fund here. Once the treasurer confirms it, the stipend is sent to the account you provide." },
+        "home.supportFund.cta":   { ko: "지원금 신청하기 →", en: "Apply for the Support Fund →" },
+
         "home.info.title":     { ko: "정보", en: "Info" },
         "home.info.intro":     { ko: "설다연에 관한 다양한 정보와 글을 만나보세요. 차 문화, 찻집 안내, 동아리 활동 이야기 등 유익한 내용을 공유합니다.",
                                  en: "Browse articles and guides about Seoldayeon — tea culture, tea house recommendations, and stories from club activities." },
