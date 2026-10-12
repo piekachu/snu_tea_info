@@ -3344,7 +3344,8 @@
         if (!ev) { searchStatusEl.textContent = "행사를 먼저 선택해주세요."; searchStatusEl.classList.add("err"); return; }
         if (!name) { searchStatusEl.textContent = "검색할 이름을 입력해주세요."; searchStatusEl.classList.add("err"); return; }
 
-        const matches = members.filter((m) => m.eventId === ev.id && m.name === name);
+        const term = name.toLowerCase();
+        const matches = members.filter((m) => m.eventId === ev.id && m.name.toLowerCase().includes(term));
         if (matches.length === 0) {
             searchStatusEl.textContent = `'${name}'은(는) 이 행사 명단에 없는 사람입니다.`;
             searchStatusEl.classList.add("err");
