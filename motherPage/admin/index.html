@@ -1265,6 +1265,21 @@
 
     <!-- ══ 소모임 지원금 신청 panel ═══════════════════════════════════════ -->
     <div class="adm-panel" id="tab-fund">
+
+        <!-- 신청자 검색 — 아래 목록과는 별개의 박스. 이름을 검색하면 목록이
+             그 사람으로만 좁혀진다 (상태 필터와 함께 적용됨). -->
+        <div class="dues-add-card">
+            <p class="dues-add-title">신청자 검색</p>
+            <div class="dues-add-row">
+                <div class="adm-field" style="min-width:160px;">
+                    <label for="fund-search">신청자 이름으로 검색</label>
+                    <input class="adm-pw" id="fund-search" type="text" placeholder="이름 입력 후 Enter">
+                </div>
+                <button class="adm-btn-sec" id="fund-search-btn" type="button">검색</button>
+                <button class="cnt-btn-secondary" id="fund-search-clear-btn" type="button">초기화</button>
+            </div>
+        </div>
+
         <div class="sm-toolbar">
             <button class="adm-btn-sec" id="fund-refresh-btn">새로고침</button>
             <select class="fund-filter-select" id="fund-filter">
@@ -1332,6 +1347,21 @@
                 <button class="adm-btn-sec" id="dues-bulk-add-btn" type="button">일괄 추가</button>
             </div>
             <p class="adm-status" id="dues-add-status"></p>
+        </div>
+
+        <!-- 입금 확인 — 명단 등록과는 별개의 박스. 이름을 검색하면 그 사람을
+             찾아서 미입금이면 입금완료로 처리할지 바로 확인창이 뜬다
+             (soeldayeon_money.py의 search_member()와 동일한 흐름). -->
+        <div class="dues-add-card">
+            <p class="dues-add-title">입금 확인</p>
+            <div class="dues-add-row">
+                <div class="adm-field" style="min-width:160px;">
+                    <label for="dues-search">이름으로 검색 (Enter)</label>
+                    <input class="adm-pw" id="dues-search" type="text" placeholder="이름 입력 후 Enter">
+                </div>
+                <button class="adm-btn-sec" id="dues-search-btn" type="button">검색</button>
+            </div>
+            <p class="adm-status" id="dues-search-status"></p>
         </div>
 
         <div class="sm-toolbar">
@@ -2884,9 +2914,13 @@
     const filterSelect = document.getElementById("fund-filter");
     const statusEl     = document.getElementById("fund-status");
     const listEl       = document.getElementById("fund-list");
+    const searchInput    = document.getElementById("fund-search");
+    const searchBtn      = document.getElementById("fund-search-btn");
+    const searchClearBtn = document.getElementById("fund-search-clear-btn");
 
     let applications = [];
     let loaded = false;
+    let searchTerm = "";
 
     const STATUS_LABEL = { submitted: "대기중", approved: "승인됨", paid: "지급완료", rejected: "반려" };
 
@@ -2900,7 +2934,11 @@
 
     function render() {
         const filter = filterSelect.value;
-        const filtered = filter === "all" ? applications : applications.filter((a) => a.status === filter);
+        let filtered = filter === "all" ? applications : applications.filter((a) => a.status === filter);
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            filtered = filtered.filter((a) => (a.applicantName || "").toLowerCase().includes(term));
+        }
         listEl.innerHTML = "";
 
         if (filtered.length === 0) {
@@ -3034,6 +3072,25 @@
     refreshBtn.addEventListener("click", fetchList);
     filterSelect.addEventListener("change", render);
 
+    // 신청자 검색 — separate box from the list itself; narrows fund-list to
+    // applicants whose name contains the search term (combined with the
+    // status filter above).
+    function runSearch() {
+        searchTerm = searchInput.value.trim();
+        render();
+    }
+    searchBtn.addEventListener("click", runSearch);
+    searchInput.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" || e.isComposing || e.keyCode === 229) return;
+        e.preventDefault();
+        runSearch();
+    });
+    searchClearBtn.addEventListener("click", () => {
+        searchInput.value = "";
+        searchTerm = "";
+        render();
+    });
+
     window.__fundActivate = function () {
         if (!loaded) fetchList();
     };
@@ -3078,6 +3135,10 @@
     const bulkAddBtn     = document.getElementById("dues-bulk-add-btn");
     const addStatusEl    = document.getElementById("dues-add-status");
 
+    const searchInput    = document.getElementById("dues-search");
+    const searchBtn      = document.getElementById("dues-search-btn");
+    const searchStatusEl = document.getElementById("dues-search-status");
+
     const refreshBtn    = document.getElementById("dues-refresh-btn");
     const statusFilter   = document.getElementById("dues-status-filter");
     const statusEl       = document.getElementById("dues-status");
@@ -3120,6 +3181,7 @@
         memberAddCard.style.opacity = ev ? "1" : ".5";
         nameInput.disabled = !ev; addBtn.disabled = !ev;
         bulkInput.disabled = !ev; bulkAddBtn.disabled = !ev;
+        searchInput.disabled = !ev; searchBtn.disabled = !ev;
         render();
     }
 
@@ -3268,6 +3330,45 @@
         addStatusEl.textContent = `${name} 추가됨`;
         render();
     }
+
+    // 입금 확인 — separate from the add-participant box above, matching
+    // soeldayeon_money.py's own search_member(): search by name within the
+    // selected event, and if they're found unpaid, confirm marking them
+    // paid right there instead of hunting the row in the table.
+    async function searchMember() {
+        const pw = requirePw();
+        if (!pw) return;
+        const ev = currentEvent();
+        const name = searchInput.value.trim();
+        searchStatusEl.classList.remove("err");
+        if (!ev) { searchStatusEl.textContent = "행사를 먼저 선택해주세요."; searchStatusEl.classList.add("err"); return; }
+        if (!name) { searchStatusEl.textContent = "검색할 이름을 입력해주세요."; searchStatusEl.classList.add("err"); return; }
+
+        const matches = members.filter((m) => m.eventId === ev.id && m.name === name);
+        if (matches.length === 0) {
+            searchStatusEl.textContent = `'${name}'은(는) 이 행사 명단에 없는 사람입니다.`;
+            searchStatusEl.classList.add("err");
+            return;
+        }
+
+        for (const m of matches) {
+            if (m.status === "paid") {
+                alert(`${m.name} / ${STATUS_LABEL[m.status]}\n이미 입금 완료된 사람입니다.`);
+            } else if (confirm(`${m.name} / ${STATUS_LABEL[m.status]}\n입금 완료로 처리할까요?`)) {
+                await updateStatus(m, "paid");
+            }
+        }
+        searchStatusEl.textContent = `'${name}' 검색 완료`;
+        searchInput.value = "";
+        searchInput.focus();
+    }
+
+    searchBtn.addEventListener("click", searchMember);
+    searchInput.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" || e.isComposing || e.keyCode === 229) return;
+        e.preventDefault();
+        searchMember();
+    });
 
     addBtn.addEventListener("click", addSingle);
     // Enter-to-add: a Korean IME fires a keydown for the Enter that confirms
